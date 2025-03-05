@@ -1,0 +1,281 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+body {
+    background-image: url("images/fondo.jpg"); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+}
+.left-panel {
+    flex: 1;
+    background-image: url('images/robot.png');
+    background-size: contain;
+    background-position: left;
+    background-repeat: no-repeat;
+    height: 60%;
+    display: flex;
+    justify-content: left;
+    align-items: left;
+    padding-right: 400px; /* Agrega más espacio a la derecha */
+  }
+
+.right-panel {
+    background: none; /* Elimina cualquier fondo */
+    background-color: transparent; /* Asegura que sean completamente transparentes */
+    padding-left: 100px; /* Agrega más espacio a la derecha */
+  }
+  
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    align-items: center;
+    padding: 20px; /* Agrega más espacio a la derecha */
+
+}
+
+.icon {
+    margin-right: 10px;
+}
+
+.options {
+    display: flex;
+    justify-content: space-between;
+    font-size: 15px;
+    color:  #1F2738;
+}
+
+.login-btn:hover {
+    background: #f5a623;
+}
+
+h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 1000; /* Negrita */
+    color:  #1F2738;
+}
+
+h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-style: italic;
+    font-weight: 400; /* Normal */
+}
+
+h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+    color: #0F2D4E;
+    margin-bottom: 10px; /* Espacio debajo del label */
+    margin-top: 20px; /* Espacio arriba del label */
+}
+
+p {
+    font-size: 15px;
+}
+
+a {
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 11px; /* Espacio arriba del label */
+    display: inline-block;
+}
+
+button {
+    width: 80%; /* Ocupa todo el ancho del contenedor */
+    padding: 12px; /* Espaciado interno para mejor apariencia */
+    background-color: #EFA020; /* Color de fondo */
+    color: white; /* Texto en blanco */
+    border: none; /* Sin bordes */
+    border-radius: 5px; /* Bordes redondeados */
+    font-size: 16px; /* Tamaño de fuente */
+    font-weight: bold; /* Negrita */
+    cursor: pointer; /* Cursor de mano */
+    transition: background-color 0.3s ease; /* Transición suave */
+}
+
+label {
+    font-size: 15px;
+    /*color: #333; */
+    padding-right: px; /* Espacio a la derecha campo de texto*/
+    margin: 10px 15px 10px 0px; /* Arriba, Derecha, Abajo, Izquierda */
+}
+
+
+.title-imagen {
+    width: 500px;  /* Ajusta según el tamaño de la imagen */
+    height: 100px; /* Ajusta la altura de la imagen */
+    background-image: url('images/titulo_simulador.png'); /* Ruta correcta */
+    background-size: contain;  /* Ajusta la imagen sin distorsionarla */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+    background-position: center;  /* Centra la imagen */
+}
+
+.sub-title-r {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    font-size: 30px;
+    font-weight: bold;
+    color: #0F2D4E;
+    margin-bottom: 20px; /* Espacio debajo del subtítulo */
+    margin-top: 0%; /* Espacio debajo del subtítulo */
+    padding: 0px 15px 10px 0px;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    padding: 8px;
+    width: 80%;
+}
+
+.input-container input {    
+    font-size: 15px; /* Tamaño del texto ingresado */
+    border: none;
+    outline: none;
+    flex: 1;
+    padding: 8px;
+}
+
+.input-container .divider {
+    height: 20px;
+    width: 1px;
+    background-color: #ccc;
+    margin-right: 10px;
+}
+
+input {
+    margin-top: 2px; /* Espacio entre el label y el input */
+}
+
+.divider_ {
+    position: absolute;
+    left: 45%;
+    top: 20%;
+    bottom: 15%;
+    width: 20px; /* Grosor de la línea */
+    background-image: url("images/linea_loguin.png"); /* Ruta de la imagen */
+    background-repeat: repeat-y; /* Para que se repita en vertical */
+    background-size: contain; /* Ajusta la imagen al tamaño del div */
+}
+
+.footer {
+    background-color: #1F2738; 
+    height: 80px; /* Altura del footer */
+    width: 100%; /* Ancho completo */
+    position: fixed; /* Fijado en la parte inferior */
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: center; /* Centra el contenido */
+    align-items: center; /* Centra el contenido */
+}
+
+/* Logo dentro del footer */
+.footer::before {
+    content: "";
+    background-image: url("images/logo_ceipa.png"); /* Ruta de la imagen */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 160px; /* Tamaño del logo */
+    height: 60px;
+    display: block;
+}
+
+/*----------------------- Styles Register ----------------------------------------*/
+
+/* Contenedor de la imagen y formulario */
+.register-container {
+    position: relative;
+    width: 50vw;  /* 50% del ancho de la pantalla */
+    height: 50vh; /* 50% del alto de la pantalla */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Imagen de fondo robot registro */
+.register-background {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    width: 150%;
+    max-width: none; /* Permite que la imagen crezca más allá del tamaño normal */
+    height: auto;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    overflow: hidden; /* Evita que la imagen genere barras de desplazamiento */
+}
+
+.register-form-r {
+    position: absolute;
+    top: 65%;
+    left: 85%; /* Mueve el formulario más a la izquierda */
+    transform: translate(-55%, -50%); /* Ajusta más la posición */
+    width: 100%;
+    max-width: 400px;
+    padding: 0px;
+    border-radius: 10px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);  
+    outline: none; /* Evita el borde azul al hacer clic */
+}
+
+.input-container-r {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    padding: 5px;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+/* Iconos */
+.input-icon {
+    width: 30px;
+    height: 24px;
+    margin-right: 10px;
+}
+
+/* Divider entre el ícono y el input */
+.input-divider-r {
+    width: 1px;
+    height: 20px;
+    background-color: #ccc;
+    margin-right: 10px;
+}
+
+/* Ajustes para los inputs */
+.input-container-r input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 2px;
+    font-size: 16px;
+}
+
+.register-form-r button {
+    width: 100%; /* Ocupa todo el ancho del contenedor */
+}

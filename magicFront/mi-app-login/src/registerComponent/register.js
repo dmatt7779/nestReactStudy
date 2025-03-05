@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import '../styles.css';
+import Footer from "../components/Footer";
+import bgImage from "../images/img_registro.png";
+import emailIcon from "../images/icon-email.png";
+import passIcon from "../images/passIcon.png";
+import confirmIcon from "../images/confirmIcon.png";
+
+
 
 function Registro() {
     const [proyecto, setProyecto] = useState('');
@@ -45,32 +53,13 @@ function Registro() {
     };
 
     return (
-        <div>
-            <h2>Registro</h2>
+        <div className="register-container">
+            <img src={bgImage} alt="Registro de Usuarios" className="register-background" />
+            <div className='register-form-r'>
             <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="proyecto">Nombre del proyecto:</label>
-                    <input
-                        type="text"
-                        id="proyecto"
-                        value={proyecto}
-                        onChange={(e) => setProyecto(e.target.value)}
-                        required
-                    />
-                </div>
-                <h3>Estudiantes:</h3>
-                {estudiantes.map((estudiante, indice) => (
-                    <div key={indice}>
-                        <input
-                            type="text"
-                            value={estudiante.nombre}
-                            onChange={(e) => manejarCambioEstudiante(indice, e.target.value)}
-                            required
-                        />
-                        <button type="button" onClick={agregarEstudiante}>+</button>
-                    </div>
-                ))}
-                <div>
+                <div className='input-container-r'>
+                <img src={emailIcon} alt="Email Icon" className="input-icon" />
+                <div className="input-divider-r"></div> 
                     <label htmlFor="email">Email:</label>
                     <input
                         type="email"
@@ -80,7 +69,9 @@ function Registro() {
                         required
                     />
                 </div>
-                <div>
+                <div className='input-container-r'>
+                <img src={passIcon} alt="Password Icon" className="input-icon" />
+                <div className="input-divider-r"></div>       
                     <label htmlFor="contrasena">Contraseña:</label>
                     <input
                         type="password"
@@ -93,7 +84,9 @@ function Registro() {
                         required
                     />
                 </div>
-                <div>
+                <div className='input-container-r'>
+                <img src={confirmIcon} alt="Confirm Password Icon" className="input-icon" />
+                <div className="input-divider-r"></div>  
                     <label htmlFor="confirmarContrasena">Confirmar contraseña:</label>
                     <input
                         type="password"
@@ -110,8 +103,10 @@ function Registro() {
                     )}
                 </div>
                 <button type="submit">Registrarse</button>
-                <div><p>¿Ya tienes cuenta? <Link to="/">Iniciar Sesion</Link></p> </div>
+                <div className="options"><p>¿Ya tienes cuenta? <Link to="/">Iniciar Sesion</Link></p> </div>
             </form>
+            </div>
+            <Footer /> {}
         </div>
     );
 }
