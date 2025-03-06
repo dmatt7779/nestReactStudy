@@ -38,55 +38,19 @@ body {
     background: none; /* Elimina cualquier fondo */
     background-color: transparent; /* Asegura que sean completamente transparentes */
     padding-left: 100px; /* Agrega más espacio a la derecha */
-  }
-  
+  }  
 
 .login-form {
     display: flex;
     flex-direction: column;
-    gap: 30px;
     align-items: center;
-    padding: 20px; /* Agrega más espacio a la derecha */
-
+    padding: 5px; /* Agrega más espacio a la derecha */
+    gap: 20px; /* Reduce el espacio entre los elementos */
+    width: 100%;
 }
 
-.icon {
-    margin-right: 10px;
-}
-
-.options {
-    display: flex;
-    justify-content: space-between;
-    font-size: 15px;
-    color:  #1F2738;
-}
-
-.login-btn:hover {
-    background: #f5a623;
-}
-
-h1 {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 1000; /* Negrita */
-    color:  #1F2738;
-}
-
-h2 {
-    font-family: 'Montserrat', sans-serif;
-    font-style: italic;
-    font-weight: 400; /* Normal */
-}
-
-h3 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 20px;
-    color: #0F2D4E;
-    margin-bottom: 10px; /* Espacio debajo del label */
-    margin-top: 20px; /* Espacio arriba del label */
-}
-
-p {
-    font-size: 15px;
+.login-form .icon {
+    margin-right: 10px; /* espacio entre el icono y el texto hacia la izquierda*/
 }
 
 a {
@@ -110,13 +74,14 @@ button {
     transition: background-color 0.3s ease; /* Transición suave */
 }
 
-label {
-    font-size: 15px;
-    /*color: #333; */
-    padding-right: px; /* Espacio a la derecha campo de texto*/
-    margin: 10px 15px 10px 0px; /* Arriba, Derecha, Abajo, Izquierda */
+button:hover {
+    background-color: #efa020c5; /* Azul más oscuro */
+    transform: scale(1.05); /* Hace que el botón se agrande un poco */
 }
 
+button:active {
+    transform: scale(0.95); /* Hace que el botón se amplie al hacer clic */
+}
 
 .title-imagen {
     width: 500px;  /* Ajusta según el tamaño de la imagen */
@@ -127,17 +92,6 @@ label {
     background-position: center;  /* Centra la imagen */
 }
 
-.sub-title-r {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 400;
-    font-size: 30px;
-    font-weight: bold;
-    color: #0F2D4E;
-    margin-bottom: 20px; /* Espacio debajo del subtítulo */
-    margin-top: 0%; /* Espacio debajo del subtítulo */
-    padding: 0px 15px 10px 0px;
-}
-
 .input-container {
     display: flex;
     align-items: center;
@@ -145,7 +99,7 @@ label {
     border: 1px solid #ccc;
     border-radius: 7px;
     padding: 8px;
-    width: 80%;
+    width: 80%;  /* Tamaño del formulario login */
 }
 
 .input-container input {    
@@ -153,29 +107,62 @@ label {
     border: none;
     outline: none;
     flex: 1;
-    padding: 8px;
+    padding: 10px;
 }
 
 .input-container .divider {
     height: 20px;
-    width: 1px;
+    width: 1px;  /* Grosor de la línea */
     background-color: #ccc;
-    margin-right: 10px;
+    margin-right: 10px;  /* Espacio entre el icono de usuario y el texto hacia la derecha */
 }
 
-input {
-    margin-top: 2px; /* Espacio entre el label y el input */
-}
-
-.divider_ {
+.divider-line {
     position: absolute;
     left: 45%;
     top: 20%;
     bottom: 15%;
     width: 20px; /* Grosor de la línea */
-    background-image: url("images/linea_loguin.png"); /* Ruta de la imagen */
+    background-image: url("images/linea_login.png");
     background-repeat: repeat-y; /* Para que se repita en vertical */
     background-size: contain; /* Ajusta la imagen al tamaño del div */
+}
+
+.options {
+    display: flex;
+    justify-content: space-between; /* Mueve un elemento a la izquierda y otro a la derecha */
+    align-items: center; /* Asegura que estén alineados verticalmente */
+    width: 80%; /* Ocupa todo el ancho disponible */
+    font-size: 14px;
+    margin-top: 1px; /* Espacio arriba */
+}
+
+.options label {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Espacio entre el checkbox y el texto */
+}
+
+/* Estilo del enlace "Olvidé contraseña" */
+.options a {
+    color: #542f92;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 14px; /* Tamaño de fuente */
+}
+
+.options a:hover {
+    color: #7747ca; /* Cambia el color al pasar el mouse */
+    text-decoration: underline;
+}
+
+.register-option a:hover {
+    color: #7747ca; /* Cambia a naranja en hover */
+    text-decoration: underline;
+}
+
+.register-option span {
+    margin-right: 10px; /* Espacio entre el texto y el enlace */
 }
 
 .footer {
@@ -193,22 +180,22 @@ input {
 /* Logo dentro del footer */
 .footer::before {
     content: "";
-    background-image: url("images/logo_ceipa.png"); /* Ruta de la imagen */
+    background-image: url("images/logo_ceipa.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    width: 160px; /* Tamaño del logo */
+    width: 160px; /* Tamaño del logo Ceipa footer */
     height: 60px;
     display: block;
 }
 
-/*----------------------- Styles Register ----------------------------------------*/
+/*---------------------------------- Styles Register ----------------------------------------*/
 
 /* Contenedor de la imagen y formulario */
 .register-container {
     position: relative;
     width: 50vw;  /* 50% del ancho de la pantalla */
-    height: 50vh; /* 50% del alto de la pantalla */
+    height: 40vh; /* 50% del alto de la pantalla */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -233,7 +220,7 @@ input {
     left: 85%; /* Mueve el formulario más a la izquierda */
     transform: translate(-55%, -50%); /* Ajusta más la posición */
     width: 100%;
-    max-width: 400px;
+    max-width: 500px;
     padding: 0px;
     border-radius: 10px;
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);  
@@ -251,7 +238,7 @@ input {
     margin-bottom: 5px;
 }
 
-/* Iconos */
+/* Iconos de registro*/
 .input-icon {
     width: 30px;
     height: 24px;
@@ -272,10 +259,18 @@ input {
     border: none;
     outline: none;
     background: transparent;
-    padding: 2px;
+    padding: 4px;
     font-size: 16px;
 }
 
 .register-form-r button {
     width: 100%; /* Ocupa todo el ancho del contenedor */
 }
+
+.options p {
+    text-align: center; /* Alinea el texto a la derecha */
+    width: 100%; /* Asegura que ocupe todo el ancho disponible */
+    margin: 5px; /* Elimina márgenes innecesarios */
+    padding: 5px; /* Ajusta el espaciado */
+}
+

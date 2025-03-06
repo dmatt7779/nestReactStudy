@@ -103,7 +103,7 @@ function Registro() {
                     )}
                 </div>
                 <button type="submit">Registrarse</button>
-                <div className="options"><p>¿Ya tienes cuenta? <Link to="/">Iniciar Sesion</Link></p> </div>
+                <div className="options"><p>¿Ya tienes cuenta? <Link to="/">Iniciar Sesión</Link></p> </div>
             </form>
             </div>
             <Footer /> {}

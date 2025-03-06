@@ -19,7 +19,7 @@ function Login() {
   return (
     <div className="container">
       <div className="left-panel"></div>
-      <div className="divider_"></div>
+      <div className="divider-line"></div>
         <div className="right-panel">
           <div className="title-imagen"></div>
           <form className="login-form" onSubmit={handleSubmit}>
@@ -51,9 +51,9 @@ function Login() {
               </label>
               <a href="#">Olvidé contraseña</a>
             </div>
-            <button type="submit">Iniciar sesión</button>
-            <div>
-            <label>¿No tienes cuenta? <Link to="register">Regístrate</Link></label>
+            <button className='' type="submit">Iniciar sesión</button>
+            <div className='register-option'>
+            <span>¿No tienes cuenta?</span> <label><Link to="register">Regístrate</Link></label>
             </div>
           </form>
       </div>

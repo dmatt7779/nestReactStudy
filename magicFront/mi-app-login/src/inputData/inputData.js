@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import '../styles.css';
+import Footer from "../components/Footer";
 
 function InputData() {
   const [nombreProyecto, setNombreProyecto] = useState("");
@@ -65,7 +67,8 @@ function InputData() {
           />
         </div>
         <div>
-          <label htmlFor="integrantes">Integrantes:</label>
+          <h2><label htmlFor="integrantes">1. Integrantes:</label></h2>
+          <p>Diligencie en los siguientes recuadros los estudiantes que conforman el grupo.</p>
           {integrantes.map((integrante, indice) => (
             <div key={indice}>
               <input
@@ -81,6 +84,8 @@ function InputData() {
           </button>
         </div>
         <div>
+          <h2>2. Años de proyección</h2>
+          <p>Ingrese el primer año o año base para las proyecciones financieras (por ejemplo 2020).</p>
           <label htmlFor="anoApertura">Año de Apertura:</label>
           <input
             type="number"
@@ -91,7 +96,9 @@ function InputData() {
           />
         </div>
 
-        <h3>Proyección Macro</h3>
+        <h2>3. Análisis del entorno (Proyección Macro)</h2>
+        <p>En el análisis del entorno, es necesario Investigar y contemplar las proyecciones de ciertas variables Macroeconómicas</p>
+        <p>En este aspecto, existen entidades que se encargan de realizar estos estudios, y los publican en sus portales digitales</p>
         <h4>IPC</h4>
         {proyeccionMacro.ipc.map((valor, indice) => (
           <input
@@ -132,7 +139,10 @@ function InputData() {
           />
         ))}
 
-        <h2>Análisis de Mercado</h2>
+        <h2>4. Análisis de Mercadeo y ventas</h2>
+        <p>En el plan de mercadeo y ventas, se debe realizar una estimación de las cantidades a facturar y los precios promedio de ventas para el primer año por cada producto y/o servicio, así como también los factores de crecimiento (con base en indicador o estrategia) y el costo de cada una de las estrategias de Marketing para atraer clientes.</p>
+
+        <h3>Ingrese el número de productos o servicios que tiene su proyecto.</h3>
 
         <h3>Crecimiento Unidades</h3>
         <div>
@@ -226,6 +236,7 @@ function InputData() {
 
         <button type="submit">Guardar</button>
       </form>
+      <Footer /> {}
     </div>
   );
 }
