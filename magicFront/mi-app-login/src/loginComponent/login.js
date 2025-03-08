@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import '../styles.css';
+import '../style/styles.css';
 import Footer from "../components/Footer";
 
 function Login() {
@@ -49,7 +49,7 @@ function Login() {
               <label>
                 <input type="checkbox" /> Recuerdame
               </label>
-              <a href="#">Olvidé contraseña</a>
+              <a href="aquiVaLaUrlparaRecuperarContrasena">Olvidé contraseña</a>
             </div>
             <button type="submit">Iniciar sesión</button>
             <div>
