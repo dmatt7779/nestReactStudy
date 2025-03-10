@@ -4,7 +4,9 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './loginComponent/login';
 import Registro from './registerComponent/register';
-import InputData from './inputData/inputData';
+import ProjectInfo from './projectInfo/projectInfo';
+import ProyeccionMacro from './proyeccionMacro/proyeccionMacro';
+import NewProject from './newProject/newProject';
 
 function App() {
   return(
@@ -12,7 +14,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} /> 
         <Route path="/register" element={<Registro />} /> 
-        <Route path="/InputData" element={<InputData />} /> 
+        <Route path="/ProjectInfo" element={<ProjectInfo />} /> 
+        <Route path="/ProyeccionMacro" element={<ProyeccionMacro />} /> 
+        <Route path="/NewProject" element={<NewProject />} /> 
       </Routes>
     </BrowserRouter>
   );

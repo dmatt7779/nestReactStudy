@@ -7,8 +7,6 @@ import emailIcon from "../images/icon-email.png";
 import passIcon from "../images/passIcon.png";
 import confirmIcon from "../images/confirmIcon.png";
 
-
-
 function Registro() {
     const [proyecto, setProyecto] = useState('');
     const [estudiantes, setEstudiantes] = useState([{ nombre: '' }]);
@@ -103,10 +101,10 @@ function Registro() {
                     )}
                 </div>
                 <button type="submit">Registrarse</button>
-                <div className="options"><p>¿Ya tienes cuenta? <Link to="/">Iniciar Sesión</Link></p> </div>
+                <div><p>¿Ya tienes cuenta? <Link to="/">Iniciar Sesión</Link></p> </div>
             </form>
             </div>
-            <Footer /> {}
+            <Footer />
         </div>
     );
 }

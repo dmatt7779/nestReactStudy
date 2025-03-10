@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import '../styles.css';
 import Footer from "../components/Footer";
 
-function InputData() {
+function ProyeccionMacro() {
   const [nombreProyecto, setNombreProyecto] = useState("");
   const [integrantes, setIntegrantes] = useState([""]); // Array para los integrantes
   const [anoApertura, setAnoApertura] = useState("");
@@ -236,8 +236,8 @@ function InputData() {
 
         <button type="submit">Guardar</button>
       </form>
-      <Footer /> {}
+      <Footer />
     </div>
   );
 }
-export default InputData;
+export default ProyeccionMacro;
