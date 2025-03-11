@@ -8,13 +8,13 @@
 }
 
 body {
-    background-image: url("images/fondo.jpg"); 
+    background-image: url("../images/fondo.jpg"); 
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     padding-bottom: 80px; /* Espacio para el footer */
-    background-image: url("images/fondo.jpg"); 
+    background-image: url("../images/fondo.jpg"); 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -134,7 +134,7 @@ button:active {
     top: 20%;
     bottom: 15%;
     width: 20px; /* Grosor de la línea */
-    background-image: url("images/linea_login.png");
+    background-image: url("../images/linea_login.png");
     background-repeat: repeat-y; /* Para que se repita en vertical */
     background-size: contain; /* Ajusta la imagen al tamaño del div */
 }
@@ -191,7 +191,7 @@ button:active {
 /* Logo dentro del footer */
 .footer::before {
     content: "";
-    background-image: url("images/logo_ceipa.png");
+    background-image: url("../images/logo_ceipa.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -299,7 +299,7 @@ button:active {
 
 .right-panel-pi {
     flex: 1;
-    background-image: url('images/robot.png');
+    background-image: url('../images/robot.png');
     background-size: 300px 300px; /* Tamaño fijo en píxeles */
     background-position: right;
     background-repeat: no-repeat;
@@ -347,7 +347,7 @@ button:active {
 .title-imagen-pi {
     width: 500px;  /* Ajusta según el tamaño de la imagen */
     height: 100px; /* Ajusta la altura de la imagen */
-    background-image: url('images/titulo_simulador.png'); /* Ruta correcta */
+    background-image: url('../images/titulo_simulador.png'); /* Ruta correcta */
     background-size: contain;  /* Ajusta la imagen sin distorsionarla */
     background-repeat: no-repeat; /* Evita que la imagen se repita */
     background-position: center;  /* Centra la imagen */
