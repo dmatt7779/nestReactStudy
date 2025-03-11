@@ -8,11 +8,22 @@
 }
 
 body {
-    background-image: url("../images/fondo.jpg"); 
+    background-image: url("images/fondo.jpg"); 
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    padding-bottom: 80px; /* Espacio para el footer */
+    background-image: url("images/fondo.jpg"); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /*padding-bottom: 80px;  Espacio para el footer 
+    background-image: url("images/fondo.jpg"); 
+    display: flex;
+    justify-content: center;
+    align-items: center;*/ /*Para el scroll footer*/
 }
 .container {
     display: flex;
@@ -38,55 +49,19 @@ body {
     background: none; /* Elimina cualquier fondo */
     background-color: transparent; /* Asegura que sean completamente transparentes */
     padding-left: 100px; /* Agrega más espacio a la derecha */
-  }
-  
+  }  
 
 .login-form {
     display: flex;
     flex-direction: column;
-    gap: 30px;
     align-items: center;
-    padding: 20px; /* Agrega más espacio a la derecha */
-
+    padding: 5px; /* Agrega más espacio a la derecha */
+    gap: 20px; /* Reduce el espacio entre los elementos */
+    width: 100%;
 }
 
-.icon {
-    margin-right: 10px;
-}
-
-.options {
-    display: flex;
-    justify-content: space-between;
-    font-size: 15px;
-    color:  #1F2738;
-}
-
-.login-btn:hover {
-    background: #f5a623;
-}
-
-h1 {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 1000; /* Negrita */
-    color:  #1F2738;
-}
-
-h2 {
-    font-family: 'Montserrat', sans-serif;
-    font-style: italic;
-    font-weight: 400; /* Normal */
-}
-
-h3 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 20px;
-    color: #0F2D4E;
-    margin-bottom: 10px; /* Espacio debajo del label */
-    margin-top: 20px; /* Espacio arriba del label */
-}
-
-p {
-    font-size: 15px;
+.login-form .icon {
+    margin-right: 10px; /* espacio entre el icono y el texto hacia la izquierda*/
 }
 
 a {
@@ -110,13 +85,14 @@ button {
     transition: background-color 0.3s ease; /* Transición suave */
 }
 
-label {
-    font-size: 15px;
-    /*color: #333; */
-    padding-right: px; /* Espacio a la derecha campo de texto*/
-    margin: 10px 15px 10px 0px; /* Arriba, Derecha, Abajo, Izquierda */
+button:hover {
+    background-color: #efa020c5; /* Azul más oscuro */
+    transform: scale(1.02); /* Hace que el botón se agrande un poco */
 }
 
+button:active {
+    transform: scale(0.95); /* Hace que el botón se amplie al hacer clic */
+}
 
 .title-imagen {
     width: 500px;  /* Ajusta según el tamaño de la imagen */
@@ -127,17 +103,6 @@ label {
     background-position: center;  /* Centra la imagen */
 }
 
-.sub-title-r {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 400;
-    font-size: 30px;
-    font-weight: bold;
-    color: #0F2D4E;
-    margin-bottom: 20px; /* Espacio debajo del subtítulo */
-    margin-top: 0%; /* Espacio debajo del subtítulo */
-    padding: 0px 15px 10px 0px;
-}
-
 .input-container {
     display: flex;
     align-items: center;
@@ -145,37 +110,70 @@ label {
     border: 1px solid #ccc;
     border-radius: 7px;
     padding: 8px;
-    width: 80%;
+    width: 80%;  /* Tamaño del formulario login */
 }
 
 .input-container input {    
-    font-size: 15px; /* Tamaño del texto ingresado */
+    font-size: 14px; /* Tamaño del texto ingresado */
     border: none;
     outline: none;
     flex: 1;
-    padding: 8px;
+    padding: 10px;
 }
 
 .input-container .divider {
     height: 20px;
-    width: 1px;
+    width: 1px;  /* Grosor de la línea */
     background-color: #ccc;
-    margin-right: 10px;
+    margin-right: 10px;  /* Espacio entre el icono de usuario y el texto hacia la derecha */
 }
 
-input {
-    margin-top: 2px; /* Espacio entre el label y el input */
-}
-
-.divider_ {
+.divider-line {
     position: absolute;
     left: 45%;
     top: 20%;
     bottom: 15%;
     width: 20px; /* Grosor de la línea */
-    background-image: url("../images/linea_loguin.png"); /* Ruta de la imagen */
+    background-image: url("images/linea_login.png");
     background-repeat: repeat-y; /* Para que se repita en vertical */
     background-size: contain; /* Ajusta la imagen al tamaño del div */
+}
+
+.options {
+    display: flex;
+    justify-content: space-between; /* Mueve un elemento a la izquierda y otro a la derecha */
+    align-items: center; /* Asegura que estén alineados verticalmente */
+    width: 80%; /* Ocupa todo el ancho disponible */
+    font-size: 14px;
+    margin-top: 1px; /* Espacio arriba */
+}
+
+.options label {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Espacio entre el checkbox y el texto */
+}
+
+/* Estilo del enlace "Olvidé contraseña" */
+.options a {
+    color: #542f92;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 14px; /* Tamaño de fuente */
+}
+
+.options a:hover {
+    color: #7747ca; /* Cambia el color al pasar el mouse */
+    text-decoration: underline;
+}
+
+.register-option a:hover {
+    color: #7747ca; /* Cambia a naranja en hover */
+    text-decoration: underline;
+}
+
+.register-option span {
+    margin-right: 10px; /* Espacio entre el texto y el enlace */
 }
 
 .footer {
@@ -193,22 +191,22 @@ input {
 /* Logo dentro del footer */
 .footer::before {
     content: "";
-    background-image: url("../images/logo_ceipa.png"); /* Ruta de la imagen */
+    background-image: url("images/logo_ceipa.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    width: 160px; /* Tamaño del logo */
+    width: 160px; /* Tamaño del logo Ceipa footer */
     height: 60px;
     display: block;
 }
 
-/*----------------------- Styles Register ----------------------------------------*/
+/*---------------------------------- Styles Register ----------------------------------------*/
 
 /* Contenedor de la imagen y formulario */
 .register-container {
     position: relative;
     width: 50vw;  /* 50% del ancho de la pantalla */
-    height: 50vh; /* 50% del alto de la pantalla */
+    height: 40vh; /* 50% del alto de la pantalla */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -233,11 +231,15 @@ input {
     left: 85%; /* Mueve el formulario más a la izquierda */
     transform: translate(-55%, -50%); /* Ajusta más la posición */
     width: 100%;
-    max-width: 400px;
+    max-width: 450px;
     padding: 0px;
     border-radius: 10px;
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);  
     outline: none; /* Evita el borde azul al hacer clic */
+}
+
+.register-form-r label{
+    font-size: 14px;
 }
 
 .input-container-r {
@@ -248,10 +250,10 @@ input {
     border-radius: 7px;
     padding: 5px;
     width: 100%;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
 }
 
-/* Iconos */
+/* Iconos de registro*/
 .input-icon {
     width: 30px;
     height: 24px;
@@ -272,10 +274,304 @@ input {
     border: none;
     outline: none;
     background: transparent;
-    padding: 2px;
-    font-size: 16px;
+    padding: 4px;
+    font-size: 14px;
 }
 
 .register-form-r button {
     width: 100%; /* Ocupa todo el ancho del contenedor */
 }
+
+.register-form-r p {
+    text-align: right; /* Alinea el texto a la derecha */
+    width: 100%; /* Asegura que ocupe todo el ancho disponible */
+    margin: 5px 0; /* Ajusta el margen: arriba y abajo 5px, sin margen lateral */
+    padding: 8px; /* Espaciado interno uniforme */
+    display: block; /* Asegura que el párrafo se comporte como un bloque */
+    font-size: 14px;
+}
+
+.register-form-r a {
+    font-size: 14px;
+}
+
+/*---------------------------------- Styles Input Data ----------------------------------------*/
+
+.right-panel-pi {
+    flex: 1;
+    background-image: url('images/robot.png');
+    background-size: 300px 300px; /* Tamaño fijo en píxeles */
+    background-position: right;
+    background-repeat: no-repeat;
+    height: auto;
+    display: flex;
+    justify-content: right;
+    align-items: right;
+    padding-right: 300px; /* Agrega más espacio a la derecha */
+  }
+
+.right-panel-pi input{
+    border: none; /* Elimina el borde negro */
+    border-bottom: 1px solid #ccc; /* Agrega un borde inferior sutil (opcional) */
+    outline: none; /* Elimina el contorno al enfocar */
+    font-size: 14px; /* Aumenta el tamaño de la fuente */
+    padding: 5px; /* Aumenta el padding */
+    width: calc(50% - 22px); /* Ajusta al ancho del contenedor con padding*/
+    margin-bottom: 5px; /* Agrega un margen inferior */
+    box-sizing: border-box;
+}
+
+.left-panel-pi {
+    background: none; /* Elimina cualquier fondo */
+    background-color: transparent; /* Asegura que sean completamente transparentes */
+    padding-left: 0px; /* Agrega más espacio a la derecha */
+  } 
+
+.right-panel-pi h2 {
+   margin-top: 15px;
+   margin-bottom: 8px;
+  }
+
+.right-panel-pi p {
+    margin-bottom: 8px;
+    font-size: 14px;
+   }
+
+.add-int button { /* Estilo agregar otro integrante*/
+    font-size: 0.8em; /* Reduce el tamaño de la fuente de los botones */
+    padding: 5px 8px; /* Reduce el padding de los botones */
+    background-color: #1F2738;
+    width: 90.5%; /* 30% de ancho */
+   }
+
+.title-imagen-pi {
+    width: 500px;  /* Ajusta según el tamaño de la imagen */
+    height: 100px; /* Ajusta la altura de la imagen */
+    background-image: url('images/titulo_simulador.png'); /* Ruta correcta */
+    background-size: contain;  /* Ajusta la imagen sin distorsionarla */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+    background-position: center;  /* Centra la imagen */
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-around; /* o flex-end si los quieres todos a la derecha */
+    padding: 5px; /* reduce el padding */
+    width: 30%; /* 30% de ancho */
+    position: absolute; /* Posicionamiento absoluto */
+    top: 20px; /* Ajusta la distancia desde arriba */
+    right: 10px; /* Ajusta la distancia desde la derecha */
+    position: fixed; /* Fija la barra de navegación */
+  }
+  
+.navbar button {
+    font-size: 0.8em; /* Reduce el tamaño de la fuente de los botones */
+    padding: 5px 8px; /* Reduce el padding de los botones */
+    background-color: #ccc;
+  }
+ 
+  /* Estilos opcionales para el grid de los profesores */
+.profesor-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 100px); /* 4 columnas */
+    grid-template-rows: repeat(2, 100px);    /* 2 filas */
+    gap: 5px; /* Espacio entre las tarjetas */
+  }
+
+  @media (max-width: 768px) { /* Ajusta el breakpoint según tus necesidades */
+.profesor-grid {
+      grid-template-columns: repeat(2, 1fr); /* 2 columnas en pantallas pequeñas */
+      grid-template-rows: repeat(3, 1fr); /* 3 filas en pantallas pequeñas */
+    }
+  }
+  
+.profesor-card {
+    border: 1px solid #ccc;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid transparent; /* Borde transparente inicialmente */
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; 
+    transition: opacity 0.3s ease;
+  }
+
+.profesor-card:hover {
+      transform: scale(1.05); /* Escala ligeramente al pasar el mouse */
+      box-shadow: 0 0 10px rgba(84, 66, 121, 0.2); /* Agrega una sombra */
+  }
+  
+.profesor-card img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
+  
+.profesor-card p {
+    font-size: 12px;
+  }
+
+.profesor-card.selected {
+    background-color: #d2d0d6; /* Color de fondo para la tarjeta seleccionada */    
+    transform: scale(0.9); /* Mantiene la escala cuando está seleccionado */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Mantiene la sombra cuando está seleccionado */  
+    opacity: 1; /* Opacidad total */
+  }
+
+.profesor-card:not(.selected) { /* Aplica a las NO seleccionadas */
+    opacity: 0.6; /* Opacidad reducida */
+}
+
+.integrante-fields {
+    display: flex;
+    align-items: center; /* Alinea verticalmente los elementos */
+    gap: 10px; /* Espacio entre los elementos */
+    font-size: 14px;
+  }
+  
+.integrante-fields label {
+    white-space: nowrap; /* Evita que el texto del label se divida en varias líneas */
+  }
+  
+.integrante-fields input[type="text"] {
+      width: 200px; /* Ajusta el ancho según tus necesidades */
+  }
+
+.profesor p{
+    margin-bottom: 15px;
+  }
+
+.profesor h3{
+    font-size: 18px;
+    margin-bottom: 15px;
+    margin-top: 15px;
+  }
+
+.container-pi {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 120vh;
+}
+
+/*-----------------------------------Styles new project--------------------------------------*/
+
+/* Contenedor del grid en fila horizontal */
+.project-grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(250px, auto);
+    gap: 20px;
+    padding: 20px;
+    overflow-x: auto;
+    border-bottom: 2px solid #ccc;
+}
+
+/* Tarjeta de cada proyecto */
+.project-card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    min-width: 250px;
+    border-right: 2px solid #ccc;
+    position: relative;
+}
+
+/* Eliminar borde derecho del último elemento */
+.project-card:last-child {
+    border-right: none;
+}
+
+/* Botón de acciones (editar/eliminar) */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.edit-btn, .delete-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.edit-btn {
+    background-color: #ffc107;
+    color: black;
+}
+
+.edit-btn:hover {
+    background-color: #e0a800;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+/* Botón para agregar proyecto */
+.add-project-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: block;
+    margin: 20px auto;
+}
+
+.add-project-btn:hover {
+    background-color: #0056b3;
+}
+
+.project-card {
+    background-color: #f4f4f4;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .project-card p {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .icons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+  }
+  
+  .icon {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.2s;
+  }
+  
+  .icon-btn:hover .icon {
+    transform: scale(1.2);
+  }
+
