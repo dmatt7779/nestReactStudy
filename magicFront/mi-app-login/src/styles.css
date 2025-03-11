@@ -353,22 +353,38 @@ button:active {
     background-position: center;  /* Centra la imagen */
 }
 
+/* Contenedor del navbar */
+/* Contenedor del navbar */
 .navbar {
     display: flex;
-    justify-content: space-around; /* o flex-end si los quieres todos a la derecha */
-    padding: 5px; /* reduce el padding */
-    width: 30%; /* 30% de ancho */
-    position: absolute; /* Posicionamiento absoluto */
-    top: 20px; /* Ajusta la distancia desde arriba */
-    right: 10px; /* Ajusta la distancia desde la derecha */
-    position: fixed; /* Fija la barra de navegación */
-  }
-  
+    justify-content: flex-end; /* Alinea a la derecha */
+    align-items: center; /* Asegura alineación vertical */
+    gap: 10px; /* Espacio entre los botones */
+    padding: 10px;
+    width: auto; /* Ajusta el ancho al contenido */
+    position: fixed;
+    top: 20px;
+    right: 20px;
+}
+
+/* Estilo de los botones */
 .navbar button {
-    font-size: 0.8em; /* Reduce el tamaño de la fuente de los botones */
-    padding: 5px 8px; /* Reduce el padding de los botones */
-    background-color: #ccc;
-  }
+    font-size: 1.2em; /* Letra más grande */
+    font-weight: normal; /* Quitar negrilla */
+    padding: 5px 10px;
+    background: none; /* Sin fondo */
+    border: none; /* Sin borde */
+    color: #000; /* Color del texto */
+    cursor: pointer;
+    white-space: nowrap; /* Evita que los botones se dividan en varias líneas */
+}
+
+/* Eliminar el hover naranja */
+.navbar button:hover {
+    background: none; /* Evita cambio de fondo */
+    color: #000; /* Mantiene el color */
+}
+
  
   /* Estilos opcionales para el grid de los profesores */
 .profesor-grid {
@@ -457,121 +473,96 @@ button:active {
 
 /*-----------------------------------Styles new project--------------------------------------*/
 
-/* Contenedor del grid en fila horizontal */
-.project-grid {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(250px, auto);
-    gap: 20px;
+.nuevo-proyecto-container {
+    display: flex;
+    height: 100vh;
     padding: 20px;
-    overflow-x: auto;
-    border-bottom: 2px solid #ccc;
+    align-items: center; /* Asegura que el contenido se alinee verticalmente */
 }
 
-/* Tarjeta de cada proyecto */
-.project-card {
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    min-width: 250px;
-    border-right: 2px solid #ccc;
-    position: relative;
-}
-
-/* Eliminar borde derecho del último elemento */
-.project-card:last-child {
-    border-right: none;
-}
-
-/* Botón de acciones (editar/eliminar) */
-.action-buttons {
+/* Sección izquierda (Robot) */
+.robot-container {
+    flex: 1; /* Asegura que tome el espacio a la izquierda */
     display: flex;
+    justify-content: center; /* Centra el robot */
+    align-items: center;
+}
+
+.robot-img {
+    width: 80%;
+    max-width: 300px;
+}
+
+/* Sección derecha (Contenido) */
+.contenido-container {
+    flex: 2; /* Toma el espacio restante */
+    display: flex;
+    flex-direction: column;
     justify-content: center;
-    gap: 10px;
-    margin-top: 10px;
+    align-items: flex-start; /* Alinea a la izquierda */
+    padding-left: 50px; /* Ajuste de espaciado */
 }
 
-.edit-btn, .delete-btn {
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: 0.3s;
-}
-
-.edit-btn {
-    background-color: #ffc107;
-    color: black;
-}
-
-.edit-btn:hover {
-    background-color: #e0a800;
-}
-
-.delete-btn {
-    background-color: #dc3545;
-    color: white;
-}
-
-.delete-btn:hover {
-    background-color: #c82333;
-}
-
-/* Botón para agregar proyecto */
-.add-project-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s;
-    display: block;
-    margin: 20px auto;
-}
-
-.add-project-btn:hover {
-    background-color: #0056b3;
-}
-
-.project-card {
-    background-color: #f4f4f4;
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .project-card p {
-    font-size: 16px;
+.contenido-container h1 {
+    font-size: 32px;
     font-weight: bold;
-  }
-  
-  .icons {
+    color: #000;
+}
+
+.contenido-container h1 span {
+    color: #007c92;
+}
+
+.contenido-container p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+/* Grid de proyectos */
+.grid-proyectos {
+    display: flex; /* Cambia de grid a flex para un mejor control */
+    flex-wrap: wrap; /* Asegura que los elementos se acomoden correctamente */
+    justify-content: center; /* Centra los elementos */
+    gap: 15px;
+    max-width: 100%; /* Evita que crezca más allá del contenedor */
+    padding: 10px;
+    overflow-x: hidden; /* Evita cualquier scroll horizontal en el contenedor */
+}
+
+/* Asegura que las tarjetas no sean más grandes de lo necesario */
+.proyecto-card {
+    flex: 1 1 calc(20% - 15px); /* Hace que cada tarjeta ocupe un 20% del ancho */
+    max-width: 180px; /* Ajusta según el diseño */
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.proyecto-card:hover {
+    transform: scale(1.05);
+}
+
+.imagen-hover {
+    background: transparent; /* Elimina el fondo */
+    padding: 0; /* Evita espacios extra */
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin-top: 10px;
-  }
-  
-  .icon-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-  }
-  
-  .icon {
-    width: 24px;
-    height: 24px;
-    transition: transform 0.2s;
-  }
-  
-  .icon-btn:hover .icon {
-    transform: scale(1.2);
-  }
+    align-items: center;
+}
+
+/* Ajustar la imagen dentro de cada tarjeta */
+.proyecto-img {
+    width: 100px; /* Ajusta el tamaño según sea necesario */
+    transition: opacity 0.3s;
+}
+
+/* Opcional: Efecto hover para resaltar */
+.proyecto-card:hover .proyecto-img {
+    opacity: 0.7;
+}
+
+
 

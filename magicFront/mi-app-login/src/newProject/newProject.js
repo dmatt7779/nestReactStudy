@@ -2,76 +2,37 @@ import React, { useState } from "react";
 import '../styles.css';
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
-import Icon1 from '../images/edit-icon.png';
-import Icon2 from '../images/delete-icon.png';
+import robotImg from '../images/robot.png';
+import nuevoProyectoImg from "../images/bt_nuevo_proyecto.png";
+//import Icon1 from '../images/edit-icon.png';
+//import Icon2 from '../images/delete-icon.png';
 const NewProject = () => {
-  const [projects, setProjects] = useState([
-      { id: 1, name: "Proyecto 1" },
-      { id: 2, name: "Proyecto 2" },
-  ]);
-
-   // Agregar un nuevo proyecto
-    const addProject = () => {
-        const newProject = { id: projects.length + 1, name: `Proyecto ${projects.length + 1}` };
-        setProjects([...projects, newProject]);
-    };
-
-    // Editar un proyecto
-    const editProject = (id) => {
-        const newName = prompt("Nuevo nombre del proyecto:");
-        if (newName) {
-            setProjects(
-                projects.map((project) =>
-                    project.id === id ? { ...project, name: newName } : project
-                )
-            );
-        }
-    };
-
-    // Eliminar un proyecto
-    const deleteProject = (id) => {
-        const confirmDelete = window.confirm("¿Seguro que quieres eliminar este proyecto?");
-        if (confirmDelete) {
-            setProjects(projects.filter((project) => project.id !== id));
-        }
-    };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Crear Json en Node o PHP para mandarlo a SQL y Python
-
-  };
+  const proyectos = [1, 2, 3, 4, 5];
 
   return (
-    <div className="container-pi ">
+    <div className="nuevo-proyecto-container">
       <Navbar />
-      <form onSubmit={handleSubmit}>
-      <div className="title-imagen-pi"></div>
-      <h2>Nuevo Proyecto</h2>
-      <div>
-          <button className="add-project-btn" onClick={addProject}>
-                + Agregar Proyecto
-            </button>
-            <div className="project-grid">
-                {projects.map((project) => (
-                    <div key={project.id} className="project-card">
-                        <h3>{project.name}</h3>
-                        <div className="icons">
-                          <button className="icon-btn" onClick={() => editProject(project.id)}>
-                             <img src={Icon1} alt="Editar" className="icon" />
-                          </button>
-                          <button className="icon-btn" onClick={() => deleteProject(project.id)}>
-                          <img src={Icon2} alt="Eliminar" className="icon" />
-                          </button>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
-        <button type="submit">Guardar</button>
-      </form>
+      <div className="robot-container">
+         <img src={robotImg} alt="Robot" className="robot-img" />
+      </div>
+      <div className="contenido-container">
+        <h1>Creación de un <span>nuevo proyecto</span></h1>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <div className="grid-proyectos">
+            {proyectos.map((_, index) => (
+              <div key={index} className="proyecto-card">
+                <div className="imagen-hover">
+                  <img src={nuevoProyectoImg} alt="Nuevo Proyecto" className="proyecto-img" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </form>
+      </div>
       <Footer />
     </div>
   );
-}
+};
+
 export default NewProject;
