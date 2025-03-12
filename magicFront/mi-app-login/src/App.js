@@ -2,7 +2,7 @@
 import './App.css';
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from './loginComponent/login';
+import Login from './loginComponent';
 import Registro from './registerComponent/register';
 import ProjectInfo from './projectInfo/projectInfo';
 import ProyeccionMacro from './proyeccionMacro/proyeccionMacro';
