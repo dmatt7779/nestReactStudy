@@ -8,7 +8,7 @@ import passIcon from "../images/passIcon.png";
 import confirmIcon from "../images/confirmIcon.png";
 import axiosClient from '../utils/axios';
 
-function Registro() {
+function Register() {
     const navigate = useNavigate();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -131,4 +131,4 @@ function Registro() {
         </div>
     );
 }
-export default Registro;
+export default Register;
