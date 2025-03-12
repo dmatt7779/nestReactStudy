@@ -295,183 +295,217 @@ button:active {
     font-size: 14px;
 }
 
-/*---------------------------------- Styles Input Data ----------------------------------------*/
-
-.right-panel-pi {
-    flex: 1;
-    background-image: url('images/robot.png');
-    background-size: 300px 300px; /* Tamaño fijo en píxeles */
-    background-position: right;
-    background-repeat: no-repeat;
-    height: auto;
-    display: flex;
-    justify-content: right;
-    align-items: right;
-    padding-right: 300px; /* Agrega más espacio a la derecha */
-  }
-
-.right-panel-pi input{
-    border: none; /* Elimina el borde negro */
-    border-bottom: 1px solid #ccc; /* Agrega un borde inferior sutil (opcional) */
-    outline: none; /* Elimina el contorno al enfocar */
-    font-size: 14px; /* Aumenta el tamaño de la fuente */
-    padding: 5px; /* Aumenta el padding */
-    width: calc(50% - 22px); /* Ajusta al ancho del contenedor con padding*/
-    margin-bottom: 5px; /* Agrega un margen inferior */
-    box-sizing: border-box;
-}
-
-.left-panel-pi {
-    background: none; /* Elimina cualquier fondo */
-    background-color: transparent; /* Asegura que sean completamente transparentes */
-    padding-left: 0px; /* Agrega más espacio a la derecha */
-  } 
-
-.right-panel-pi h2 {
-   margin-top: 15px;
-   margin-bottom: 8px;
-  }
-
-.right-panel-pi p {
-    margin-bottom: 8px;
-    font-size: 14px;
-   }
-
-.add-int button { /* Estilo agregar otro integrante*/
-    font-size: 0.8em; /* Reduce el tamaño de la fuente de los botones */
-    padding: 5px 8px; /* Reduce el padding de los botones */
-    background-color: #1F2738;
-    width: 90.5%; /* 30% de ancho */
-   }
-
-.title-imagen-pi {
-    width: 500px;  /* Ajusta según el tamaño de la imagen */
-    height: 100px; /* Ajusta la altura de la imagen */
-    background-image: url('images/titulo_simulador.png'); /* Ruta correcta */
-    background-size: contain;  /* Ajusta la imagen sin distorsionarla */
-    background-repeat: no-repeat; /* Evita que la imagen se repita */
-    background-position: center;  /* Centra la imagen */
-}
-
-/* Contenedor del navbar */
-/* Contenedor del navbar */
+/*---------------------------------- navbar ----------------------------------------*/
+/* Contenedor principal del navbar */
 .navbar {
     display: flex;
-    justify-content: flex-end; /* Alinea a la derecha */
-    align-items: center; /* Asegura alineación vertical */
-    gap: 10px; /* Espacio entre los botones */
-    padding: 10px;
-    width: auto; /* Ajusta el ancho al contenido */
+    align-items: center;
+    justify-content: space-between;
     position: fixed;
     top: 20px;
+    left: 20px;
     right: 20px;
-}
-
-/* Estilo de los botones */
-.navbar button {
-    font-size: 1.2em; /* Letra más grande */
-    font-weight: normal; /* Quitar negrilla */
-    padding: 5px 10px;
-    background: none; /* Sin fondo */
-    border: none; /* Sin borde */
-    color: #000; /* Color del texto */
-    cursor: pointer;
-    white-space: nowrap; /* Evita que los botones se dividan en varias líneas */
-}
-
-/* Eliminar el hover naranja */
-.navbar button:hover {
-    background: none; /* Evita cambio de fondo */
-    color: #000; /* Mantiene el color */
-}
-
- 
-  /* Estilos opcionales para el grid de los profesores */
-.profesor-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 100px); /* 4 columnas */
-    grid-template-rows: repeat(2, 100px);    /* 2 filas */
-    gap: 5px; /* Espacio entre las tarjetas */
-  }
-
-  @media (max-width: 768px) { /* Ajusta el breakpoint según tus necesidades */
-.profesor-grid {
-      grid-template-columns: repeat(2, 1fr); /* 2 columnas en pantallas pequeñas */
-      grid-template-rows: repeat(3, 1fr); /* 3 filas en pantallas pequeñas */
-    }
+    height: 60px;
+    padding: 0 20px;
+    background: transparent;
+    z-index: 1000;
   }
   
-.profesor-card {
-    border: 1px solid #ccc;
-    padding: 15px;
-    text-align: center;
+  .navbar-logo {
+    height: 80px;
     cursor: pointer;
-    border: 1px solid transparent; /* Borde transparente inicialmente */
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; 
-    transition: opacity 0.3s ease;
-  }
-
-.profesor-card:hover {
-      transform: scale(1.05); /* Escala ligeramente al pasar el mouse */
-      box-shadow: 0 0 10px rgba(84, 66, 121, 0.2); /* Agrega una sombra */
+    margin-top: 20px;
   }
   
-.profesor-card img {
+  .navbar-right {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  
+  .nav-button {
+    font-size: 1em;
+    font-weight: normal;
+    background: none;
+    border: none;
+    color: #000;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .nav-button:hover {
+    color: #333;  /* Cambia el color del texto a un gris más oscuro */
+    background-color: #f0f0f0; /* Sutil fondo gris */
+    border-radius: 4px; /* Redondea un poco las esquinas */
+  } 
+
+  /* Contenedor de la línea */
+.navbar-line {
+    position: fixed;  /* Para que quede debajo del navbar fijo */
+    top: 100px; /* Ajusta según la altura total del navbar */
+    left: 0;
+    right: 0;
+    z-index: 999; /* Debajo del navbar (que tiene 1000) */
+  }
+  
+  /* Imagen de la línea */
+  .line-img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .titulo-imagen {
+    text-align: left;  /* Alinea el contenido a la izquierda */
+    margin-bottom: 10px;
+    padding-left: 0px;  /* Opcional: agrega un poco de espacio a la izquierda */
+}
+
+.project-title-img {
+    width: 50%;  /* Ocupa el 100% del contenedor */
+    max-width: 600px;  /* Limita el ancho máximo para no sobrepasar el diseño */
+    height: auto;  /* Mantiene la proporción */
+}
+
+/*---------------------------------- Styles Project Info ----------------------------------------*/
+
+.project-info-container {
+    background: #F8F8F8;        /* Color de fondo suave */
+    min-height: 100vh;          /* Ocupa toda la altura de la pantalla */
+    padding-top: 450px;         /* Espacio para que no tape el navbar fijo */
+    position: relative;
+  }
+  
+  .main-content {
+    width: 80%;                 /* Ajusta el ancho según tu diseño */
+    margin: 0 auto;             /* Centra horizontalmente */
+    text-align: justify;       
+  }
+  
+  .new-project-title-img {
+    width: 300px;               /* Ajusta el tamaño según necesites */
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+  }
+  
+  .intro-text {
+    font-size: 10px;
+    color: #333;
+    margin-bottom: 30px;
+  }
+  
+  /**************************************Secciones**********************************************/
+  
+  .section {
+    margin: 30px 0;            /* Espacio vertical entre secciones */
+  }
+  
+  .section-img {
+    width: 220px;              /* Ajusta según tu diseño */
     max-width: 100%;
     height: auto;
     margin-bottom: 10px;
-    border-radius: 5px;
   }
   
-.profesor-card p {
-    font-size: 12px;
+  .section-description {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 15px;
+    max-width: 600px;          /* Limita el ancho del texto */
+    margin: 0 auto 15px auto;  /* Centra horizontalmente */
   }
-
-.profesor-card.selected {
-    background-color: #d2d0d6; /* Color de fondo para la tarjeta seleccionada */    
-    transform: scale(0.9); /* Mantiene la escala cuando está seleccionado */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Mantiene la sombra cuando está seleccionado */  
-    opacity: 1; /* Opacidad total */
-  }
-
-.profesor-card:not(.selected) { /* Aplica a las NO seleccionadas */
-    opacity: 0.6; /* Opacidad reducida */
-}
-
-.integrante-fields {
-    display: flex;
-    align-items: center; /* Alinea verticalmente los elementos */
-    gap: 10px; /* Espacio entre los elementos */
+  
+  /***********************Inputs***********************************************/
+  .project-input {
+    width: 300px;
+    max-width: 80%;
+    margin: 0 auto 20px auto;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
     font-size: 14px;
   }
   
-.integrante-fields label {
-    white-space: nowrap; /* Evita que el texto del label se divida en varias líneas */
+  /******************************Integrants container***********************************/
+  .integrantes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espacio entre cada par de inputs */
+    margin-bottom: 15px;
   }
   
-.integrante-fields input[type="text"] {
-      width: 200px; /* Ajusta el ancho según tus necesidades */
+  .integrante-fields {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
   }
-
-.profesor p{
-    margin-bottom: 15px;
+  
+  .integrante-fields input {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    width: 200px; /* Ajusta según tu diseño */
   }
-
-.profesor h3{
-    font-size: 18px;
-    margin-bottom: 15px;
-    margin-top: 15px;
+  
+  .add-integrant-btn {
+    background-color: #1F2738;
+    color: #fff;
+    font-size: 1.2em;
+    font-weight: normal;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
   }
-
-.container-pi {
+  
+  .add-integrant-btn:hover {
+    background-color: #005f72;
+  }
+  
+  
+  /***********************************************
+     Sección: Seleccionar profesor
+  ***********************************************/
+  .professor-select {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    width: 220px;
+    max-width: 100%;
+  }
+  
+  /***********************************************
+     Botones de navegación (Anterior / Siguiente)
+  ***********************************************/
+  .buttons-container {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    height: 120vh;
-}
+    margin-top: 40px;
+  }
+  
+  .nav-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #E88C1C;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .nav-btn:hover {
+    background-color: #d17a15;
+  }
+  
 
-/*-----------------------------------Styles new project--------------------------------------*/
+/*-----------------------------------Styles New Project--------------------------------------*/
 
 .nuevo-proyecto-container {
     display: flex;
@@ -489,53 +523,45 @@ button:active {
 }
 
 .robot-img {
-    width: 80%;
-    max-width: 300px;
+    width: 100%;
+    max-width: 250px;
+    margin-right: -50px; /* Ajusta este valor para acercarla más */
 }
 
 /* Sección derecha (Contenido) */
 .contenido-container {
-    flex: 2; /* Toma el espacio restante */
+    flex: 2;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: flex-start; /* Alinea a la izquierda */
-    padding-left: 50px; /* Ajuste de espaciado */
-}
-
-.contenido-container h1 {
-    font-size: 32px;
-    font-weight: bold;
-    color: #000;
-}
-
-.contenido-container h1 span {
-    color: #007c92;
+    align-items: flex-start;
+    padding-left: 20px;  /* Reduce el padding si es necesario */
+    max-width: 800px;    /* Establece un ancho máximo menor */
+    width: 100%;         /* Puedes ajustar un ancho fijo si lo prefieres */
 }
 
 .contenido-container p {
     font-size: 16px;
-    color: #555;
-    margin-bottom: 20px;
+    margin: 0 0 30px 0;   /* 0 arriba, 0 a los lados, 10px abajo */
+    text-align: justify;
+    padding: 0;
 }
 
 /* Grid de proyectos */
 .grid-proyectos {
-    display: flex; /* Cambia de grid a flex para un mejor control */
-    flex-wrap: wrap; /* Asegura que los elementos se acomoden correctamente */
-    justify-content: center; /* Centra los elementos */
-    gap: 15px;
-    max-width: 100%; /* Evita que crezca más allá del contenedor */
-    padding: 10px;
-    overflow-x: hidden; /* Evita cualquier scroll horizontal en el contenedor */
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0px; /* Espacio reducido entre tarjetas */
+    padding: 0px;
+    max-width: 100%;
+    overflow-x: hidden;   /* Oculta cualquier scroll horizontal */
+    overflow-y: hidden;   /* Oculta cualquier scroll vertical */
 }
 
-/* Asegura que las tarjetas no sean más grandes de lo necesario */
+/* Tarjeta de cada proyecto (dejamos que ocupe el 100% del ancho de su celda) */
 .proyecto-card {
-    flex: 1 1 calc(20% - 15px); /* Hace que cada tarjeta ocupe un 20% del ancho */
-    max-width: 180px; /* Ajusta según el diseño */
     border-radius: 10px;
-    padding: 10px;
+    padding: 0px;
     text-align: center;
     transition: transform 0.3s ease-in-out;
     cursor: pointer;
@@ -546,23 +572,34 @@ button:active {
 }
 
 .imagen-hover {
-    background: transparent; /* Elimina el fondo */
-    padding: 0; /* Evita espacios extra */
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: relative;
+    overflow: hidden; /* Asegura que el pseudo-elemento no se desborde */
 }
 
 /* Ajustar la imagen dentro de cada tarjeta */
 .proyecto-img {
-    width: 100px; /* Ajusta el tamaño según sea necesario */
+    width: 140px; /* Ajusta el tamaño según sea necesario */
     transition: opacity 0.3s;
 }
 
-/* Opcional: Efecto hover para resaltar */
-.proyecto-card:hover .proyecto-img {
-    opacity: 0.7;
+/* Pseudo-elemento que contiene la imagen de hover */
+.imagen-hover::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('images/bt_nuevo_proyecto_over.png') no-repeat center center;
+    background-size: cover;
+    opacity: 0; /* Inicialmente invisible */
+    transition: opacity 0.3s ease-in-out;
+    z-index: 2;
 }
 
+.imagen-hover:hover::before {
+    opacity: 1; /* Al hacer hover, se muestra la imagen de hover */
+
+}
 
 

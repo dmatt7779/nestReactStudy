@@ -6,7 +6,7 @@ import Login from './loginComponent/login';
 import Registro from './registerComponent/register';
 import ProjectInfo from './projectInfo/projectInfo';
 import ProyeccionMacro from './proyeccionMacro/proyeccionMacro';
-import NewProject from './newProject/newProject';
+import NewProject from './newProject';
 
 function App() {
   return(
@@ -16,7 +16,7 @@ function App() {
         <Route path="/register" element={<Registro />} /> 
         <Route path="/ProjectInfo" element={<ProjectInfo />} /> 
         <Route path="/ProyeccionMacro" element={<ProyeccionMacro />} /> 
-        <Route path="/NewProject" element={<NewProject />} /> 
+        <Route path="/NewProject/" element={<NewProject />} />
       </Routes>
     </BrowserRouter>
   );
