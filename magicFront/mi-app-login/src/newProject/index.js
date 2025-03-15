@@ -14,7 +14,7 @@ const NewProject = () => {
 
   return (
     <div className="nuevo-proyecto-container">
-      <Navbar />
+     
       <div className="robot-container">
          <img src={robotImg} alt="Robot" className="robot-img" />
       </div>

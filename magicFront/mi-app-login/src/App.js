@@ -2,9 +2,9 @@
 import './App.css';
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from './login';
-import Register from './register';
-import ProjectInfo from './projectInfo/';
+import Login from './loginComponent';
+import Registro from './registerComponent';
+import ProjectInfo from './projectInfo';
 import ProyeccionMacro from './proyeccionMacro';
 import NewProject from './newProject';
 
