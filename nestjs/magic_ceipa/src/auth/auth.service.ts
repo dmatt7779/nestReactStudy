@@ -4,6 +4,8 @@ import { RegisterDto } from './dto/register.dto';
 import * as bcryptjs from 'bcryptjs';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
+import { Role } from 'src/common/enums/rol.enum';
+import { RequestWithUser } from 'src/interfaces/profileGuards.interface';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +16,7 @@ export class AuthService {
     ) {}
 
     async login({email, password}: LoginDto){
-        const isUser = await this.usersService.findOneByEmail(email);
+        const isUser = await this.usersService.findOneByEmailWithPwd(email);
         if( !isUser){
             throw new UnauthorizedException("email or password is wrong");
         }
@@ -41,5 +43,9 @@ export class AuthService {
             name, 
             email,
         }
+    }
+
+    async profile(req: RequestWithUser){
+        return await this.usersService.findOneByEmail(req.user.email)
     }
 }

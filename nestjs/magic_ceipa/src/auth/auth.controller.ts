@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RequestWithUser } from 'src/interfaces/profileGuards.interface';
-import { Role } from './enums/rol.enum';
+import { Role } from '../common/enums/rol.enum';
 import { Auth } from './decorators/auth.decorator';
 
 @Controller('auth')
@@ -35,6 +35,6 @@ export class AuthController {
         @Req()
         req: RequestWithUser,
     ){
-        return req.user;
+        return this.authService.profile(req)
     }
 }
