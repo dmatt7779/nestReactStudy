@@ -178,7 +178,7 @@ button:active {
 
 .footer {
     background-color: #1F2738; 
-    height: 80px; /* Altura del footer */
+    height: 60px; /* Altura del footer */
     width: 100%; /* Ancho completo */
     position: fixed; /* Fijado en la parte inferior */
     bottom: 0;
@@ -196,7 +196,7 @@ button:active {
     background-repeat: no-repeat;
     background-position: center;
     width: 160px; /* Tamaño del logo Ceipa footer */
-    height: 60px;
+    height: 40px;
     display: block;
 }
 
@@ -295,85 +295,75 @@ button:active {
     font-size: 14px;
 }
 
-/*---------------------------------- navbar ----------------------------------------*/
+/*---------------------------------- navbar --------------------------------------------------*/
+
 /* Contenedor principal del navbar */
 .navbar {
+    display: flex;             /* Alinea los elementos en fila */
+    align-items: center;       /* Centra verticalmente */
+    justify-content: space-between; /* Imagen a la izquierda, botones a la derecha */
+    width: 100%;
+    padding: 10px 20px;
+    background: transparent;   /* Usa el fondo del body (o el color que quieras) */
+    margin-top: 46px
+  }
+  
+  /* Imagen del título "Simulación financiera..." */
+  .nav-title {
+    height: 70px;              /* Ajusta según tu diseño */
+    width: auto;               /* Mantiene la proporción */
+    cursor: pointer;           /* Opcional, si quieres que parezca clickable */
+  }
+  
+  /* Contenedor de los botones a la derecha */
+  .nav-buttons {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    right: 20px;
-    height: 60px;
-    padding: 0 20px;
-    background: transparent;
-    z-index: 1000;
+    gap: 20px;                 /* Espacio horizontal entre botones */
   }
   
-  .navbar-logo {
-    height: 80px;
-    cursor: pointer;
-    margin-top: 20px;
-  }
-  
-  .navbar-right {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-  }
-  
-  .nav-button {
-    font-size: 1em;
-    font-weight: normal;
+  .nav-btn {
     background: none;
     border: none;
-    color: #000;
+    color: #000000;
     cursor: pointer;
-    white-space: nowrap;
-    transition: background-color 0.3s, color 0.3s;
+    font-size: 14px;
+    transition: color 0.3s ease, background-color 0.3s ease;
+    white-space: nowrap; /* Evita que el texto se parta en varias líneas */
   }
   
-  .nav-button:hover {
-    color: #333;  /* Cambia el color del texto a un gris más oscuro */
-    background-color: #f0f0f0; /* Sutil fondo gris */
-    border-radius: 4px; /* Redondea un poco las esquinas */
-  } 
-
-  /* Contenedor de la línea */
-.navbar-line {
-    position: fixed;  /* Para que quede debajo del navbar fijo */
-    top: 100px; /* Ajusta según la altura total del navbar */
-    left: 0;
-    right: 0;
-    z-index: 999; /* Debajo del navbar (que tiene 1000) */
+  .nav-btn:hover {
+    color: #444;                /* Cambio sutil al pasar el mouse */
+    background-color: #f0f0f0;  /* Fondo gris claro */
+    border-radius: 4px;         /* Bordes redondeados para un toque extra */
+  }
+  
+  /* Contenedor de la línea debajo del navbar */
+  .navbar-line {
+    width: 100%;
+    text-align: center;        /* Centra la imagen de la línea si es más pequeña que el ancho */
   }
   
   /* Imagen de la línea */
   .line-img {
-    width: 100%;
+    width: 100%;               /* Ocupará todo el ancho disponible */
     height: auto;
     display: block;
-  }
-
-  .titulo-imagen {
-    text-align: left;  /* Alinea el contenido a la izquierda */
-    margin-bottom: 10px;
-    padding-left: 0px;  /* Opcional: agrega un poco de espacio a la izquierda */
-}
-
-.project-title-img {
-    width: 50%;  /* Ocupa el 100% del contenedor */
-    max-width: 600px;  /* Limita el ancho máximo para no sobrepasar el diseño */
-    height: auto;  /* Mantiene la proporción */
-}
+    margin-bottom: 53px;  } 
 
 /*---------------------------------- Styles Project Info ----------------------------------------*/
 
+.white-container {
+    background-color: #fff;  /* Fondo blanco */
+    padding: 20px;           /* Espaciado interno */
+    margin: 20px auto;       /* Centrado horizontal y margen vertical */
+    max-width: 800px;        /* Ancho máximo */
+    border-radius: 10px;     /* Bordes redondeados */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* Sombra sutil para darle profundidad */
+  }
+
 .project-info-container {
-    background: #F8F8F8;        /* Color de fondo suave */
     min-height: 100vh;          /* Ocupa toda la altura de la pantalla */
-    padding-top: 450px;         /* Espacio para que no tape el navbar fijo */
+    padding-top: 480px;         /* Espacio para que no tape el navbar fijo */
     position: relative;
   }
   
@@ -451,7 +441,7 @@ button:active {
   }
   
   .add-integrant-btn {
-    background-color: #1F2738;
+    background-color: #007c92;
     color: #fff;
     font-size: 1.2em;
     font-weight: normal;
@@ -488,7 +478,7 @@ button:active {
     margin-top: 40px;
   }
   
-  .nav-btn {
+  .nav-btn1 {
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -500,7 +490,7 @@ button:active {
     transition: background-color 0.3s;
   }
   
-  .nav-btn:hover {
+  .nav-btn1:hover {
     background-color: #d17a15;
   }
   
@@ -524,8 +514,8 @@ button:active {
 
 .robot-img {
     width: 100%;
-    max-width: 250px;
-    margin-right: -50px; /* Ajusta este valor para acercarla más */
+    max-width: 350px;
+    margin-top: -74px;
 }
 
 /* Sección derecha (Contenido) */
@@ -538,6 +528,7 @@ button:active {
     padding-left: 20px;  /* Reduce el padding si es necesario */
     max-width: 800px;    /* Establece un ancho máximo menor */
     width: 100%;         /* Puedes ajustar un ancho fijo si lo prefieres */
+    margin-top: 20px;
 }
 
 .contenido-container p {

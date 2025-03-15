@@ -28,10 +28,16 @@ const NewProject = () => {
   return (
     <div className="project-info-container">
       <Navbar />
+      <div className="white-container">
       <div className="robot-container">
         <img src={nuevoProyectoImg1} alt="Robot" className="robot-img" />
       </div>
       <div className="contenido-container">
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam
+          nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
+          volutpat.
+        </p>
         <div className="titulo-imagen">
           <img
             src={tituloProyectoImg}
@@ -99,6 +105,7 @@ const NewProject = () => {
           <button className="nav-btn">Anterior</button>
           <button className="nav-btn">Siguiente</button>
         </div>
+      </div>
       </div>
       <Footer />
     </div>
