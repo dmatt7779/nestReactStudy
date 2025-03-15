@@ -14,9 +14,12 @@ import { ActivoFijo } from './activos-fijos/entities/activos-fijo.entity';
 import { UsersModule } from './users/users.module';
 import { User } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
+// import { CorsModule } from '@nestjs/platform-express';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: '127.0.0.1',
@@ -27,6 +30,12 @@ import { AuthModule } from './auth/auth.module';
       entities: [ProjectInfo, ProyeccionMacro, CostosGasto, PlanFinanciero, ActivoFijo, User],
       synchronize: true
     }),
+    // CorsModule.forRoot({
+    //   origin: [process.env.CORS_ORIGIN],
+    //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    //   credentials: true,
+    //   allowedHeaders: 'Content-Type, Accept, Authorization',
+    // }),
     ProjectInfoModule,
     ProyeccionMacroModule,
     CostosGastosModule,

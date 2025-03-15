@@ -22,21 +22,24 @@ export class AuthService {
         if(!isPwdValid){
             throw new UnauthorizedException("email or password is wrong");
         }
-        const payload = { email: isUser.email };
+        const payload = { email: isUser.email, role: isUser.role };
         const token = await this.jwtService.signAsync(payload);
-        return {token, email};
+        return { token, payload };
     }
 
     async register({name, email, password}: RegisterDto){
         const isUser = await this.usersService.findOneByEmail(email);
-        if(isUser){
+        if (isUser) {
             throw new BadRequestException("User already exists");
         }
-
-        return await this.usersService.create({
+        await this.usersService.create({
             name,
             email,
             password: await bcryptjs.hash(password, 12)
         });
+        return {
+            name, 
+            email,
+        }
     }
 }

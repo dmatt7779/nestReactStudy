@@ -1,46 +1,51 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import '../styles.css';
+import { Link, useNavigate } from 'react-router-dom';
+import '../style/styles.css';
 import Footer from "../components/Footer";
 import bgImage from "../images/img_registro.png";
 import emailIcon from "../images/icon-email.png";
 import passIcon from "../images/passIcon.png";
 import confirmIcon from "../images/confirmIcon.png";
+import axiosClient from '../utils/axios';
 
 function Registro() {
-    const [proyecto, setProyecto] = useState('');
-    const [estudiantes, setEstudiantes] = useState([{ nombre: '' }]);
+    const navigate = useNavigate();
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [contrasena, setContrasena] = useState('');
     const [confirmarContrasena, setConfirmarContrasena] = useState('');
+    const [mostrarErrorContrasena, setMostrarErrorContrasena] = useState(false);
+    const [registroExitoso, setRegistroExitoso] = useState(false);
+    const [errorServidor, setErrorServidor] = useState('');
 
-    const agregarEstudiante = () => {
-        setEstudiantes([...estudiantes, { nombre: '' }]);
-    };
-
-    const manejarCambioEstudiante = (indice, valor) => {
-        const nuevosEstudiantes = [...estudiantes];
-        nuevosEstudiantes[indice].nombre = valor;
-        setEstudiantes(nuevosEstudiantes);
-    };
-
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
-        // Validar que las contraseñas coincidan
         if (contrasena !== confirmarContrasena) {
-            alert('Las contraseñas no coinciden');
+            setMostrarErrorContrasena(true);
             return;
         }
 
-        // Aquí iría la lógica para enviar los datos al backend
-        console.log('Proyecto:', proyecto);
-        console.log('Estudiantes:', estudiantes);
-        console.log('Email:', email);
-        console.log('Contraseña:', contrasena);
-    };
+        try {
+            const response = await axiosClient.register({
+                name: name,
+                email: email,
+                password: contrasena,
+            });
 
-    const [mostrarErrorContrasena, setMostrarErrorContrasena] = useState(false);
+            console.log('Registro exitoso:', response);
+            setRegistroExitoso(true);
+
+            setTimeout(() => {
+                navigate('/');
+            }, 3000);
+
+        } catch (error) {
+          console.error('Error al registrar:', error.response?.data || error.message);
+          setErrorServidor(error.response?.data?.message || "Error al registrarse. Inténtalo de nuevo.");
+
+        }
+    };
 
     const validarContrasena = (contrasena, confirmarContrasena) => {
         if (contrasena !== confirmarContrasena) {
@@ -56,16 +61,28 @@ function Registro() {
             <div className='register-form-r'>
             <form onSubmit={handleSubmit}>
                 <div className='input-container-r'>
-                <img src={emailIcon} alt="Email Icon" className="input-icon" />
-                <div className="input-divider-r"></div> 
-                    <label htmlFor="email">Email:</label>
-                    <input
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
+                    <img src={emailIcon} alt="Name Icon" className="input-icon" />
+                    <div className="input-divider-r"></div> 
+                        <label htmlFor="name">Name:</label>
+                        <input
+                            type="name"
+                            id="name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            required
+                        />
+                </div>
+                <div className='input-container-r'>
+                    <img src={emailIcon} alt="Email Icon" className="input-icon" />
+                    <div className="input-divider-r"></div> 
+                        <label htmlFor="email">Email:</label>
+                        <input
+                            type="email"
+                            id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
                 </div>
                 <div className='input-container-r'>
                 <img src={passIcon} alt="Password Icon" className="input-icon" />
@@ -83,22 +100,28 @@ function Registro() {
                     />
                 </div>
                 <div className='input-container-r'>
-                <img src={confirmIcon} alt="Confirm Password Icon" className="input-icon" />
-                <div className="input-divider-r"></div>  
-                    <label htmlFor="confirmarContrasena">Confirmar contraseña:</label>
-                    <input
-                        type="password"
-                        id="confirmarContrasena"
-                        value={confirmarContrasena}
-                        onChange={(e) => {
-                            setConfirmarContrasena(e.target.value);
-                            validarContrasena(contrasena, e.target.value);
-                        }}
-                        required
-                    />
-                    {mostrarErrorContrasena && (
-                        <p style={{ color: 'red' }}>Las contraseñas no coinciden</p>
-                    )}
+                    <img src={confirmIcon} alt="Confirm Password Icon" className="input-icon" />
+                    <div className="input-divider-r"></div>  
+                        <label htmlFor="confirmarContrasena">Confirmar contraseña:</label>
+                        <input
+                            type="password"
+                            id="confirmarContrasena"
+                            value={confirmarContrasena}
+                            onChange={(e) => {
+                                setConfirmarContrasena(e.target.value);
+                                validarContrasena(contrasena, e.target.value);
+                            }}
+                            required
+                        />
+                    <div className='input-container-r'> 
+                        {errorServidor && <p style={{ color: 'red' }}>{errorServidor}</p>}
+                        {mostrarErrorContrasena && (
+                            <p style={{ color: 'red' }}>Las contraseñas no coinciden</p>
+                        )}
+                        {registroExitoso && (
+                            <p style={{ color: 'green' }}>Registro exitoso! Redirigiendo...</p>
+                        )}
+                    </div>
                 </div>
                 <button type="submit">Registrarse</button>
                 <div><p>¿Ya tienes cuenta? <Link to="/">Iniciar Sesión</Link></p> </div>
