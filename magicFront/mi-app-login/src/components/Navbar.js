@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles.css';
+import '../style/styles.css';
 import Titulo from "../images/titulo_simulador.png";
 import lineImg from "../images/linea_divisora.png"; // La imagen de la línea
 //import { useNavigate } from 'react-router-dom';

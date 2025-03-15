@@ -3,9 +3,9 @@ import './App.css';
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './loginComponent';
-import Registro from './registerComponent/register';
-import ProjectInfo from './projectInfo/projectInfo';
-import ProyeccionMacro from './proyeccionMacro/proyeccionMacro';
+import Registro from './registerComponent';
+import ProjectInfo from './projectInfo';
+import ProyeccionMacro from './proyeccionMacro';
 import NewProject from './newProject';
 
 function App() {
