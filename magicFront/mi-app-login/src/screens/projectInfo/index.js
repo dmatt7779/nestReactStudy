@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import '../style/styles.css';
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
-import robotImg from '../images/robot2.png';
-import nuevoProyectoImg1 from "../images/titulo_nuevo_proyecto_1.png";       // Imagen principal del título
-import tituloProyectoImg from "../images/titulo_nombre.png";     // Imagen para "Título proyecto nuevo"
-import integrantesImg from "../images/titulo_integrantes.png";            // Imagen para "Integrantes"
-import profesorImg from "../images/titulo_profesor.png";  
+import '../../style/styles.css';
+import Footer from "../../components/Footer";
+import Navbar from "../../components/Navbar";
+import robotImg from '../../images/robot2.png';
+import nuevoProyectoImg1 from "../../images/titulo_nuevo_proyecto_1.png";       // Imagen principal del título
+import tituloProyectoImg from "../../images/titulo_nombre.png";     // Imagen para "Título proyecto nuevo"
+import integrantesImg from "../../images/titulo_integrantes.png";            // Imagen para "Integrantes"
+import profesorImg from "../../images/titulo_profesor.png";  
 const NewProject = () => {
   // Estado para la lista de integrantes
   const [integrantes, setIntegrantes] = useState([

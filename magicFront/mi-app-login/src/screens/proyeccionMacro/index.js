@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import '../style/styles.css';
-import Footer from "../components/Footer";
+import '../../style/styles.css';
+import Footer from "../../components/Footer";
 
 function ProyeccionMacro() {
   const [nombreProyecto, setNombreProyecto] = useState("");

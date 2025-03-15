@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import '../style/styles.css';
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
-import robotImg from '../images/robot2.png';
-import nuevoProyectoImg from "../images/bt_nuevo_proyecto.png";
-import tituloProyectoImg from "../images/titulo_nuevo_proyecto.png";
-//import Icon1 from '../images/edit-icon.png';
-//import Icon2 from '../images/delete-icon.png';
+import '../../style/styles.css';
+import Footer from "../../components/Footer";
+import Navbar from "../../components/Navbar";
+import robotImg from '../../images/robot2.png';
+import nuevoProyectoImg from "../../images/bt_nuevo_proyecto.png";
+import tituloProyectoImg from "../../images/titulo_nuevo_proyecto.png";
+//import Icon1 from '../../images/edit-icon.png';
+//import Icon2 from '../../images/delete-icon.png';
 import { useNavigate } from 'react-router-dom';
 const NewProject = () => {
   const proyectos = [1, 2, 3, 4, 5];

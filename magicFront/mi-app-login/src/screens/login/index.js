@@ -1,11 +1,11 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import '../style/styles.css';
-import emailIcon from "../images/icon-email.png";
-import passIcon from "../images/passIcon.png";
-import Footer from "../components/Footer";
-import axiosClient from '../utils/axios';
+import '../../style/styles.css';
+import emailIcon from "../../images/icon-email.png";
+import passIcon from "../../images/passIcon.png";
+import Footer from "../../components/Footer";
+import axiosClient from '../../utils/axios';
 
 function Login() {
   const navigate = useNavigate();

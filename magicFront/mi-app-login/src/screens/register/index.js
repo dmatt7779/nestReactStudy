@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import '../style/styles.css';
-import Footer from "../components/Footer";
-import bgImage from "../images/img_registro.png";
-import emailIcon from "../images/icon-email.png";
-import passIcon from "../images/passIcon.png";
-import confirmIcon from "../images/confirmIcon.png";
-import axiosClient from '../utils/axios';
+import '../../style/styles.css';
+import Footer from "../../components/Footer";
+import bgImage from "../../images/img_registro.png";
+import emailIcon from "../../images/icon-email.png";
+import passIcon from "../../images/passIcon.png";
+import confirmIcon from "../../images/confirmIcon.png";
+import axiosClient from '../../utils/axios';
 
 function Register() {
     const navigate = useNavigate();
