@@ -87,7 +87,7 @@ function Login() {
             {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
           </button>
 
-          <div>
+          <div className='register-option'>
             <label>¿No tienes cuenta? <Link to="/register">Regístrate</Link></label>
           </div>
         </form>

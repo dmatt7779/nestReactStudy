@@ -63,7 +63,7 @@ function Register() {
                 <div className='input-container-r'>
                     <img src={emailIcon} alt="Name Icon" className="input-icon" />
                     <div className="input-divider-r"></div> 
-                        <label htmlFor="name">Name:</label>
+                        <label htmlFor="name">Nombre:</label>
                         <input
                             type="name"
                             id="name"
@@ -124,7 +124,7 @@ function Register() {
                     </div>
                 </div>
                 <button type="submit">Registrarse</button>
-                <div><p>¿Ya tienes cuenta? <Link to="/">Iniciar Sesión</Link></p> </div>
+                <div className='register-option'><p>¿Ya tienes cuenta? <Link to="/">Iniciar Sesión</Link></p> </div>
             </form>
             </div>
             <Footer />

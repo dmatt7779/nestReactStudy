@@ -12,7 +12,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    /*height: 100vh;*/
     padding-bottom: 80px; /* Espacio para el footer */
     background-image: url("../images/fondo.jpg"); 
     display: flex;
@@ -163,17 +163,17 @@ button:active {
 }
 
 .options a:hover {
-    color: #7747ca; /* Cambia el color al pasar el mouse */
+    color: #7747ca; /* Cambia el color al pasar el mouse olvidé contraseña */
     text-decoration: underline;
 }
 
 .register-option a:hover {
-    color: #7747ca; /* Cambia a naranja en hover */
+    color: #7747ca; 
     text-decoration: underline;
 }
 
 .register-option span {
-    margin-right: 10px; /* Espacio entre el texto y el enlace */
+    margin-right: 10px; 
 }
 
 .footer {
@@ -206,7 +206,7 @@ button:active {
 .register-container {
     position: relative;
     width: 50vw;  /* 50% del ancho de la pantalla */
-    height: 40vh; /* 50% del alto de la pantalla */
+    height: 100vh; /* 50% del alto de la pantalla */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -227,19 +227,20 @@ button:active {
 
 .register-form-r {
     position: absolute;
-    top: 65%;
-    left: 85%; /* Mueve el formulario más a la izquierda */
+    top: 54%;
+    left: 83%; /* Mueve el formulario más a la izquierda */
     transform: translate(-55%, -50%); /* Ajusta más la posición */
     width: 100%;
     max-width: 450px;
     padding: 0px;
     border-radius: 10px;
-    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);  
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.2);  
     outline: none; /* Evita el borde azul al hacer clic */
 }
 
 .register-form-r label{
     font-size: 14px;
+    white-space: nowrap;
 }
 
 .input-container-r {
@@ -305,7 +306,6 @@ button:active {
     width: 100%;
     padding: 10px 20px;
     background: transparent;   /* Usa el fondo del body (o el color que quieras) */
-    margin-top: 46px
   }
   
   /* Imagen del título "Simulación financiera..." */
@@ -363,62 +363,45 @@ button:active {
 
 .project-info-container {
     min-height: 100vh;          /* Ocupa toda la altura de la pantalla */
-    padding-top: 480px;         /* Espacio para que no tape el navbar fijo */
     position: relative;
   }
   
-  .main-content {
-    width: 80%;                 /* Ajusta el ancho según tu diseño */
-    margin: 0 auto;             /* Centra horizontalmente */
-    text-align: justify;       
-  }
-  
-  .new-project-title-img {
-    width: 300px;               /* Ajusta el tamaño según necesites */
-    max-width: 100%;
-    height: auto;
-    margin-bottom: 20px;
-  }
-  
-  .intro-text {
-    font-size: 10px;
-    color: #333;
-    margin-bottom: 30px;
-  }
-  
-  /**************************************Secciones**********************************************/
-  
   .section {
-    margin: 30px 0;            /* Espacio vertical entre secciones */
+    margin: 10px 0;            /* Espacio vertical entre secciones */
   }
   
-  .section-img {
-    width: 220px;              /* Ajusta según tu diseño */
+  .section-img1 {
+    width: 270px;              /* Ajusta según tu diseño */
     max-width: 100%;
     height: auto;
-    margin-bottom: 10px;
   }
-  
-  .section-description {
+
+  .section-img2 {
+    width: 190px;              /* Ajusta según tu diseño */
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 5px;
+  }
+
+  .section-img3 {
+    width: 270px;              /* Ajusta según tu diseño */
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 5px;
+  }
+
+  .section-img4 {
+    width: 270px;              /* Ajusta según tu diseño */
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 5px;
+  }
+
+  .profesor label {
+    /*display: flex; */
     font-size: 14px;
-    color: #555;
-    margin-bottom: 15px;
-    max-width: 600px;          /* Limita el ancho del texto */
-    margin: 0 auto 15px auto;  /* Centra horizontalmente */
   }
   
-  /***********************Inputs***********************************************/
-  .project-input {
-    width: 300px;
-    max-width: 80%;
-    margin: 0 auto 20px auto;
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-  }
-  
-  /******************************Integrants container***********************************/
   .integrantes-container {
     display: flex;
     flex-direction: column;
@@ -427,9 +410,15 @@ button:active {
   }
   
   .integrante-fields {
-    display: flex;
+    /*display: flex; */
     gap: 10px;
     justify-content: center;
+  }
+
+  .integrante-fields label {
+    /*display: flex; */
+    margin: 10px;
+    font-size: 14px;
   }
   
   .integrante-fields input {
@@ -441,25 +430,23 @@ button:active {
   }
   
   .add-integrant-btn {
-    background-color: #007c92;
+    background-color: #1F2738;
     color: #fff;
-    font-size: 1.2em;
+    font-size: 1em;
     font-weight: normal;
     padding: 8px 12px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    width: 100%;
   }
   
   .add-integrant-btn:hover {
     background-color: #005f72;
   }
   
-  
-  /***********************************************
-     Sección: Seleccionar profesor
-  ***********************************************/
+  /*********************************Sección: Seleccionar profesor************************/
   .professor-select {
     padding: 8px;
     border-radius: 5px;
@@ -469,38 +456,95 @@ button:active {
     max-width: 100%;
   }
   
-  /***********************************************
-     Botones de navegación (Anterior / Siguiente)
-  ***********************************************/
+
   .buttons-container {
     display: flex;
     justify-content: space-between;
     margin-top: 40px;
   }
-  
-  .nav-btn1 {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #E88C1C;
-    color: #fff;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .nav-btn1:hover {
-    background-color: #d17a15;
-  }
-  
 
+  .robot-img2 {
+    width: 100%;
+    margin-top: 40px;
+  }
+
+  .checkbox-container {
+    display: flex;
+    align-items: center; /* Alinea verticalmente */
+    gap: 10px; /* Espacio entre el checkbox y el texto */
+  }
+  
+  .checkbox-container input {
+    width: 18px; /* Ajusta el tamaño del checkbox */
+    height: 18px;
+  }
+  
+  .checkbox-container label {
+    font-size: 14px;
+  }
+
+  /* Botón base sin fondo ni borde */
+.nav-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 120px; /* Ajusta el tamaño */
+  height: 50px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Imagen por defecto del botón Anterior */
+.anterior {
+  background-image: url("../images/bt_anterior.png");
+}
+
+/* Imagen en hover del botón Anterior */
+.anterior:hover {
+  background-image: url("../images/bt_anterior_hover.png");
+  background-color: transparent !important; /* Asegura que no haya fondo gris */
+  box-shadow: none !important; /* Quita cualquier sombra */
+}
+
+/* Imagen por defecto del botón Siguiente */
+.siguiente {
+  background-image: url("../images/bt_siguiente.png");
+}
+
+/* Imagen en hover del botón Siguiente */
+.siguiente:hover {
+  background-image: url("../images/bt_siguiente_hover.png");
+  background-color: transparent !important; /* Asegura que no haya fondo gris */
+  box-shadow: none !important; /* Quita cualquier sombra */
+}
+
+.año-container {
+  display: flex;
+  align-items: center; /* Alinea verticalmente */
+  gap: 8px; /* Espacio entre el texto y el input */
+}
+
+.año-container label {
+  font-size: 14px;
+  font-weight: normal;
+  white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+}
+
+.año-container input {
+  width: 70px; /* Ajusta el tamaño del input */
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  text-align: center; /* Centra el texto dentro del input */
+}
+
+  
 /*-----------------------------------Styles New Project--------------------------------------*/
 
 .nuevo-proyecto-container {
     display: flex;
-    height: 100vh;
-    padding: 20px;
     align-items: center; /* Asegura que el contenido se alinee verticalmente */
 }
 
@@ -510,12 +554,12 @@ button:active {
     display: flex;
     justify-content: center; /* Centra el robot */
     align-items: center;
+    margin-top: -64px;
 }
 
 .robot-img {
     width: 100%;
-    max-width: 350px;
-    margin-top: -74px;
+    max-width: 300px;
 }
 
 /* Sección derecha (Contenido) */
@@ -524,18 +568,21 @@ button:active {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: flex-start;
-    padding-left: 20px;  /* Reduce el padding si es necesario */
-    max-width: 800px;    /* Establece un ancho máximo menor */
+    align-items: flex-start;    
     width: 100%;         /* Puedes ajustar un ancho fijo si lo prefieres */
-    margin-top: 20px;
 }
 
 .contenido-container p {
-    font-size: 16px;
-    margin: 0 0 30px 0;   /* 0 arriba, 0 a los lados, 10px abajo */
-    text-align: justify;
-    padding: 0;
+    font-size: 14px;
+    margin: 20px 0 10px 0;   /* 0 arriba, 0 a los lados, 10px abajo */
+    text-align: left;
+    padding: 0px;
+}
+
+.img-resizable {
+  width: 400px; /* Ajusta el ancho según lo necesites */
+  height: auto; /* Mantiene la proporción */
+  max-width: 100%; /* Evita que la imagen se salga del contenedor */
 }
 
 /* Grid de proyectos */
@@ -590,7 +637,21 @@ button:active {
 
 .imagen-hover:hover::before {
     opacity: 1; /* Al hacer hover, se muestra la imagen de hover */
-
 }
+
+/* Contenedor de los botones */
+.buttons-container {
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Centra verticalmente */
+  gap: 20px; /* Espacio entre los botones */
+  width: 100%;
+  margin-top: 20px;
+}
+
+
+
+
+
 
 

@@ -13,17 +13,17 @@ const NewProject = () => {
   const navigate = useNavigate();  // Agregamos useNavigate
 
   return (
-    <div className="nuevo-proyecto-container">
-     
+    <div><Navbar />    
+    <div className="nuevo-proyecto-container">      
       <div className="robot-container">
          <img src={robotImg} alt="Robot" className="robot-img" />
       </div>
       <div className="contenido-container">
-        <div className="titulo-imagen">
+        <div>
           <img 
             src={tituloProyectoImg} 
             alt="Creación de un nuevo proyecto" 
-            className="project-title-img" 
+            className="img-resizable"
           />
         </div>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
@@ -44,6 +44,7 @@ const NewProject = () => {
         </form>
       </div>
       <Footer />
+    </div>
     </div>
   );
 };
