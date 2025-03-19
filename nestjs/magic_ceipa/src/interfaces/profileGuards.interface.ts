@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { Role } from "src/common/enums/rol.enum";
+import { Role } from "../common/enums/rol.enum";
 
 export interface RequestWithUser extends Request{
     user: {

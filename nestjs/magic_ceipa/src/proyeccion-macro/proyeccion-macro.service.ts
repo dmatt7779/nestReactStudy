@@ -4,6 +4,8 @@ import { UpdateProyeccionMacroDto } from './dto/update-proyeccion-macro.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProyeccionMacro } from './entities/proyeccion-macro.entity';
 import { Repository } from 'typeorm';
+import { UserActiveInterface } from 'src/common/interfaces/active-user.interface';
+import { Role } from '../common/enums/rol.enum';
 
 @Injectable()
 export class ProyeccionMacroService {
@@ -12,17 +14,25 @@ export class ProyeccionMacroService {
       private readonly ProyeccionMacro: Repository<ProyeccionMacro>
   ) {}
 
-  async create(createProyeccionMacroDto: CreateProyeccionMacroDto) {
+  async create(createProyeccionMacroDto: CreateProyeccionMacroDto, user: UserActiveInterface) {
     try{
       const proyeccionMacro = this.ProyeccionMacro.create(createProyeccionMacroDto)
-      return await this.ProyeccionMacro.save(proyeccionMacro);
+      return await this.ProyeccionMacro.save({
+        ...proyeccionMacro,
+        userEmail: user.email,
+      });
     }catch (error){
         console.log(error);
     }
   }
 
-  async findAll() {
-    return await this.ProyeccionMacro.find();
+  async findAll(user: UserActiveInterface) {
+    if(user.role === Role.ADMIN){
+      return await this.ProyeccionMacro.find();
+    }
+    return await this.ProyeccionMacro.find({
+      where: {userEmail: user.email}
+    });
   }
 
   async findOne(id: number) {
