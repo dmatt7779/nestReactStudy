@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-// import { Usuario } from './usuario.entity';
+import { User } from '../../users/entities/user.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, DeleteDateColumn } from 'typeorm';
 
 @Entity()
 export class ProjectInfo {
@@ -18,6 +18,13 @@ export class ProjectInfo {
   @Column('simple-array')
   professor: string[];
 
-//   @ManyToOne(() => Usuario, usuario => usuario.projects, { onDelete: 'CASCADE' }) // Relación con Usuario
-//   usuario: Usuario;
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'userEmail', referencedColumnName: 'email'})
+  user: User;
+
+  @Column()
+  userEmail: string;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

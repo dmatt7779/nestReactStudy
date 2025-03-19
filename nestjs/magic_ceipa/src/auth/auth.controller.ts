@@ -2,9 +2,10 @@ import { Body, Controller, Get, Post, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { RequestWithUser } from 'src/interfaces/profileGuards.interface';
 import { Role } from '../common/enums/rol.enum';
 import { Auth } from './decorators/auth.decorator';
+import { ActiveUser } from '../common/decorators/active-user.decorator';
+import { UserActiveInterface } from '../common/interfaces/active-user.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -31,10 +32,7 @@ export class AuthController {
 
     @Get('profile')
     @Auth(Role.ADMIN)
-    async profile(
-        @Req()
-        req: RequestWithUser,
-    ){
-        return this.authService.profile(req)
+    async profile(@ActiveUser() user: UserActiveInterface){
+        return this.authService.profile(user)
     }
 }

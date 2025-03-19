@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne } from 'typeorm';
 import { Producto } from './producto.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class ProyeccionMacro {
@@ -45,4 +46,11 @@ export class ProyeccionMacro {
       comunity_manager: number[];
     };
   };
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'userEmail', referencedColumnName: 'email'})
+  user: User;
+
+  @Column()
+  userEmail: string;
 }

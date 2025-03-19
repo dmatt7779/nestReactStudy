@@ -2,19 +2,24 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { ProyeccionMacroService } from './proyeccion-macro.service';
 import { CreateProyeccionMacroDto } from './dto/create-proyeccion-macro.dto';
 import { UpdateProyeccionMacroDto } from './dto/update-proyeccion-macro.dto';
+import { ActiveUser } from '../common/decorators/active-user.decorator';
+import { UserActiveInterface } from '../common/interfaces/active-user.interface';
+import { Auth } from '../auth/decorators/auth.decorator';
+import { Role } from '../common/enums/rol.enum';
 
+@Auth(Role.USER)
 @Controller('proyeccion-macro')
 export class ProyeccionMacroController {
   constructor(private readonly proyeccionMacroService: ProyeccionMacroService) {}
 
   @Post()
-  create(@Body() createProyeccionMacroDto: CreateProyeccionMacroDto) {
-    return this.proyeccionMacroService.create(createProyeccionMacroDto);
+  create(@Body() createProyeccionMacroDto: CreateProyeccionMacroDto, @ActiveUser() user: UserActiveInterface) {
+    return this.proyeccionMacroService.create(createProyeccionMacroDto, user);
   }
 
   @Get()
-  findAll() {
-    return this.proyeccionMacroService.findAll();
+  findAll(@ActiveUser() user: UserActiveInterface) {
+    return this.proyeccionMacroService.findAll(user);
   }
 
   @Get(':id')

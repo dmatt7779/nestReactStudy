@@ -1,11 +1,10 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dto/register.dto';
 import * as bcryptjs from 'bcryptjs';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
-import { Role } from 'src/common/enums/rol.enum';
-import { RequestWithUser } from 'src/interfaces/profileGuards.interface';
+import { UserActiveInterface } from '../common/interfaces/active-user.interface';
 
 @Injectable()
 export class AuthService {
@@ -34,18 +33,22 @@ export class AuthService {
         if (isUser) {
             throw new BadRequestException("User already exists");
         }
-        await this.usersService.create({
-            name,
-            email,
-            password: await bcryptjs.hash(password, 12)
-        });
-        return {
-            name, 
-            email,
+        try{
+            await this.usersService.create({
+                name,
+                email,
+                password: await bcryptjs.hash(password, 12)
+            });
+            return {
+                name,
+                email
+            }
+        }catch (error){
+            console.log(error);
         }
     }
 
-    async profile(req: RequestWithUser){
-        return await this.usersService.findOneByEmail(req.user.email)
+    async profile(req: UserActiveInterface){
+        return await this.usersService.findOneByEmail(req.email)
     }
 }
