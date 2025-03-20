@@ -649,9 +649,168 @@ button:active {
   margin-top: 20px;
 }
 
+/*-----------------------------------Styles Analisis Info--------------------------------------*/
 
+.white-container-n {
+  background-color: #fff;
+  padding: 20px;
+  margin: 100px auto; /* Aumenta el espacio superior */
+  max-width: 800px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+.robot-container-an {
+  flex: 1; /* Asegura que tome el espacio a la izquierda */
+  display: flex;
+  justify-content: center; /* Centra el robot */
+  align-items: center;
+  margin-top: -110px;
+}
 
+.robot-img-an {
+  width: 100%;
+}
 
+.table-container {
+  max-width: 600px; /* Reduje el tamaño */
+  margin: 20px auto;
+}
 
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px; /* Tamaño de fuente más pequeño */
+}
 
+.table-container th,
+.table-container td {
+  border: 1px solid #ddd; /* Bordes más sutiles */
+  padding: 6px; /* Menos espaciado */
+  text-align: center;
+}
+
+.table-container th {
+  background-color: #f8f8f8; /* Color más suave */
+  font-weight: bold;
+}
+
+input.percentage-input {
+  width: 70%; /* Un poco más pequeño */
+  padding: 4px;
+  text-align: center;
+  border: 1px solid #ccc; /* Borde más tenue */
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.section-img5 {
+  width: 360px;              /* Ajusta según tu diseño */
+  max-width: 100%;
+  height: auto;
+}
+
+.form-container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+label {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+input {
+  padding: 6px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.producto-input {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.producto-input label {
+  width: 120px;
+}
+
+.input-producto {
+  flex: 1;
+}
+
+.form-container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+label {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+input {
+  padding: 6px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+.producto-input {
+  width: 300px; /* Ajusta según necesidad */
+  padding: 3px;
+  font-size: 14px;
+}
+
+.iva-container {
+  margin-top: 15px;
+}
+
+.iva-container input {
+  width: 80px;
+  padding: 5px;
+  text-align: center;
+}
+
+.productos-container {
+  margin-top: 20px;
+}
+
+.producto-input {
+  width: 120px;
+  padding: 5px;
+  text-align: center;
+}
+
+.nombre-input {
+  width: 200px;
+}
 
