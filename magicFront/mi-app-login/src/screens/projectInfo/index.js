@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import '../../style/styles.css';
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
-import nuevoProyectoImg1 from "../../images/titulo_nuevo_proyecto_1.png";       // Imagen principal del título
-import tituloProyectoImg from "../../images/titulo_nombre.png";     // Imagen para "Título proyecto nuevo"
-import integrantesImg from "../../images/titulo_integrantes.png";            // Imagen para "Integrantes"
+import nuevoProyectoImg1 from "../../images/titulo_nuevo_proyecto_1.png";       
+import tituloProyectoImg from "../../images/titulo_nombre.png";     
+import integrantesImg from "../../images/titulo_integrantes.png";         
 import profesorImg from "../../images/titulo_profesor.png"; 
 import momentoDatos from "../../images/momento_datos.png";
 import momentoAnios from "../../images/titulo_anio.png";
