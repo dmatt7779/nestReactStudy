@@ -22,7 +22,7 @@ export class CostosGastosService {
       where: { projectInfoId },
     });
     if(isCostosGastos){
-      throw new BadRequestException('ProyeccionMacro already exists for this project');
+      throw new BadRequestException('CostosGastos already exists for this project');
     }
     try{
       const costosGastos = this.costosGasto.create({
