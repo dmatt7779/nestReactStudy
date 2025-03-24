@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import '../../style/styles.css';
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
+import CustomInput from "../../components/CustomInput"; 
 import nuevoProyectoImg1 from "../../images/titulo_nuevo_proyecto_1.png";       
 import tituloProyectoImg from "../../images/titulo_nombre.png";     
 import integrantesImg from "../../images/titulo_integrantes.png";         
@@ -12,9 +13,7 @@ import momentoAnios from "../../images/titulo_anio.png";
 
 const NewProject = () => {
   // Estado para la lista de integrantes
-  const [integrantes, setIntegrantes] = useState([
-    { cedula: "", nombre: "" }
-  ]);
+  const [integrantes, setIntegrantes] = useState([{ cedula: "", nombre: "" }]);
 
   // Función para agregar un nuevo integrante
   const addIntegrante = () => {
@@ -79,6 +78,7 @@ const NewProject = () => {
             nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
             volutpat.
           </p>
+
           {/* Sección de Integrantes */}
           <div className="section">
             <img src={integrantesImg} alt="Integrantes" className="section-img2" />  
@@ -88,31 +88,41 @@ const NewProject = () => {
             <div className="integrantes-container">
               {integrantes.map((integrante, index) => (
                 <div key={index} className="integrante-fields">
-                  <label htmlFor={`cedula-${index}`}>Cédula:</label>
-                  <input
-                    type="text"
-                    placeholder="Ingresa cédula"
-                    value={integrante.cedula}
-                    onChange={(e) =>
-                      handleIntegranteChange(index, "cedula", e.target.value)
-                    }
-                  />
-                  <label htmlFor={`nombre-${index}`}>Nombre:</label>
-                  <input
-                    type="text"
-                    placeholder="Ingresa nombre"
-                    value={integrante.nombre}
-                    onChange={(e) =>
-                      handleIntegranteChange(index, "nombre", e.target.value)
-                    }
-                  />
+                  
+                  {/* Campo Cédula */}
+                  <div className="integrante-field">
+                    <label htmlFor={`cedula-${index}`}>Cédula:</label>
+                    <CustomInput
+                      id={`cedula-${index}`}
+                      type="number"
+                      placeholder="Ingresa cédula"
+                      value={integrante.cedula}
+                      onChange={(value) => handleIntegranteChange(index, "cedula", value)}
+                      className="cedula-input"
+                    />
+                  </div>
+
+                  {/* Campo Nombre */}
+                  <div className="integrante-field">
+                    <label htmlFor={`nombre-${index}`}>Nombre:</label>
+                    <CustomInput
+                      id={`nombre-${index}`}
+                      type="text"
+                      placeholder="Ingresa nombre"
+                      value={integrante.nombre}
+                      onChange={(value) => handleIntegranteChange(index, "nombre", value)}
+                      className="nombre-input"
+                    />
+                  </div>
                 </div>
               ))}
             </div>
+
             <button className="add-integrant-btn" onClick={addIntegrante}>
               + Agregar integrantes
             </button>
           </div>
+
             {/* Sección de Seleccionar Profesor */}
             <div className="section">
               <img src={profesorImg} alt="Selecciona tu profesor" className="section-img3" /> 
@@ -122,17 +132,23 @@ const NewProject = () => {
                   nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
                   volutpat.
                 </p>
-                {profesoresLista.map((profesor) => (
-                  <label key={profesor.id} style={{ display: "block", margin: "5px 0" }}>
-                    <input
-                      type="checkbox"
-                      value={profesor.id}
-                      checked={seleccionados.includes(profesor.id)}
-                      onChange={() => manejarCambio(profesor.id)}
-                    />
-                    {profesor.nombre}
-                  </label>
-                ))}
+                <div className="profesor-container">
+                  {profesoresLista.map((profesor) => (
+                    <div key={profesor.id} className="profesor-option">
+                      {/* Checkbox alineado a la izquierda */}
+                      <input
+                        type="checkbox"
+                        className="profesor-checkbox"
+                        value={profesor.id}
+                        checked={seleccionados.includes(profesor.id)}
+                        onChange={() => manejarCambio(profesor.id)}
+                      />
+                      {/* Nombre del profesor alineado junto al checkbox */}
+                      <span>{profesor.nombre}</span>
+                    </div>
+                  ))}
+                </div>
+
                 <p>Profesores seleccionados: {seleccionados.join(", ")}</p>
               </div>
             </div>
@@ -145,17 +161,22 @@ const NewProject = () => {
               nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
               volutpat.
              </p>
-          <div className="año-container">
-          <label htmlFor="year-input">Año de apertura:</label>
-            <input
-              type="number"
-              value={ano}
-              onChange={manejarCambioF}
-              placeholder="YYYY"
-              min="1900"
-              max="2099"
-            />
-          </div>
+
+              {/* Año de apertura */}
+              <div className="anio-container">
+              <label htmlFor="year-input">Año de apertura:</label>
+                <input
+                  id="year-input"
+                  type="number"
+                  placeholder="YYYY"
+                  min="1900"
+                  max="2099"
+                  value={ano}
+                  onChange={manejarCambioF}
+                  className="year-input"
+                />
+              </div>
+              
           {/* Botones de navegación */}
           <div className="buttons-container">
             <button className="nav-btn anterior" onClick={() => navigate(-1)}></button>

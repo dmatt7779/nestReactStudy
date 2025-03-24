@@ -410,23 +410,25 @@ button:active {
   }
   
   .integrante-fields {
-    /*display: flex; */
-    gap: 10px;
-    justify-content: center;
-  }
-
-  .integrante-fields label {
-    /*display: flex; */
-    margin: 10px;
-    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espacio entre cada par de label e input */
+    margin-bottom: 10px;
   }
   
-  .integrante-fields input {
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    width: 200px; /* Ajusta según tu diseño */
+  .integrante-field {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Espacio entre el label y el input */
+  }
+  
+  .cedula-input {
+    width: 120px; /* Más pequeño para Cédula */
+  }
+  
+  .nombre-input {
+    width: 300px; /* Más grande para Nombre */
+    flex-grow: 1;
   }
   
   .add-integrant-btn {
@@ -447,42 +449,45 @@ button:active {
   }
   
   /*********************************Sección: Seleccionar profesor************************/
-  .professor-select {
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    width: 220px;
-    max-width: 100%;
+
+  .profesor-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
   }
   
-
-  .buttons-container {
+  .profesor-option {
     display: flex;
-    justify-content: space-between;
-    margin-top: 40px;
+    align-items: center; /* Alinea el checkbox y el nombre verticalmente */
+    gap: 10px; /* Espacio entre el checkbox y el texto */
+    white-space: nowrap; /* Evita que el nombre se divida en varias líneas */
+    font-size: 14px;
+  }
+  
+  .profesor-checkbox {
+    margin: 0; /* Elimina margen extra */
   }
 
+  .profesor-nombre {
+    display: inline-block;
+    white-space: nowrap;
+  }  
+ 
   .robot-img2 {
     width: 100%;
     margin-top: 40px;
   }
-
-  .checkbox-container {
+  
+  .anio-container {
     display: flex;
-    align-items: center; /* Alinea verticalmente */
-    gap: 10px; /* Espacio entre el checkbox y el texto */
+    align-items: center; /* Alinea verticalmente el label y el input */
+    gap: 8px; /* Espacio entre el label y el input */
   }
   
-  .checkbox-container input {
-    width: 18px; /* Ajusta el tamaño del checkbox */
-    height: 18px;
+  .anio-container label {
+    white-space: nowrap; /* Evita que el texto del label se divida en varias líneas */
   }
   
-  .checkbox-container label {
-    font-size: 14px;
-  }
-
   /* Botón base sin fondo ni borde */
 .nav-btn {
   background: none;
@@ -520,27 +525,7 @@ button:active {
   box-shadow: none !important; /* Quita cualquier sombra */
 }
 
-.año-container {
-  display: flex;
-  align-items: center; /* Alinea verticalmente */
-  gap: 8px; /* Espacio entre el texto y el input */
-}
-
-.año-container label {
-  font-size: 14px;
-  font-weight: normal;
-  white-space: nowrap; /* Evita que el texto se divida en varias líneas */
-}
-
-.año-container input {
-  width: 70px; /* Ajusta el tamaño del input */
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  text-align: center; /* Centra el texto dentro del input */
-}
-
-  
+ 
 /*-----------------------------------Styles New Project--------------------------------------*/
 
 .nuevo-proyecto-container {
@@ -748,7 +733,6 @@ input {
 
 .custom-input {
   padding-right: 25px; /* Espacio para el % */
-  text-align: right;
 }
 
 .percentage-symbol {
