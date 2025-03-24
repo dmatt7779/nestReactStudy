@@ -1,6 +1,6 @@
 import React from "react";
 
-const CustomInput = ({ label, value, onChange, placeholder, type, options, name, disabled }) => {
+const CustomInput = ({ label, value, onChange, placeholder, type, options, name }) => {
   const handleChange = (e) => {
     let newValue = e.target.value;
 
@@ -9,6 +9,8 @@ const CustomInput = ({ label, value, onChange, placeholder, type, options, name,
       if (newValue > 100) newValue = "100";
     } else if (type === "number") {
       newValue = newValue.replace(/[^0-9.]/g, "");
+    } else if (type === "text") {  
+      newValue = newValue.replace(/[^a-zA-ZÁÉÍÓÚáéíóúñÑ\s]/g, "");
     }
 
     onChange(newValue);
@@ -19,11 +21,10 @@ const CustomInput = ({ label, value, onChange, placeholder, type, options, name,
       {type === "radio" ? (
         <div className="radio-group">
           <label>{label}</label>
-          {options.map((option, index) => (
+          {options.map((option) => (
             <label key={option} className="radio-label">
               <input
                 type="radio"
-                id={`radio-${name}-${index}`} // Genera ID único dinámico
                 name={name}
                 value={option}
                 checked={value === option}
@@ -43,7 +44,6 @@ const CustomInput = ({ label, value, onChange, placeholder, type, options, name,
               onChange={handleChange}
               placeholder={placeholder}
               className="custom-input"
-              disabled={disabled} // 🔥 Agregamos la opción de deshabilitar el input
             />
             {type === "percentage" && <span className="percentage-symbol">%</span>}
           </div>
