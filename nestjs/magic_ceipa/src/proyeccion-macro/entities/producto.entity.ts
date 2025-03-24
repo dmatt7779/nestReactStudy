@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, DeleteDateColumn } from 'typeorm';
 import { ProyeccionMacro } from './proyeccion-macro.entity';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class Producto {
@@ -24,13 +24,6 @@ export class Producto {
 
     @Column({ type: 'decimal', precision: 10, scale: 2 })
     precio_venta: number;
-
-    @ManyToOne(() => User)
-    @JoinColumn({ name: 'userEmail', referencedColumnName: 'email'})
-    user: User;
-
-    @Column()
-    userEmail: string;
 
     @DeleteDateColumn()
     deletedAt: Date;

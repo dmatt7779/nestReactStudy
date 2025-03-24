@@ -1,4 +1,6 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { ProjectInfo } from "../../project-info/entities/project-info.entity";
+import { User } from "../../users/entities/user.entity";
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class CostosGasto {
@@ -7,21 +9,21 @@ export class CostosGasto {
     id: number;
 
     @Column({ type: 'json' })
-    costos_gastos: {
+    costosGastos: {
         costos: Record<string, any>;
         gastos: Record<string, any>;
-        incremento_egresos: {
-            otros_porcentajes: boolean;
+        incrementoEgresos: {
+            otrosPorcentajes: boolean;
             ipc: boolean;
-            incremento_egresos: number[];
+            incrementoEgresos: number[];
         };
     };
 
     @BeforeInsert()
     @BeforeUpdate()
     processCostosGastos() {
-        this.costos_gastos.costos = this.processDynamicKeys(this.costos_gastos.costos);
-        this.costos_gastos.gastos = this.processDynamicKeys(this.costos_gastos.gastos);
+        this.costosGastos.costos = this.processDynamicKeys(this.costosGastos.costos);
+        this.costosGastos.gastos = this.processDynamicKeys(this.costosGastos.gastos);
     }
 
     private processDynamicKeys(obj: any) {
@@ -37,4 +39,18 @@ export class CostosGasto {
         }
         return newObj;
     };
+
+    @ManyToOne(() => User)
+    @JoinColumn({ name: 'userEmail', referencedColumnName: 'email' })
+    user: User;
+
+    @Column()
+    userEmail: string;
+
+    @OneToOne(() => ProjectInfo, (projectInfo) => projectInfo.proyeccionMacro)
+    @JoinColumn({ name: 'projectInfoId' })
+    projectInfo: ProjectInfo;
+
+    @Column({ name: 'projectInfoId' })
+    projectInfoId: number
 }

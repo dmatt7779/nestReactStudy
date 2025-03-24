@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 
 export class IncrementoEgresosDto {
     @IsBoolean()
-    otros_porcentajes: boolean;
+    otrosPorcentajes: boolean;
 
     @IsBoolean()
     ipc: boolean;
@@ -11,7 +11,7 @@ export class IncrementoEgresosDto {
     @IsOptional()
     @IsArray()
     @ArrayMaxSize(4)
-    incremento_egresos: number[];
+    incrementoEgresos: number[];
 }
 
 class CostosGastosDto {
@@ -21,11 +21,11 @@ class CostosGastosDto {
     @IsOptional()
     @ValidateNested()
     @Type(() => IncrementoEgresosDto)
-    incremento_egresos: IncrementoEgresosDto;
+    incrementoEgresos: IncrementoEgresosDto;
 }
 
 export class CreateCostosGastoDto {
     @IsNotEmptyObject()
     @Type(() => CostosGastosDto)
-    costos_gastos: CostosGastosDto;
+    costosGastos: CostosGastosDto;
 }

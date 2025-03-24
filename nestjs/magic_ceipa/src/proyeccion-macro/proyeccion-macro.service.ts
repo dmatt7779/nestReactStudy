@@ -1,26 +1,36 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateProyeccionMacroDto } from './dto/create-proyeccion-macro.dto';
 import { UpdateProyeccionMacroDto } from './dto/update-proyeccion-macro.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProyeccionMacro } from './entities/proyeccion-macro.entity';
-import { Repository } from 'typeorm';
-import { UserActiveInterface } from 'src/common/interfaces/active-user.interface';
+import { FindOptionsWhere, Repository } from 'typeorm';
+import { UserActiveInterface } from '../common/interfaces/active-user.interface';
 import { Role } from '../common/enums/rol.enum';
+import { ProjectInfoService } from '../project-info/project-info.service';
 
 @Injectable()
 export class ProyeccionMacroService {
   constructor(
       @InjectRepository(ProyeccionMacro)
-      private readonly ProyeccionMacro: Repository<ProyeccionMacro>
+      private readonly ProyeccionMacro: Repository<ProyeccionMacro>,
+      private readonly projectInfoService: ProjectInfoService,
   ) {}
 
-  async create(createProyeccionMacroDto: CreateProyeccionMacroDto, user: UserActiveInterface) {
+  async create(createProyeccionMacroDto: CreateProyeccionMacroDto, projectInfoId: number, user: UserActiveInterface) {
+    await this.projectInfoService.findOne(projectInfoId, user)
+    const isProyeccionMacro = await this.ProyeccionMacro.findOne({
+      where: { projectInfoId },
+    });
+    if(isProyeccionMacro){
+      throw new BadRequestException('ProyeccionMacro already exists for this project');
+    }
     try{
-      const proyeccionMacro = this.ProyeccionMacro.create(createProyeccionMacroDto)
-      return await this.ProyeccionMacro.save({
-        ...proyeccionMacro,
+      const proyeccionMacro = this.ProyeccionMacro.create({
+        ...createProyeccionMacroDto,
+        projectInfo: { id: projectInfoId },
         userEmail: user.email,
       });
+      return await this.ProyeccionMacro.save(proyeccionMacro);
     }catch (error){
         console.log(error);
     }
@@ -35,15 +45,31 @@ export class ProyeccionMacroService {
     });
   }
 
-  async findOne(id: number) {
-    return await this.ProyeccionMacro.findOneBy({id});
+  async findOne(projectInfoId: number, user: UserActiveInterface) {
+    const proyeccionMacro = await this.ProyeccionMacro.findOne({
+      where: { projectInfoId },
+    });
+    if(!proyeccionMacro){
+      throw new BadRequestException('Project is not found');
+    }
+    this.validateOwnerShip(proyeccionMacro, user)
+    return proyeccionMacro;
   }
 
-  async update(id: number, updateProyeccionMacroDto: UpdateProyeccionMacroDto) {
-    return await this.ProyeccionMacro.update(id, updateProyeccionMacroDto);
+  async update(id: number, updateProyeccionMacroDto) {
+    const where: FindOptionsWhere<ProyeccionMacro> = { id };
+    return await this.ProyeccionMacro.update(where, updateProyeccionMacroDto);
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} proyeccionMacro`;
+  async remove(id: number, user: UserActiveInterface) {
+    const projectToDelete = await this.findOne(id, user);
+    await this.ProyeccionMacro.softDelete({id});
+    return projectToDelete;
+  }
+
+  private validateOwnerShip(project: ProyeccionMacro, user: UserActiveInterface){
+    if(user.role !== Role.ADMIN && project.userEmail !== user.email) {
+      throw new UnauthorizedException();
+    }
   }
 }

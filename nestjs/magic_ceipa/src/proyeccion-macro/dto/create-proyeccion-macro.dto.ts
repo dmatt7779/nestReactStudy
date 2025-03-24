@@ -7,18 +7,18 @@ export class ProductoDto {
 
   @IsNumber()
   @IsPositive()
-  costo_var_prod_ano_base: number;
+  costoVarProdAnoBase: number;
 
   @IsNumber()
   @IsPositive()
-  cantidad_facturar: number;
+  cantidadFacturar: number;
 
   @IsNumber()
   @IsPositive()
-  precio_sin_iva: number;
+  precioSinIva: number;
 
   @IsNumber()
-  precio_venta: number;
+  precioVenta: number;
 }
 
 class CrecimientoDto {
@@ -37,9 +37,9 @@ class CrecimientoDto {
     @IsOptional()
     @IsArray()
     @ArrayMaxSize(4)
-    crecimiento_cantidades?: number[];
+    crecimientoCantidades?: number[];
 }
-  
+
 class MarketingInvestAnoBaseDto {
     @IsArray()
     precio: number[];
@@ -54,14 +54,14 @@ class MarketingInvestAnoBaseDto {
     comunicacionales: number[];
 
     @IsArray()
-    comunity_manager: number[];
+    comunityManager: number[];
 }
 
 class AnalisisMercadoDto {
     @IsNumber()
     @Min(1)
     @Max(100)
-    tasa_iva: number;
+    tasaIva: number;
 
     @IsArray()
     @ValidateNested({ each: true })
@@ -71,19 +71,19 @@ class AnalisisMercadoDto {
 
     @ValidateNested()
     @Type(() => CrecimientoDto)
-    crecimiento_unidades: CrecimientoDto;
+    crecimientoUnidades: CrecimientoDto;
 
     @ValidateNested()
     @Type(() => CrecimientoDto)
-    crecimiento_precios: CrecimientoDto;
+    crecimientoPrecios: CrecimientoDto;
 
     @ValidateNested()
     @Type(() => CrecimientoDto)
-    crecimiento_costos: CrecimientoDto;
+    crecimientoCostos: CrecimientoDto;
 
     @ValidateNested()
     @Type(() => MarketingInvestAnoBaseDto)
-    marketing_invest_ano_base: MarketingInvestAnoBaseDto;
+    marketingInvestAnoBase: MarketingInvestAnoBaseDto;
 }
 
 class proyecciones_macroeconomicasDto {
@@ -100,7 +100,7 @@ class proyecciones_macroeconomicasDto {
   @IsArray()
   @ArrayMinSize(5)
   @ArrayMaxSize(5)
-  tasa_interes: number[];
+  tasaInteres: number[];
 
   @IsArray()
   @ArrayMinSize(5)
@@ -112,9 +112,9 @@ export class CreateProyeccionMacroDto {
 
   @ValidateNested()
   @Type(() => proyecciones_macroeconomicasDto)
-  proyecciones_macroeconomicas: proyecciones_macroeconomicasDto;
+  proyeccionesMacroeconomicas: proyecciones_macroeconomicasDto;
 
   @ValidateNested()
   @Type(() => AnalisisMercadoDto)
-  analisis_mercado: AnalisisMercadoDto;
+  analisisMercado: AnalisisMercadoDto;
 }

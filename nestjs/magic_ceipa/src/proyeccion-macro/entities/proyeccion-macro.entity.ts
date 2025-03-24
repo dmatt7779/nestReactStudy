@@ -1,49 +1,51 @@
-import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 import { Producto } from './producto.entity';
+import { ProjectInfo } from '../../project-info/entities/project-info.entity';
 import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class ProyeccionMacro {
+  [x: string]: any;
 
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({type: 'json'})
-  proyecciones_macroeconomicas: {
+  proyeccionesMacroeconomicas: {
     ipc: number[],
     devaluacion: number[],
-    tasa_interes: number[],
+    tasaInteres: number[],
     pib: number[]
   }
 
   @Column({ type: 'json' })
-  analisis_mercado: {
-    tasa_iva: number;
+  analisisMercado: {
+    tasaIva: number;
     productos: Producto[];
-    crecimiento_unidades: {
+    crecimientoUnidades: {
       pib: boolean;
       estrategia: boolean;
       ipc: boolean;
-      crecimiento_cantidades: number[];
+      crecimientoCantidades: number[];
     };
-    crecimiento_precios: {
+    crecimientoPrecios: {
       pib: boolean;
       estrategia: boolean;
       ipc: boolean;
-      crecimiento_cantidades: number[];
+      crecimientoCantidades: number[];
     };
-    crecimiento_costos: {
+    crecimientoCostos: {
       ipc: boolean;
       estrategia: boolean;
       pib: boolean;
-      estrategia_values: number[];
+      estrategiaValues: number[];
     };
-    marketing_invest_ano_base: {
+    marketingInvestAnoBase: {
       precio: number[];
       producto: number[];
       distribucion: number[];
       comunicacionales: number[];
-      comunity_manager: number[];
+      comunityManager: number[];
     };
   };
 
@@ -53,4 +55,11 @@ export class ProyeccionMacro {
 
   @Column()
   userEmail: string;
+
+  @OneToOne(() => ProjectInfo, (projectInfo) => projectInfo.proyeccionMacro) // Inverse side of the relation
+  @JoinColumn({name: 'projectInfoId'}) //specifies the column name of the joining relation.
+  projectInfo: ProjectInfo;
+
+  @Column({name: 'projectInfoId'})
+  projectInfoId: number
 }

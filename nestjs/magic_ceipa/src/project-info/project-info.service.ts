@@ -13,10 +13,9 @@ export class ProjectInfoService {
   constructor(
       @InjectRepository(ProjectInfo)
       private readonly ProjectInfo: Repository<ProjectInfo>
-    ) {}
+  ) {}
     
   async create(createProjectInfoDto: CreateProjectInfoDto, user: UserActiveInterface) {
-    // this.validateProjectExist(createProjectInfoDto, user);
     const isProjectExist = await this.findProjectByOneByEmail(createProjectInfoDto.projectName, user.email)
     if(isProjectExist){
       throw new BadRequestException("Project already exist")
@@ -49,7 +48,10 @@ export class ProjectInfoService {
   }
 
   async findOne(id: number, user: UserActiveInterface) {
-    const project = await this.ProjectInfo.findOneBy({id});
+    const project = await this.ProjectInfo.findOne({
+      where: { id },
+      relations: ['proyeccionMacro'],
+    });
     if(!project){
       throw new BadRequestException('Project is not found');
     }
@@ -73,12 +75,4 @@ export class ProjectInfoService {
       throw new UnauthorizedException();
     }
   }
-
-  // private async validateProjectExist(createProjectInfoDto: CreateProjectInfoDto, user: UserActiveInterface){
-  //   const isProjectExist = await this.findProjectByOneByEmail(createProjectInfoDto.projectName, user.email)
-  //   if(isProjectExist){
-  //     throw new BadRequestException("Project already exist")
-  //   }
-  //   return isProjectExist;
-  // }
 }

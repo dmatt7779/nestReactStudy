@@ -1,34 +1,43 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { CostosGastosService } from './costos-gastos.service';
 import { CreateCostosGastoDto } from './dto/create-costos-gasto.dto';
 import { UpdateCostosGastoDto } from './dto/update-costos-gasto.dto';
+import { Auth } from '../auth/decorators/auth.decorator';
+import { Role } from '../common/enums/rol.enum';
+import { ActiveUser } from '../common/decorators/active-user.decorator';
+import { UserActiveInterface } from '../common/interfaces/active-user.interface';
 
+@Auth(Role.USER)
 @Controller('costos-gastos')
 export class CostosGastosController {
   constructor(private readonly costosGastosService: CostosGastosService) {}
 
-  @Post()
-  create(@Body() createCostosGastoDto: CreateCostosGastoDto) {
-    return this.costosGastosService.create(createCostosGastoDto);
+  @Post(':projectInfoId')
+  create(
+    @Param('projectInfoId', ParseIntPipe) projectInfoId: number,
+    @Body() createCostosGastoDto: CreateCostosGastoDto,
+    @ActiveUser() user: UserActiveInterface
+  ) {
+    return this.costosGastosService.create(createCostosGastoDto, projectInfoId, user);
   }
 
   @Get()
-  findAll() {
-    return this.costosGastosService.findAll();
+  findAll(@ActiveUser() user: UserActiveInterface) {
+    return this.costosGastosService.findAll(user);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.costosGastosService.findOne(id);
+  findOne(@Param('id') projectId: number, @ActiveUser() user: UserActiveInterface) {
+    return this.costosGastosService.findOne(projectId, user);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: number, @Body() updateCostosGastoDto: UpdateCostosGastoDto) {
-    return this.costosGastosService.update(id, updateCostosGastoDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') projectId: number, @Body() updateCostosGastoDto: UpdateCostosGastoDto, @ActiveUser() user: UserActiveInterface) {
+  //   return this.costosGastosService.update(projectId, updateCostosGastoDto, user);
+  // }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.costosGastosService.remove(id);
+  remove(@Param('id') id: number, @ActiveUser() user: UserActiveInterface) {
+    return this.costosGastosService.remove(id, user);
   }
 }

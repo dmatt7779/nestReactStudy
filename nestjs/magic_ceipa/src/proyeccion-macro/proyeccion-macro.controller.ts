@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { ProyeccionMacroService } from './proyeccion-macro.service';
 import { CreateProyeccionMacroDto } from './dto/create-proyeccion-macro.dto';
 import { UpdateProyeccionMacroDto } from './dto/update-proyeccion-macro.dto';
@@ -12,9 +12,13 @@ import { Role } from '../common/enums/rol.enum';
 export class ProyeccionMacroController {
   constructor(private readonly proyeccionMacroService: ProyeccionMacroService) {}
 
-  @Post()
-  create(@Body() createProyeccionMacroDto: CreateProyeccionMacroDto, @ActiveUser() user: UserActiveInterface) {
-    return this.proyeccionMacroService.create(createProyeccionMacroDto, user);
+  @Post(':projectInfoId')
+  create(
+    @Param('projectInfoId', ParseIntPipe) projectInfoId: number,
+    @Body() createProyeccionMacroDto: CreateProyeccionMacroDto,
+    @ActiveUser() user: UserActiveInterface
+  ) {
+    return this.proyeccionMacroService.create(createProyeccionMacroDto, projectInfoId, user);
   }
 
   @Get()
@@ -23,8 +27,8 @@ export class ProyeccionMacroController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.proyeccionMacroService.findOne(id);
+  findOne(@Param('id') id: number, @ActiveUser() user: UserActiveInterface) {
+    return this.proyeccionMacroService.findOne(id, user);
   }
 
   @Patch(':id')
@@ -33,7 +37,7 @@ export class ProyeccionMacroController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.proyeccionMacroService.remove(id);
+  remove(@Param('id') id: number, @ActiveUser() user: UserActiveInterface) {
+    return this.proyeccionMacroService.remove(id, user);
   }
 }

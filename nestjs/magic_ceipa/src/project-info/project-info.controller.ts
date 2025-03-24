@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { ProjectInfoService } from './project-info.service';
 import { CreateProjectInfoDto } from './dto/create-project-info.dto';
 import { UpdateProjectInfoDto } from './dto/update-project-info.dto';
@@ -23,7 +23,7 @@ export class ProjectInfoController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number, @ActiveUser() user: UserActiveInterface) {
+  async findOne(@Param('id', ParseIntPipe) id: number, @ActiveUser() user: UserActiveInterface) {
     return this.projectInfoService.findOne(id, user);
   }
 
