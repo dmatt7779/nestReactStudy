@@ -676,6 +676,9 @@ button:active {
   margin: 20px auto;
 }
 
+.table-footer{
+  font-size: 14px;
+}
 .table-container table {
   width: 100%;
   border-collapse: collapse;
@@ -719,7 +722,7 @@ input.percentage-input {
 }
 
 label {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: bold;
 }
 
@@ -731,86 +734,168 @@ input {
   width: 100%;
 }
 
-.producto-input {
+.custom-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.input-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
 }
 
-.producto-input label {
-  width: 120px;
+.custom-input {
+  padding-right: 25px; /* Espacio para el % */
+  text-align: right;
 }
 
-.input-producto {
-  flex: 1;
+.percentage-symbol {
+  position: absolute;
+  right: 10px;
+  font-weight: bold;
 }
 
 .form-container {
-  max-width: 600px;
-  margin: 20px auto;
-  padding: 15px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-label {
-  font-size: 14px;
-  font-weight: bold;
-}
-
-input {
-  padding: 6px;
-  margin: 5px 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-th, td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-}
-
-th {
-  background-color: #f2f2f2;
-}
-
-.producto-input {
-  width: 300px; /* Ajusta según necesidad */
-  padding: 3px;
-  font-size: 14px;
-}
-
-.iva-container {
-  margin-top: 15px;
-}
-
-.iva-container input {
-  width: 80px;
-  padding: 5px;
-  text-align: center;
+.tasa-iva {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 20px;
 }
 
 .productos-container {
-  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
-.producto-input {
-  width: 120px;
-  padding: 5px;
+.fila-producto {
+  display: flex;
+  align-items: center;
+  gap: 25px; /* Espaciado entre elementos */
+  margin-bottom: 15px;
+}
+
+.numero-producto {
+  width: 10px; /* Espacio reservado para los números */
   text-align: center;
+  font-size: 14px;
+  margin-top: 30px;
 }
 
-.nombre-input {
-  width: 200px;
+.boton-eliminar {
+  background: #EFA020;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 2px 5px; /* Reduce el espacio interno */
+  font-size: 14px; /* Reduce el tamaño del icono o texto */
+  width: 30px; /* Ajusta el ancho */
+  height: 30px; /* Ajusta la altura */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-top: 30px;
+
 }
 
+.boton-eliminar:hover {
+  background: #e09d31;
+}
+
+.boton-agregar-container {
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+  margin-top: 15px;
+}
+
+.boton-agregar {
+  background-color: #1F2738; /* Azul */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 100%;
+  font-size: 14px;
+}
+
+.boton-agregar:hover {
+  background-color: #005f72; /* Azul más oscuro al pasar el mouse */
+}
+
+.contenedor-crecimiento {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Espaciado entre secciones */
+}
+
+.fila-crecimiento {
+  display: flex;
+  gap: 1rem; /* Espaciado entre los inputs */
+  align-items: center;
+  margin-top: 15px;
+}
+
+.custom-input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.custom-input-container input:disabled {
+  background-color: #f0f0f0;
+  color: #888;
+  cursor: not-allowed;
+}
+
+.anio{
+  font-size: 14px;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: row;  /* Alinea en fila (horizontal) */
+  gap: 20px;  /* Espacio entre opciones */
+  align-items: center;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.input-disabled {
+  background-color: #e0e0e0; /* Gris claro */
+  color: #757575; /* Texto gris oscuro */
+  cursor: not-allowed;
+}
+
+.marketing-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.marketing-table th, .marketing-table td {
+  border: 1px solid black;
+  padding: 8px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.estrategia-nombre {
+  text-align: left;
+  font-weight: bold;
+}

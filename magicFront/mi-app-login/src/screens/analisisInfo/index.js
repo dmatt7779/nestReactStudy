@@ -1,129 +1,139 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-import '../../style/styles.css';
+import "../../style/styles.css";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
-import analisisImg from "../../images/cabezote_analisis.png";       
-import tituloAnalisiImg from "../../images/titulo_analisis_de_entorno.png";    
-import titulomerveImg from "../../images/titulo_analisis_de_mercadeo_y_ventas.png";        
+import CustomInput from "../../components/CustomInput";
 
-const AnalisisInfo = (name,) => {
+import analisisImg from "../../images/cabezote_analisis.png";
+import tituloAnalisiImg from "../../images/titulo_analisis_de_entorno.png";
+import tituloMercadeoImg from "../../images/titulo_analisis_de_mercadeo_y_ventas.png";
+
+const AnalisisInfo = () => {
+
+  // ANALISIS DEL ENTORNO
   const navigate = useNavigate();
 
-  // Estados para la tabla de análisis del entorno
-  const anios = [2025, 2026, 2027, 2028, 2029];
-  const [proyeccion, setProyeccion] = useState({
-    ipc: ["", "", "", "", ""],
-    devaluacion: ["", "", "", "", ""],
-    tasaInteres: ["", "", "", "", ""],
-    pib: ["", "", "", "", ""],
-  });
-
-  const handleChangeProyeccion = (e, campo, index) => {
-    const value = e.target.value;
-    setProyeccion((prev) => ({
-      ...prev,
-      [campo]: prev[campo].map((val, i) => (i === index ? value : val)),
-    }));
-  };
-
-  
-  // Estados para la tabla de productos/servicios
-  const [numProductos, setNumProductos] = useState(0);
-  const [productos, setProductos] = useState([]);
-
-  const handleNumProductosChange = (e) => {
-    let cantidad = parseInt(e.target.value, 10) || 0;
-
-    // Limitar el número de productos a 10
-    if (cantidad > 10) {
-      cantidad = 10;
-    }
-
-    setNumProductos(cantidad);
-    setProductos(Array(cantidad).fill(""));
-  };
-
-  const handleProductoChange = (index, value) => {
-    const nuevosProductos = [...productos];
-    nuevosProductos[index] = value;
-    setProductos(nuevosProductos);
-  };
-
-  // Manejo del envío del formulario
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    // Validación de campos vacíos en ambas tablas
-    const camposVaciosProyeccion = Object.values(proyeccion).some((valores) =>
-      valores.includes("")
-    );
-    const camposVaciosProductos = productos.some((producto) => producto.trim() === "");
-
-    if (camposVaciosProyeccion || camposVaciosProductos) {
-      alert("Todos los campos son obligatorios");
-      return;
-    }
-
-    console.log("Datos guardados:", { proyeccion, productos });
-
-    // Aquí puedes enviar los datos a la base de datos con Axios u otro método
-  };
-
-    // Estado para la selección del crecimiento en unidades
-    const [metodoCrecimiento, setMetodoCrecimiento] = useState("");
-    const [crecimiento, setCrecimiento] = useState({
-      2026: "",
-      2027: "",
-      2028: "",
-      2029: "",
-    });
-  
-    const handleMetodoChange = (e) => {
-      setMetodoCrecimiento(e.target.value);
-    };
-  
-    const handleCrecimientoChange = (e, anio) => {
-      setCrecimiento({
-        ...crecimiento,
-        [anio]: e.target.value,
-      });
-    };
-
-    // Estado para la selección del crecimiento en precios
-const [metodoCrecimientoPrecios, setMetodoCrecimientoPrecios] = useState("");
-const [crecimientoPrecios, setCrecimientoPrecios] = useState({
-  2026: "",
-  2027: "",
-  2028: "",
-  2029: "",
+// Estado para almacenar los valores de la tabla
+const [values, setValues] = useState({
+  IPC: { 2025: "", 2026: "", 2027: "", 2028: "", 2029: "" },
+  Devaluation: { 2025: "", 2026: "", 2027: "", 2028: "", 2029: "" },
+  InterestRate: { 2025: "", 2026: "", 2027: "", 2028: "", 2029: "" },
+  PIB: { 2025: "", 2026: "", 2027: "", 2028: "", 2029: "" },
 });
 
-const handleMetodoCrecimientoPreciosChange = (e) => {
-  setMetodoCrecimientoPrecios(e.target.value);
+// Función para manejar cambios en los inputs de Analisis del entorno
+const handleChange = (category, year, value) => {
+  setValues((prevValues) => ({
+    ...prevValues,
+    [category]: {
+      ...prevValues[category],
+      [year]: value,
+    },
+  }));
 };
 
-const handleCrecimientoPreciosChange = (e, anio) => {
-  setCrecimientoPrecios({
-    ...crecimientoPrecios,
-    [anio]: e.target.value,
+  // ANALISIS DE MERCADEO Y VENTAS
+
+  // Estado para Tasa IVA
+  const [tasaIVA, setTasaIVA] = useState("");
+
+  // Estado para productos (máximo 10)
+  const [productos, setProductos] = useState([
+    { id: 1, nombre: "", cantidad: "", precioSinIVA: "", precioVenta: "", costoVariable: "" }
+  ]);
+
+  // Agregar un nuevo producto (máximo 10)
+  const agregarProducto = () => {
+    if (productos.length < 10) {
+      setProductos([
+        ...productos,
+        { id: Date.now(), nombre: "", cantidad: "", precioSinIVA: "", precioVenta: "" }
+      ]);
+    }
+  };
+  
+
+  // Eliminar un producto con confirmación
+  const eliminarProducto = (id) => {
+    const confirmarEliminar = window.confirm("¿Estás seguro de que deseas eliminar este producto?");
+    if (confirmarEliminar) {
+      setProductos((productosAnteriores) => productosAnteriores.filter(producto => producto.id !== id));
+    }
+  };
+
+  // Manejar cambios en los inputs de productos
+  const manejarCambioProducto = (id, campo, valor) => {
+    setProductos((productosAnteriores) =>
+      productosAnteriores.map((producto) =>
+        producto.id === id ? { ...producto, [campo]: valor } : producto
+      )
+    );
+  };
+
+  // Crecimiento en Unidades
+  const [opcionSeleccionadaUnidades, setOpcionSeleccionadaUnidades] = useState("");
+  const [crecimientoUnidades, setCrecimientoUnidades] = useState({
+    2025: "0", 2026: "", 2027: "", 2028: "", 2029: "",
   });
-};
 
-// Estado para la tasa de IVA
-const [tasaIVA, setTasaIVA] = useState("");
+  const manejarCambioUnidades = (e) => {
+    setOpcionSeleccionadaUnidades(e.target.value);
+  };
 
-const handleTasaIVAChange = (e) => {
-  let value = e.target.value;
+  const manejarCambioCrecUnidades = (anio, valor) => {
+    setCrecimientoUnidades((prev) => ({ ...prev, [anio]: valor }));
+  };
 
-  // Validar que solo ingrese números y máximo 100%
-  if (!isNaN(value) && value >= 0 && value <= 100) {
-    setTasaIVA(value);
-  }
-};
+    // Crecimiento en Precios
+    const [opcionSeleccionadaPrecios, setOpcionSeleccionadaPrecios] = useState("");
+    const [crecimientoPrecios, setCrecimientoPrecios] = useState({
+      2025: "0", 2026: "", 2027: "", 2028: "", 2029: "",
+    });
+  
+    const manejarCambioPrecios = (e) => {
+      setOpcionSeleccionadaPrecios(e.target.value);
+    };
+  
+    const manejarCambioCrecPrecios = (anio, valor) => {
+      setCrecimientoPrecios((prev) => ({ ...prev, [anio]: valor }));
+    };
 
+    // Estrategia MarketinInvesAnoBase
+    const [estrategias, setEstrategias] = useState([
+      { nombre: "Fijación de Precios", valores: { 2025: "", 2026: "", 2027: "", 2028: "", 2029: "" } },
+      { nombre: "Producto-Distribución", valores: { 2025: "", 2026: "", 2027: "", 2028: "", 2029: "" } },
+      { nombre: "Comunicacionales", valores: { 2025: "", 2026: "", 2027: "", 2028: "", 2029: "" } },
+      { nombre: "Comercialización", valores: { 2025: "", 2026: "", 2027: "", 2028: "", 2029: "" } },
+      { nombre: "Community Manager", valores: { 2025: "", 2026: "", 2027: "", 2028: "", 2029: "" } },
+    ]);
+    
+    const manejarCambioEstrategia = (index, anio, valor) => {
+      const nuevasEstrategias = [...estrategias];
+      nuevasEstrategias[index].valores[anio] = valor;
+      setEstrategias(nuevasEstrategias);
+    };
 
+        // Crecimiento en Costos
+        const [opcionSeleccionadaCostos, setOpcionSeleccionadaCostos] = useState("");
+        const [crecimientoCostos, setCrecimientoCostos] = useState({
+          2025: "0", 2026: "", 2027: "", 2028: "", 2029: "",
+        });
+      
+        const manejarCambioCostos = (e) => {
+          setOpcionSeleccionadaCostos(e.target.value);
+        };
+      
+        const manejarCambioCrecCostos = (anio, valor) => {
+          setCrecimientoCostos((prev) => ({ ...prev, [anio]: valor }));
+        };
+
+  // Enviar formulario
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log("Valores enviados:", values);
+    // Aquí podrías hacer una petición a la API para guardar los datos
+  };
 
   return (
     <div className="project-info-container">
@@ -138,39 +148,44 @@ const handleTasaIVAChange = (e) => {
             <img src={tituloAnalisiImg} alt="Análisis del entorno" className="section-img1" />
           </div>
           <p>
-          En el análisis del entorno, es necesario Investigar y contemplar las proyecciones de ciertas variables Macroeconómicas.
-          En este aspecto, existen entidades que se encargan de realizar estos estudios, y los publican en sus portales digitales.</p>          <div className="table-container">
-            <form onSubmit={handleSubmit}>
-              <table>
+            En el análisis del entorno, es necesario investigar y contemplar las proyecciones de
+            ciertas variables macroeconómicas. En este aspecto, existen entidades que se encargan
+            de realizar estos estudios y los publican en sus portales digitales.
+          </p>
+
+          <form onSubmit={handleSubmit}>
+            {/* Tabla con inputs Análisis del entorno */}
+            <div className="table-container">
+              <table className="macro-table">
                 <thead>
                   <tr>
                     <th></th>
-                    {anios.map((anio) => (
-                      <th key={anio}>Año {anio}</th>
+                    {/* Renderizamos dinámicamente los años como encabezados */}
+                    {[2025, 2026, 2027, 2028, 2029].map((year) => (
+                      <th key={year}>Año {year}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {["ipc", "devaluacion", "tasaInteres", "pib"].map((campo, idx) => (
-                    <tr key={idx}>
-                      <td>
-                        {campo === "ipc"
-                          ? "IPC"
-                          : campo === "devaluacion"
-                          ? "Re / Devaluación"
-                          : campo === "tasaInteres"
-                          ? "Tasa de interés Efectiva Anual"
-                          : "PIB"}
-                      </td>
-                      {proyeccion[campo].map((valor, index) => (
-                        <td key={index}>
-                          <input
-                            type="text"
-                            className="percentage-input"
-                            value={valor}
-                            onChange={(e) => handleChangeProyeccion(e, campo, index)}
-                            placeholder="%"
-                            required
+                  {/* Iteramos sobre las categorías de análisis */}
+                  {[
+                    { key: "IPC", label: "IPC" },
+                    { key: "Devaluation", label: "Re / Devaluación" },
+                    { key: "InterestRate", label: "Tasa de Interés Efectiva Anual" },
+                    { key: "PIB", label: "PIB" },
+                  ].map(({ key, label }) => (
+                    <tr key={key}>
+                      {/* Primera celda con el nombre de la categoría */}
+                      <td>{label}</td>
+
+                      {/* Generamos los inputs dinámicamente para cada año */}
+                      {[2025, 2026, 2027, 2028, 2029].map((year) => (
+                        <td key={year}>
+                          <CustomInput
+                            id={`input-${key}-${year}`}  // Asignamos un ID único combinando categoría y año
+                            type="percentage"
+                            value={values[key][year]}  // Manejamos el estado con la estructura values[Categoría][Año]
+                            onChange={(newValue) => handleChange(key, year, newValue)}
                           />
                         </td>
                       ))}
@@ -179,260 +194,252 @@ const handleTasaIVAChange = (e) => {
                 </tbody>
               </table>
               <div className="table-footer">
-                Fuente: Proyecciones Macroeconómicas Bancolombia, Davivienda, BBVA, entre otros
+                Fuente: Proyecciones Macroeconómicas Bancolombia, Davivienda, BBVA, entre otros.
               </div>
-            </form>
-          </div>
+            </div>
 
-          {/* Sección de Análisis de Mercadeo y Ventas */}
-          <div className="section">
-            <img src={titulomerveImg} alt="Análisis de mercadeo y ventas" className="section-img5" />
-          </div>
-          <p>En el plan de mercadeo y ventas, se debe realizar una estimación de las cantidades a facturar y los precios promedio de ventas para el primer año por cada producto y/o servicio, así como también los factores de crecimiento (con base en indicador o estrategia) y el costo de cada una de las estrategias de Marketing para atraer clientes.</p>
-          <form onSubmit={handleSubmit} className="productos-form">
-            <label>Ingrese el número de productos o servicios:</label>
-            <input
-              type="number"
-              min="0"
-              max="10"
-              value={numProductos}
-              onChange={handleNumProductosChange}
-              required
-            />
-
-            <table className="productos-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Nombre del Producto o Servicio</th>
-                </tr>
-              </thead>
-              <tbody>
-                {productos.map((producto, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>
-                      <input
-                        type="text"
-                        className="producto-input"
-                        value={producto}
-                        onChange={(e) => handleProductoChange(index, e.target.value)}
-                        required
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {/* Sección de Crecimiento */}
-          <div className="crecimiento-container">
-            <p>El crecimiento en UNIDADES depende de (marque en el recuadro con una X):</p>
-            <label>
-              <input
-                type="radio"
-                name="crecimiento"
-                value="PIB"
-                onChange={handleMetodoChange}
-              />
-              PIB
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="crecimiento"
-                value="Estrategia"
-                onChange={handleMetodoChange}
-              />
-              Estrategia
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="crecimiento"
-                value="IPC"
-                onChange={handleMetodoChange}
-              />
-              IPC
-            </label>
-
-            {metodoCrecimiento === "Estrategia" && (
-              <div>
-                <p>En caso de que su crecimiento sea mediante estrategias de mercadeo, indique los crecimientos porcentuales de las unidades para cada año
-                </p>
-                <table className="crecimiento-table">
-                  <thead>
-                    <tr>
-                      {anios.map((anio) => (
-                        <th key={anio}>Año {anio}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      {anios.map((anio) => (
-                        <td key={anio}>
-                          {anio === 2025 ? (
-                            <input type="text" disabled placeholder="-" className="disabled-input"/>
-                          ) : (
-                            <input
-                              type="text"
-                              value={crecimiento[anio] || ""}
-                              onChange={(e) => handleCrecimientoChange(e, anio)}
-                              placeholder="%"
-                              required
-                            />
-                          )}
-                        </td>
-                      ))}
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-          {/* Sección de Crecimiento en Precios */}
-          <div className="crecimiento-container">
-            <p>El crecimiento en PRECIOS depende de (marque en el recuadro con una X):</p>
-            <label>
-              <input
-                type="radio"
-                name="crecimientoPrecios"
-                value="PIB"
-                onChange={handleMetodoCrecimientoPreciosChange}
-              />
-              PIB
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="crecimientoPrecios"
-                value="Estrategia"
-                onChange={handleMetodoCrecimientoPreciosChange}
-              />
-              Estrategia
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="crecimientoPrecios"
-                value="IPC"
-                onChange={handleMetodoCrecimientoPreciosChange}
-              />
-              IPC
-            </label>
-
-            {metodoCrecimientoPrecios === "Estrategia" && (
-              <div>
-                <p>En caso de que su crecimiento sea mediante estrategias de mercadeo, indique los crecimientos porcentuales de precios de venta para cada año
-                </p>
-                <table className="crecimiento-table">
-                  <thead>
-                    <tr>
-                      {[2025, 2026, 2027, 2028, 2029].map((anio) => (
-                        <th key={anio}>Año {anio}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      {[2025, 2026, 2027, 2028, 2029].map((anio) => (
-                        <td key={anio}>
-                          {anio === 2025 ? (
-                            <input type="text" disabled placeholder="-" className="disabled-input"/>
-                          ) : (
-                            <input
-                              type="text"
-                              value={crecimientoPrecios[anio] || ""}
-                              onChange={(e) => handleCrecimientoPreciosChange(e, anio)}
-                              placeholder="%"
-                              required
-                            />
-                          )}
-                        </td>
-                      ))}
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-
-          <div className="iva-container">
-            <p>Para cada producto o linea de negocios establacida, determine las cantidades y precios del año uno (1er año)
+              {/* Sección de Análisis de mercadeo y ventas */}
+            <div className="section">
+              <img src={tituloMercadeoImg} alt="Análisis del entorno" className="section-img5" />
+            </div>
+            <p>
+              En el plan de mercadeo y ventas, se debe realizar una estimación de las cantidades a facturar y los precios promedio de ventas para el primer año
+              por cada producto y/o servicio, así como también los factores de crecimiento (con base en indicador o estrategia) y el costo de cada
+              una de las estrategias de Marketing para atraer clientes.
             </p>
-            <h3>Tasa IVA (%)</h3>
-            <input
-              type="number"
-              id="tasaIVA"
-              value={tasaIVA}
-              onChange={handleTasaIVAChange}
-              placeholder="Ej: 19"
-              min="0"
-              max="100"
-              required
-            />
-          </div>
+            <div className="analisis-info-container">
+              {/* Input Tasa IVA */}
+              <div className="tasa-iva">
+                <p>Para cada producto o linea de negocios establecida, determine las cantidades y precios del año uno (1er año).
+                </p>
+                <label htmlFor="input-tasa-iva">Tasa IVA:</label> {/* Label asociado al ID */}
+                <CustomInput 
+                id="input-tasa-iva"  // ID único para este campo
+                type="percentage" 
+                value={tasaIVA} 
+                onChange={setTasaIVA} 
+                />
+              </div>
 
-          <div className="productos-container">
-            <h3>Lista de Productos</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Nombre del Producto</th>
-                  <th>Cantidad Año 2025</th>
-                  <th>Precio sin IVA Año 2025</th>
-                  <th>Precio de Venta Año 2025</th>
-                </tr>
-              </thead>
-              <tbody>
+              {/* Tabla de productos */}
+              <div id="tabla-productos" className="productos-container">
                 {productos.map((producto, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>
-                      <input
-                        type="text"
-                        className="producto-input nombre-input"
-                        value={producto.nombre}
-                        onChange={(e) => handleProductoChange(index, "nombre", e.target.value)}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        className="producto-input"
-                        value={producto.cantidad}
-                        onChange={(e) => handleProductoChange(index, "cantidad", e.target.value)}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        className="producto-input"
-                        value={producto.precioSinIVA}
-                        onChange={(e) => {
-                          handleProductoChange(index, "precioSinIVA", e.target.value);
-                          /*calcularPrecioVenta(index, e.target.value);*/
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        className="producto-input"
-                        value={producto.precioVenta}
-                        readOnly
-                      />
-                    </td>
-                  </tr>
+                  <div key={producto.id} className="fila-producto">
+                    <span className="numero-producto">{index + 1}.</span> {/* Número del producto */}
+                    <CustomInput
+                      id={`producto-nombre-${producto.id}`} // ID único por producto
+                      label="Nombre del Producto"
+                      value={producto.nombre}
+                      onChange={(value) => manejarCambioProducto(producto.id, "nombre", value)}
+                      placeholder=""
+                      type="text"
+                    />
+                    <CustomInput
+                      id={`producto-cantidad-${producto.id}`} // ID único por producto
+                      label="Cantidad año 2025"
+                      value={producto.cantidad}
+                      onChange={(value) => manejarCambioProducto(producto.id, "cantidad", value)}
+                      placeholder=""
+                      type="number"
+                    />
+                    <CustomInput
+                      id={`producto-precioSinIVA-${producto.id}`} // ID único por producto
+                      label="Precio sin IVA año 2025"
+                      value={producto.precioSinIVA}
+                      onChange={(value) => manejarCambioProducto(producto.id, "precioSinIVA", value)}
+                      placeholder=""
+                      type="number"
+                    />
+                    <CustomInput
+                      id={`producto-precioVenta-${producto.id}`} // ID único por producto
+                      label="Precio de venta año 2025"
+                      value={producto.precioVenta}
+                      onChange={(value) => manejarCambioProducto(producto.id, "precioVenta", value)}
+                      placeholder=""
+                      type="number"
+                    />
+                    <CustomInput
+                      label={
+                        <span title="En el plan operativo, además de los procesos y demás elementos que contempla el protocolo, se debe establecer y registrar los costos variables, costos fijos y las inversiones requeridas en el proyecto.
+Determine el costo variable promedio para cada producto para el primer año (Debería ser menor al Precio de Venta)
+La diferencia entre el Precio de Venta y el Costo Variable Promedio por unidad, nos dará el Margen de Contribución del producto y/o Servicio">
+                          Costo Variable por Unidad Año 2025 ℹ️
+                        </span>
+                      }
+                      id={`producto-costoVariable-${producto.id}`} // Nuevo campo con ID único
+                      value={producto.costoVariable}
+                      onChange={(value) => manejarCambioProducto(producto.id, "costoVariable", value)}
+                      placeholder=""
+                      type="number"
+                    />
+                    <button className="boton-eliminar" onClick={() => eliminarProducto(producto.id)}>
+                      🗑️
+                    </button>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </div>
 
+              {/* Botón para agregar más productos */}
+              {productos.length < 10 && (
+                <button className="boton-agregar" onClick={agregarProducto}>+ Agregar Producto</button>
+              )}
+            </div>
 
+            {/* Crecimiento en Unidades*/}
+            <p>El crecimiento en UNIDADES depende de (marque en el recuadro con una X):</p>
+            <div id="crecimiento-unidades" className="contenedor-crecimiento">
+              <CustomInput
+                id="opciones-crecimiento-unidades"
+                label=""
+                type="radio"
+                value={opcionSeleccionadaUnidades}
+                onChange={manejarCambioUnidades}
+                options={["PIB", "Estrategia", "IPC"]}
+                name="metodoCrecimientoUnidades"
+              />
+            </div>
 
-           </form>
+           {/* Campos de Crecimiento en Unidades (Solo se activan si se elige Estrategia) */}
+            {opcionSeleccionadaUnidades === "Estrategia" && (
+              <div id="crecimiento-unidades-estrategia">
+                <p className="texto-estrategia">
+                  En caso de que su crecimiento sea mediante estrategias de mercadeo, 
+                  indique los crecimientos porcentuales de las unidades para cada año.
+                </p>
+                <h3>Crecimiento en Unidades</h3>        
+                <div className="fila-crecimiento">
+                  {Object.keys(crecimientoUnidades).map((anio) => (
+                    <div key={anio} className="contenedor-input">
+                      <span className="anio">Año {anio}</span> {/* Título del año */}
+                      <CustomInput
+                        id={`crecimiento-unidades-${anio}`} // 🔥 ID único para cada año
+                        type="percentage"
+                        value={crecimientoUnidades[anio]}
+                        onChange={(value) => manejarCambioCrecUnidades(anio, value)}
+                        disabled={anio === "2025"}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+           {/* Crecimiento en Precios*/}
+           <p>El crecimiento en PRECIOS depende de (marque en el recuadro con una X):</p>
+            <div id="crecimiento-precios" className="contenedor-crecimiento">
+              <CustomInput
+                id="opciones-crecimiento-precios"
+                label=""
+                type="radio"
+                value={opcionSeleccionadaPrecios}
+                onChange={manejarCambioPrecios}
+                options={["PIB", "Estrategia", "IPC"]}
+                name="metodoCrecimientoPrecios"
+              />
+            </div>
+
+            {/* Campos de Crecimiento en Precios (Solo se activan si se elige Estrategia) */}
+            {opcionSeleccionadaPrecios === "Estrategia" && (
+            <div id="crecimiento-precios-estrategia">
+              <p className="texto-estrategia">
+              En caso de que su crecimiento sea mediante estrategias de mercadeo, 
+              indique los crecimientos porcentuales de precios de venta para cada año.
+              </p>
+              <h3>Crecimiento en Precios</h3>   
+              <div className="fila-crecimiento">
+                {Object.keys(crecimientoPrecios).map((anio) => (
+                  <div key={anio} className="contenedor-input">
+                    <span className="anio">Año {anio}</span> {/* Título del año */}
+                    <CustomInput
+                      id={`crecimiento-unidades-${anio}`} // ID único para cada año
+                      type="percentage"
+                      value={crecimientoPrecios[anio]}
+                      onChange={(value) => manejarCambioCrecPrecios(anio, value)}
+                      disabled={anio === "2025"}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            )}
+
+            {/* Tabla estrategias marketingInvestAnoBase */}
+            <div className="marketing-invest-container">
+              <p>Nombre las estrategias de mercadeo a realizar en su proyecto y el gasto estimado para cada año, a fin de darse a conocer y atraer clientes en el mercado competitivo.
+              </p>              
+              <table className="marketing-table">
+                <thead>
+                  <tr>
+                    <th>Estrategia</th>
+                    <th>Año 2025</th>
+                    <th>Año 2026</th>
+                    <th>Año 2027</th>
+                    <th>Año 2028</th>
+                    <th>Año 2029</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {estrategias.map((estrategia, index) => (
+                    <tr key={index}>
+                      <td className="estrategia-nombre">{estrategia.nombre}</td>
+                      {Object.keys(estrategia.valores).map((anio) => (
+                        <td key={anio}>
+                          <CustomInput
+                            id={`estrategia-${index}-${anio}`} // ID único
+                            type="number"
+                            value={estrategia.valores[anio]}
+                            onChange={(value) => manejarCambioEstrategia(index, anio, value)}
+                            placeholder=""
+                            required
+                          />
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+              
+            {/* Crecimiento en Costos*/}
+            <p>El crecimiento en costos variables por unidad depende de (marque en el recuadro con una X):</p>
+            <div id="crecimiento-costos" className="contenedor-crecimiento">
+              <CustomInput
+                id="opciones-crecimiento-costos"
+                label=""
+                type="radio"
+                value={opcionSeleccionadaCostos}
+                onChange={manejarCambioCostos}
+                options={["PIB", "Estrategia", "IPC"]}
+                name="metodoCrecimientoCostos"
+              />
+            </div>
+
+            {/* Campos de Crecimiento en Costos (Solo se activan si se elige Estrategia) */}
+            {opcionSeleccionadaCostos === "Estrategia" && (
+            <div id="crecimiento-costos-estrategia">
+              <p className="texto-estrategia">
+              En caso de que su crecimiento sea mediante estrategias de mercadeo, 
+              indique los crecimientos porcentuales de precios de venta para cada año.
+              </p>
+              <h3>Crecimiento en Precios</h3>   
+              <div className="fila-crecimiento">
+                {Object.keys(crecimientoCostos).map((anio) => (
+                  <div key={anio} className="contenedor-input">
+                    <span className="anio">Año {anio}</span> {/* Título del año */}
+                    <CustomInput
+                      id={`crecimiento-costos-${anio}`} // ID único para cada año
+                      type="percentage"
+                      value={crecimientoCostos[anio]}
+                      onChange={(value) => manejarCambioCrecCostos(anio, value)}
+                      disabled={anio === "2025"}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            )}
+
+          </form>
 
           {/* Botones de Navegación */}
           <div className="buttons-container">
