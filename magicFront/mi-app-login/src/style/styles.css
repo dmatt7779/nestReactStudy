@@ -487,6 +487,12 @@ button:active {
   .anio-container label {
     white-space: nowrap; /* Evita que el texto del label se divida en varias líneas */
   }
+
+  .custom-input:disabled {
+    background-color: #e0e0e0;
+    color: #888;
+    cursor: not-allowed;
+  }
   
   /* Botón base sin fondo ni borde */
 .nav-btn {
@@ -692,7 +698,7 @@ input.percentage-input {
 }
 
 .section-img5 {
-  width: 360px;              /* Ajusta según tu diseño */
+  width: 500px;
   max-width: 100%;
   height: auto;
 }
@@ -757,14 +763,13 @@ input {
 .productos-container {
   display: flex;
   flex-direction: column;
-  gap: 5px;
 }
 
 .fila-producto {
   display: flex;
   align-items: center;
-  gap: 25px; /* Espaciado entre elementos */
-  margin-bottom: 15px;
+  gap: 20px; /* Espaciado entre elementos */
+  margin-bottom: 10px;
 }
 
 .numero-producto {
@@ -775,7 +780,7 @@ input {
 }
 
 .boton-eliminar {
-  background: #EFA020;
+  background: #d6d4d1;
   color: white;
   border: none;
   border-radius: 5px;
@@ -792,7 +797,7 @@ input {
 }
 
 .boton-eliminar:hover {
-  background: #e09d31;
+  background: #9c9696;
 }
 
 .boton-agregar-container {
@@ -805,8 +810,7 @@ input {
   background-color: #1F2738; /* Azul */
   color: white;
   border: none;
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 10px 20px;  
   border-radius: 5px;
   cursor: pointer;
   transition: 0.3s;
@@ -866,20 +870,93 @@ input {
   color: #757575; /* Texto gris oscuro */
   cursor: not-allowed;
 }
-
 .marketing-table {
-  width: 100%;
-  border-collapse: collapse;
+  max-width: 700px;
+  margin: 20px auto;
+  font-size: 14px;
 }
 
-.marketing-table th, .marketing-table td {
-  border: 1px solid black;
-  padding: 8px;
-  text-align: center;
-  font-size: 12px;
+.marketing-table table {
+  width: 100%;
+  border-collapse: collapse;  
+}
+
+ .marketing-table td {
+  border: 1px solid #ddd;
+  padding: 5px;
+}
+
+.marketing-table th{
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  padding: 6px;
 }
 
 .estrategia-nombre {
   text-align: left;
-  font-weight: bold;
 }
+
+
+/*---------------------------------Costos Gastos---------------------------------------------*/
+
+.costos-gastos-container  h3{
+  width: 100%;
+  margin: 10px;
+}
+
+.encabezados-costos {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  padding: 10px;
+  border-bottom: 2px solid #ccc;
+}
+
+.fila-costos {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.numero-costos {
+  width: 10px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.fila-costos-producto {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Alinea todo a la izquierda */
+  gap: 10px; /* Espaciado entre elementos */
+  margin-bottom: 10px;
+
+}
+
+.input-costos {
+  flex: 1; /* Permite que los inputs se ajusten al espacio */
+  min-width: 150px; /* Define un ancho mínimo para que no se hagan muy pequeños */
+}
+
+.boton-eliminar-costos {
+  background: #d6d4d1;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 2px 5px; /* Reduce el espacio interno */
+  font-size: 14px; /* Reduce el tamaño del icono o texto */
+  width: 30px; /* Ajusta el ancho */
+  height: 30px; /* Ajusta la altura */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+}
+
+.boton-eliminar-costos:hover {
+  background: #969696;
+}
+
