@@ -1,6 +1,6 @@
 import React from "react";
 
-const CustomInput = ({ label, value, onChange, placeholder, type, options, name }) => {
+const CustomInput = ({ label, value, onChange, placeholder, type, options, name, disabled }) => {
   const handleChange = (e) => {
     let newValue = e.target.value;
 
@@ -9,6 +9,10 @@ const CustomInput = ({ label, value, onChange, placeholder, type, options, name 
       if (newValue > 100) newValue = "100";
     } else if (type === "number") {
       newValue = newValue.replace(/[^0-9.]/g, "");
+      const decimalCount = (newValue.split(".")[1] || "").length;
+      if (decimalCount > 2) {
+        newValue = parseFloat(newValue).toFixed(2); // Limita a 2 decimales
+      }
     } else if (type === "text") {  
       newValue = newValue.replace(/[^a-zA-ZÁÉÍÓÚáéíóúñÑ\s]/g, "");
     }
@@ -44,6 +48,7 @@ const CustomInput = ({ label, value, onChange, placeholder, type, options, name 
               onChange={handleChange}
               placeholder={placeholder}
               className="custom-input"
+              disabled={disabled} // Ahora el input puede recibir la prop `disabled`
             />
             {type === "percentage" && <span className="percentage-symbol">%</span>}
           </div>

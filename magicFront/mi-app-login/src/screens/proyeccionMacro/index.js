@@ -9,7 +9,7 @@ import analisisImg from "../../images/cabezote_analisis.png";
 import tituloAnalisiImg from "../../images/titulo_analisis_de_entorno.png";
 import tituloMercadeoImg from "../../images/titulo_analisis_de_mercadeo_y_ventas.png";
 
-const AnalisisInfo = () => {
+const ProyeccionMacro = () => {
 
   // ANALISIS DEL ENTORNO - proyecciones_macroeconomicas
   const navigate = useNavigate();
@@ -74,7 +74,7 @@ const handleChange = (category, year, value) => {
   // Crecimiento en Unidades
   const [opcionSeleccionadaUnidades, setOpcionSeleccionadaUnidades] = useState("");
   const [crecimientoUnidades, setCrecimientoUnidades] = useState({
-    2025: "0", 2026: "", 2027: "", 2028: "", 2029: "",
+    2025: "", 2026: "", 2027: "", 2028: "", 2029: "",
   });
 
   const manejarCambioUnidades = (e) => {
@@ -88,7 +88,7 @@ const handleChange = (category, year, value) => {
     // Crecimiento en Precios
     const [opcionSeleccionadaPrecios, setOpcionSeleccionadaPrecios] = useState("");
     const [crecimientoPrecios, setCrecimientoPrecios] = useState({
-      2025: "0", 2026: "", 2027: "", 2028: "", 2029: "",
+      2025: "", 2026: "", 2027: "", 2028: "", 2029: "",
     });
   
     const manejarCambioPrecios = (e) => {
@@ -117,7 +117,7 @@ const handleChange = (category, year, value) => {
         // Crecimiento en Costos
         const [opcionSeleccionadaCostos, setOpcionSeleccionadaCostos] = useState("");
         const [crecimientoCostos, setCrecimientoCostos] = useState({
-          2025: "0", 2026: "", 2027: "", 2028: "", 2029: "",
+          2025: "", 2026: "", 2027: "", 2028: "", 2029: "",
         });
       
         const manejarCambioCostos = (e) => {
@@ -312,11 +312,11 @@ La diferencia entre el Precio de Venta y el Costo Variable Promedio por unidad, 
                     <div key={anio} className="contenedor-input">
                       <span className="anio">Año {anio}</span> {/* Título del año */}
                       <CustomInput
-                        id={`crecimiento-unidades-${anio}`} // 🔥 ID único para cada año
+                        id={`crecimiento-unidades-${anio}`}
                         type="percentage"
                         value={crecimientoUnidades[anio]}
                         onChange={(value) => manejarCambioCrecUnidades(anio, value)}
-                        disabled={anio === "2025"}
+                        disabled={anio === "2025"} // ← Esto deshabilita solo el año 2025
                       />
                     </div>
                   ))}
@@ -453,4 +453,4 @@ La diferencia entre el Precio de Venta y el Costo Variable Promedio por unidad, 
   );
 };
 
-export default AnalisisInfo;
+export default ProyeccionMacro;
