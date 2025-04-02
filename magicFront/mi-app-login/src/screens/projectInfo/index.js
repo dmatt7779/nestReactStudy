@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import '../../style/styles.css';
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
+import CustomInput from "../../components/CustomInput"; 
 import nuevoProyectoImg1 from "../../images/titulo_nuevo_proyecto_1.png";       
 import tituloProyectoImg from "../../images/titulo_nombre.png";     
 import integrantesImg from "../../images/titulo_integrantes.png";         
@@ -176,27 +177,36 @@ const ProjectInfo = () => {
             <div className="integrantes-container">
               {integrantes.map((integrante, index) => (
                 <div key={index} className="integrante-fields">
-                  <label htmlFor={`cedula-${index}`}>Cédula:</label>
-                  <input
-                    type="text"
-                    placeholder="Ingresa cédula"
-                    value={integrante.cedula}
-                    onChange={(e) =>
-                      handleIntegranteChange(index, "cedula", e.target.value)
-                    }
-                  />
-                  <label htmlFor={`nombre-${index}`}>Nombre:</label>
-                  <input
-                    type="text"
-                    placeholder="Ingresa nombre"
-                    value={integrante.nombre}
-                    onChange={(e) =>
-                      handleIntegranteChange(index, "nombre", e.target.value)
-                    }
-                  />
+                  
+                  {/* Campo Cédula */}
+                  <div className="integrante-field">
+                    <label htmlFor={`cedula-${index}`}>Cédula:</label>
+                    <CustomInput
+                      id={`cedula-${index}`}
+                      type="number"
+                      placeholder="Ingresa cédula"
+                      value={integrante.cedula}
+                      onChange={(value) => handleIntegranteChange(index, "cedula", value)}
+                      className="cedula-input"
+                    />
+                  </div>
+
+                  {/* Campo Nombre */}
+                  <div className="integrante-field">
+                    <label htmlFor={`nombre-${index}`}>Nombre:</label>
+                    <CustomInput
+                      id={`nombre-${index}`}
+                      type="text"
+                      placeholder="Ingresa nombre"
+                      value={integrante.nombre}
+                      onChange={(value) => handleIntegranteChange(index, "nombre", value)}
+                      className="nombre-input"
+                    />
+                  </div>
                 </div>
               ))}
             </div>
+
             <button className="add-integrant-btn" onClick={addIntegrante}>
               + Agregar integrantes
             </button>

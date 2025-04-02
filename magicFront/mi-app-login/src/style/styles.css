@@ -410,23 +410,25 @@ button:active {
   }
   
   .integrante-fields {
-    /*display: flex; */
-    gap: 10px;
-    justify-content: center;
-  }
-
-  .integrante-fields label {
-    /*display: flex; */
-    margin: 10px;
-    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espacio entre cada par de label e input */
+    margin-bottom: 10px;
   }
   
-  .integrante-fields input {
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    width: 200px; /* Ajusta según tu diseño */
+  .integrante-field {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Espacio entre el label y el input */
+  }
+  
+  .cedula-input {
+    width: 120px; /* Más pequeño para Cédula */
+  }
+  
+  .nombre-input {
+    width: 300px; /* Más grande para Nombre */
+    flex-grow: 1;
   }
   
   .add-integrant-btn {
@@ -447,42 +449,51 @@ button:active {
   }
   
   /*********************************Sección: Seleccionar profesor************************/
-  .professor-select {
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    width: 220px;
-    max-width: 100%;
+
+  .profesor-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
   }
   
-
-  .buttons-container {
+  .profesor-option {
     display: flex;
-    justify-content: space-between;
-    margin-top: 40px;
+    align-items: center; /* Alinea el checkbox y el nombre verticalmente */
+    gap: 10px; /* Espacio entre el checkbox y el texto */
+    white-space: nowrap; /* Evita que el nombre se divida en varias líneas */
+    font-size: 14px;
+  }
+  
+  .profesor-checkbox {
+    margin: 0; /* Elimina margen extra */
   }
 
+  .profesor-nombre {
+    display: inline-block;
+    white-space: nowrap;
+  }  
+ 
   .robot-img2 {
     width: 100%;
     margin-top: 40px;
   }
-
-  .checkbox-container {
+  
+  .anio-container {
     display: flex;
-    align-items: center; /* Alinea verticalmente */
-    gap: 10px; /* Espacio entre el checkbox y el texto */
+    align-items: center; /* Alinea verticalmente el label y el input */
+    gap: 8px; /* Espacio entre el label y el input */
   }
   
-  .checkbox-container input {
-    width: 18px; /* Ajusta el tamaño del checkbox */
-    height: 18px;
-  }
-  
-  .checkbox-container label {
-    font-size: 14px;
+  .anio-container label {
+    white-space: nowrap; /* Evita que el texto del label se divida en varias líneas */
   }
 
+  .custom-input:disabled {
+    background-color: #e0e0e0;
+    color: #888;
+    cursor: not-allowed;
+  }
+  
   /* Botón base sin fondo ni borde */
 .nav-btn {
   background: none;
@@ -520,27 +531,7 @@ button:active {
   box-shadow: none !important; /* Quita cualquier sombra */
 }
 
-.año-container {
-  display: flex;
-  align-items: center; /* Alinea verticalmente */
-  gap: 8px; /* Espacio entre el texto y el input */
-}
-
-.año-container label {
-  font-size: 14px;
-  font-weight: normal;
-  white-space: nowrap; /* Evita que el texto se divida en varias líneas */
-}
-
-.año-container input {
-  width: 70px; /* Ajusta el tamaño del input */
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  text-align: center; /* Centra el texto dentro del input */
-}
-
-  
+ 
 /*-----------------------------------Styles New Project--------------------------------------*/
 
 .nuevo-proyecto-container {
@@ -676,6 +667,9 @@ button:active {
   margin: 20px auto;
 }
 
+.table-footer{
+  font-size: 14px;
+}
 .table-container table {
   width: 100%;
   border-collapse: collapse;
@@ -704,7 +698,7 @@ input.percentage-input {
 }
 
 .section-img5 {
-  width: 360px;              /* Ajusta según tu diseño */
+  width: 500px;
   max-width: 100%;
   height: auto;
 }
@@ -719,7 +713,7 @@ input.percentage-input {
 }
 
 label {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: bold;
 }
 
@@ -731,86 +725,238 @@ input {
   width: 100%;
 }
 
-.producto-input {
+.custom-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.input-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
 }
 
-.producto-input label {
-  width: 120px;
+.custom-input {
+  padding-right: 25px; /* Espacio para el % */
 }
 
-.input-producto {
-  flex: 1;
+.percentage-symbol {
+  position: absolute;
+  right: 10px;
+  font-weight: bold;
 }
 
 .form-container {
-  max-width: 600px;
-  margin: 20px auto;
-  padding: 15px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-label {
-  font-size: 14px;
-  font-weight: bold;
-}
-
-input {
-  padding: 6px;
-  margin: 5px 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-th, td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-}
-
-th {
-  background-color: #f2f2f2;
-}
-
-.producto-input {
-  width: 300px; /* Ajusta según necesidad */
-  padding: 3px;
-  font-size: 14px;
-}
-
-.iva-container {
-  margin-top: 15px;
-}
-
-.iva-container input {
-  width: 80px;
-  padding: 5px;
-  text-align: center;
+.tasa-iva {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 20px;
 }
 
 .productos-container {
-  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
-.producto-input {
-  width: 120px;
-  padding: 5px;
+.fila-producto {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Espaciado entre elementos */
+  margin-bottom: 10px;
+}
+
+.numero-producto {
+  width: 10px; /* Espacio reservado para los números */
   text-align: center;
+  font-size: 14px;
+  margin-top: 30px;
 }
 
-.nombre-input {
-  width: 200px;
+.boton-eliminar {
+  background: #d6d4d1;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 2px 5px; /* Reduce el espacio interno */
+  font-size: 14px; /* Reduce el tamaño del icono o texto */
+  width: 30px; /* Ajusta el ancho */
+  height: 30px; /* Ajusta la altura */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-top: 30px;
+
+}
+
+.boton-eliminar:hover {
+  background: #9c9696;
+}
+
+.boton-agregar-container {
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+  margin-top: 15px;
+}
+
+.boton-agregar {
+  background-color: #1F2738; /* Azul */
+  color: white;
+  border: none;
+  padding: 10px 20px;  
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 100%;
+  font-size: 14px;
+}
+
+.boton-agregar:hover {
+  background-color: #005f72; /* Azul más oscuro al pasar el mouse */
+}
+
+.contenedor-crecimiento {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Espaciado entre secciones */
+}
+
+.fila-crecimiento {
+  display: flex;
+  gap: 1rem; /* Espaciado entre los inputs */
+  align-items: center;
+  margin-top: 15px;
+}
+
+.custom-input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.custom-input-container input:disabled {
+  background-color: #f0f0f0;
+  color: #888;
+  cursor: not-allowed;
+}
+
+.anio{
+  font-size: 14px;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: row;  /* Alinea en fila (horizontal) */
+  gap: 20px;  /* Espacio entre opciones */
+  align-items: center;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.input-disabled {
+  background-color: #e0e0e0; /* Gris claro */
+  color: #757575; /* Texto gris oscuro */
+  cursor: not-allowed;
+}
+.marketing-table {
+  max-width: 700px;
+  margin: 20px auto;
+  font-size: 14px;
+}
+
+.marketing-table table {
+  width: 100%;
+  border-collapse: collapse;  
+}
+
+ .marketing-table td {
+  border: 1px solid #ddd;
+  padding: 5px;
+}
+
+.marketing-table th{
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  padding: 6px;
+}
+
+.estrategia-nombre {
+  text-align: left;
+}
+
+
+/*---------------------------------Costos Gastos---------------------------------------------*/
+
+.costos-gastos-container  h3{
+  width: 100%;
+  margin: 10px;
+}
+
+.encabezados-costos {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  padding: 10px;
+  border-bottom: 2px solid #ccc;
+}
+
+.fila-costos {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.numero-costos {
+  width: 10px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.fila-costos-producto {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Alinea todo a la izquierda */
+  gap: 10px; /* Espaciado entre elementos */
+  margin-bottom: 10px;
+
+}
+
+.input-costos {
+  flex: 1; /* Permite que los inputs se ajusten al espacio */
+  min-width: 150px; /* Define un ancho mínimo para que no se hagan muy pequeños */
+}
+
+.boton-eliminar-costos {
+  background: #d6d4d1;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 2px 5px; /* Reduce el espacio interno */
+  font-size: 14px; /* Reduce el tamaño del icono o texto */
+  width: 30px; /* Ajusta el ancho */
+  height: 30px; /* Ajusta la altura */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+}
+
+.boton-eliminar-costos:hover {
+  background: #969696;
 }
 

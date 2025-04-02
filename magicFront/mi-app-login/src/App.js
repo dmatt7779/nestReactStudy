@@ -5,9 +5,9 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './screens/login';
 import Register from './screens/register';
 import ProjectInfo from './screens/projectInfo';
-import ProyeccionMacro from './screens/proyeccionMacro';
 import NewProject from './screens/newProject';
-import AnalisisInfo from './screens/analisisInfo';
+import ProyeccionMacro from './screens/proyeccionMacro';
+import CostosGastos from './screens/costosGastos';
 
 function App() {
   return(
@@ -16,9 +16,9 @@ function App() {
         <Route path="/" element={<Login />} /> 
         <Route path="/register" element={<Register />} /> 
         <Route path="/ProjectInfo" element={<ProjectInfo />} /> 
-        <Route path="/ProyeccionMacro" element={<ProyeccionMacro />} /> 
         <Route path="/NewProject/" element={<NewProject />} />
-        <Route path="/AnalisisInfo/" element={<AnalisisInfo />} />
+        <Route path="/ProyeccionMacro/" element={<ProyeccionMacro />} />
+        <Route path="/CostosGastos/" element={<CostosGastos />} />
       </Routes>
     </BrowserRouter>
   );
