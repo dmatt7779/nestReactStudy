@@ -25,7 +25,7 @@ function Login() {
         password: password,
       });
       if (response.token && response.payload.role) {
-        localStorage.setItem('token', response.access_token);
+        localStorage.setItem('token', response.token);
         navigate('/newProject');
       } else {
         setError('Error al iniciar sesión: No se recibió un token.');

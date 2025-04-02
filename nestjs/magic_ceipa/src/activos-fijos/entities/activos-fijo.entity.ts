@@ -1,13 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate } from 'typeorm';
+import { ProjectInfo } from '../../project-info/entities/project-info.entity';
+import { User } from '../../users/entities/user.entity';
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
 
 interface Items {
     [key: string]: number | null;
 }
 
 interface ActivoFijoData {
-    vida_util_anos?: number;
-    valor_salvamento?: number;
-    items: Items;
+    vidaUtilAnos?: number;
+    valorSalvamento?: number;
+    items?: any;
 }
 
 interface ActivosFijos {
@@ -27,29 +29,19 @@ export class ActivoFijo {
     id: number;
 
     @Column({ type: 'json' })
-    activos_fijos: ActivosFijos;
+    activosFijos: ActivosFijos;
 
-    @BeforeInsert()
-    @BeforeUpdate()
-    processActivosFijos() {
-        for (const key in this.activos_fijos) {
-            if (this.activos_fijos.hasOwnProperty(key)) {
-                this.activos_fijos[key].items = this.processDynamicKeys(this.activos_fijos[key].items);
-            }
-        }
-    }
+    @ManyToOne(() => User)
+    @JoinColumn({ name: 'userEmail', referencedColumnName: 'email' })
+    user: User;
 
-    private processDynamicKeys(obj: any) {
-        if (typeof obj !== 'object' || obj === null) {
-            return obj;
-        }
-        const newObj = {};
-        for (const key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                let newKey = key.toLowerCase().replace(/\s+/g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                newObj[newKey] = typeof obj[key] === 'object' ? this.processDynamicKeys(obj[key]) : obj[key];
-            }
-        }
-        return newObj;
-    }
+    @Column()
+    userEmail: string;
+
+    @OneToOne(() => ProjectInfo, (projectInfo) => projectInfo.proyeccionMacro)
+    @JoinColumn({ name: 'projectInfoId' })
+    projectInfo: ProjectInfo;
+
+    @Column({ name: 'projectInfoId' })
+    projectInfoId: number
 }

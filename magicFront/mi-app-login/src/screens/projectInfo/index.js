@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import '../../style/styles.css';
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
@@ -9,24 +9,19 @@ import integrantesImg from "../../images/titulo_integrantes.png";
 import profesorImg from "../../images/titulo_profesor.png"; 
 import momentoDatos from "../../images/momento_datos.png";
 import momentoAnios from "../../images/titulo_anio.png";
+import axiosClient from '../../utils/axios';
 
-const NewProject = () => {
-  // Estado para la lista de integrantes
-  const [integrantes, setIntegrantes] = useState([
-    { cedula: "", nombre: "" }
-  ]);
-
-  // Función para agregar un nuevo integrante
-  const addIntegrante = () => {
-    setIntegrantes([...integrantes, { cedula: "", nombre: "" }]);
-  };
-
-  // Función para actualizar el valor de un integrante
-  const handleIntegranteChange = (index, field, value) => {
-    const nuevosIntegrantes = [...integrantes];
-    nuevosIntegrantes[index][field] = value;
-    setIntegrantes(nuevosIntegrantes);
-  };
+const ProjectInfo = () => {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const proyectoId = location.state?.proyectoId
+  const [proyecto, setProyecto] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [projectName, setProjectName] = useState("")
+  const [integrantes, setIntegrantes] = useState([{ cedula: "", nombre: "" }])
+  const [seleccionados, setSeleccionados] = useState([])
+  const [ano, setAno] = useState("2025")
 
   const profesoresLista = [
     { id: 1, nombre: "Profesor Mauricio" },
@@ -35,28 +30,106 @@ const NewProject = () => {
     { id: 4, nombre: "Profesor Cristina" }
   ];
   
-    const [seleccionados, setSeleccionados] = useState([]);
+  useEffect(() => {
+    const fetchProyecto = async () => {
+      setLoading(true)
+      setError(null)
+      try {
+        if (proyectoId) {
+          const response = await axiosClient.get(`/api/v1/project-info/${proyectoId}`)
+          console.log(response)
+          console.log(response.length)
+          if (response) {
+            const proyectoData = response
+            setProyecto(proyectoData)
+            setProjectName(proyectoData.projectName || "")
+            setIntegrantes(proyectoData.teamMembers ? proyectoData.teamMembers.map(member => ({ cedula: "", nombre: member })) : [{ cedula: "", nombre: "" }])
+            setSeleccionados(proyectoData.professor || [])
+            setAno(proyectoData.openingYear ? proyectoData.openingYear.toString() : "2025")
+          } else {
+            setError("Proyecto no encontrado.")
+          }
+        } else {
+          setProyecto({})
+        }
+      } catch (err) {
+        console.error("Error al obtener el proyecto:", err)
+        setError(err.message || "Error al obtener el proyecto.")
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchProyecto()
+  }, [proyectoId])
+
+    const handleProjectNameChange = (e) => {
+      setProjectName(e.target.value)
+    }
+  
+    const addIntegrante = () => {
+      setIntegrantes([...integrantes, { cedula: "", nombre: "" }])
+    }
+  
+    const handleIntegranteChange = (index, field, value) => {
+      const nuevosIntegrantes = [...integrantes]
+      nuevosIntegrantes[index][field] = value
+      setIntegrantes(nuevosIntegrantes)
+    }
   
     const manejarCambio = (id) => {
       setSeleccionados((prevSeleccionados) =>
         prevSeleccionados.includes(id)
           ? prevSeleccionados.filter((profesorId) => profesorId !== id)
           : [...prevSeleccionados, id]
-      );
-    };
-
-    const [ano, setAno] = useState("2025"); // Año por defecto
-
+      )
+    }
+  
     const manejarCambioF = (e) => {
-      const valor = e.target.value;
-      // Permite solo números y restringe a 4 dígitos
+      const valor = e.target.value
       if (/^\d{0,4}$/.test(valor)) {
-        setAno(valor);
+        setAno(valor)
+      }
+    }
+  
+    const handleSubmit = async () => {
+      setLoading(true)
+      setError(null)
+      try {
+        const dataToSend = {
+          projectName: projectName,
+          teamMembers: integrantes.map(integrante => integrante.nombre),
+          openingYear: parseInt(ano),
+          professor: seleccionados,
+        }
+  
+        if (proyectoId) {
+          //TODO:
+          // Si hay un ID, actualiza el proyecto existente (PUT o PATCH)
+          // const response = await axiosClient.put(`/api/v1/project-info/${proyectoId}`, dataToSend);
+          // Suponiendo que el backend requiere todos los datos en PUT, sino usa PATCH
+        } else {
+          const response = await axiosClient.post('/api/v1/project-info', dataToSend)
+          if (response) {
+              navigate('/proyeccionMacro')
+          }
+        }
+        console.log("ProjectInfo guardado con éxito!")
+  
+      } catch (err) {
+        console.error("Error al guardar el proyecto:", err);
+        setError(err.message || "Error al guardar el proyecto.");
+      } finally {
+        setLoading(false);
       }
     };
-
-    // Para navegar con anterior y siguente
-    const navigate = useNavigate();
+  
+    if (loading) {
+      return <p>Cargando información del proyecto...</p>;
+    }
+  
+    if (error) {
+      return <p style={{ color: 'red' }}>{error}</p>;
+    }  
 
   return (
     <div className="project-info-container">
@@ -79,12 +152,27 @@ const NewProject = () => {
             nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
             volutpat.
           </p>
+
+          {/* Campo para el nombre del proyecto */}
+          <div className="section">
+            <label htmlFor="projectName">Nombre del Proyecto:</label>
+            <input
+              type="text"
+              id="projectName"
+              placeholder="Ingresa el nombre del proyecto"
+              value={projectName}
+              onChange={handleProjectNameChange}
+            />
+          </div>
+
           {/* Sección de Integrantes */}
           <div className="section">
-            <img src={integrantesImg} alt="Integrantes" className="section-img2" />  
-            <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam
-            nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
-            volutpat.</p>
+            <img src={integrantesImg} alt="Integrantes" className="section-img2" />
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam
+              nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
+              volutpat.
+            </p>
             <div className="integrantes-container">
               {integrantes.map((integrante, index) => (
                 <div key={index} className="integrante-fields">
@@ -113,40 +201,43 @@ const NewProject = () => {
               + Agregar integrantes
             </button>
           </div>
-            {/* Sección de Seleccionar Profesor */}
-            <div className="section">
-              <img src={profesorImg} alt="Selecciona tu profesor" className="section-img3" /> 
-              <div className="profesor">
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam
-                  nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
-                  volutpat.
-                </p>
-                {profesoresLista.map((profesor) => (
-                  <label key={profesor.id} style={{ display: "block", margin: "5px 0" }}>
-                    <input
-                      type="checkbox"
-                      value={profesor.id}
-                      checked={seleccionados.includes(profesor.id)}
-                      onChange={() => manejarCambio(profesor.id)}
-                    />
-                    {profesor.nombre}
-                  </label>
-                ))}
-                <p>Profesores seleccionados: {seleccionados.join(", ")}</p>
-              </div>
+
+          {/* Sección de Seleccionar Profesor */}
+          <div className="section">
+            <img src={profesorImg} alt="Selecciona tu profesor" className="section-img3" />
+            <div className="profesor">
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam
+                nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
+                volutpat.
+              </p>
+              {profesoresLista.map((profesor) => (
+                <label key={profesor.id} style={{ display: "block", margin: "5px 0" }}>
+                  <input
+                    type="checkbox"
+                    value={profesor.id}
+                    checked={seleccionados.includes(profesor.id)}
+                    onChange={() => manejarCambio(profesor.id)}
+                  />
+                  {profesor.nombre}
+                </label>
+              ))}
+              <p>Profesores seleccionados: {seleccionados.join(", ")}</p>
             </div>
-            <div className="robot-container">
-              <img src={momentoDatos} alt="Momento de los datos" className="robot-img2" /> 
-            </div>
-            <img src={momentoAnios} alt="Momento" className="section-img4" />
-             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam
-              nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
-              volutpat.
-             </p>
+          </div>
+
+          <div className="robot-container">
+            <img src={momentoDatos} alt="Momento de los datos" className="robot-img2" /> 
+          </div>
+          <img src={momentoAnios} alt="Momento" className="section-img4" />
+          <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam
+          nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
+          volutpat.
+          </p>
+
           <div className="año-container">
-          <label htmlFor="year-input">Año de apertura:</label>
+            <label htmlFor="year-input">Año de apertura:</label>
             <input
               type="number"
               value={ano}
@@ -156,16 +247,17 @@ const NewProject = () => {
               max="2099"
             />
           </div>
+
           {/* Botones de navegación */}
           <div className="buttons-container">
             <button className="nav-btn anterior" onClick={() => navigate(-1)}></button>
-            <button className="nav-btn siguiente" onClick={() => navigate("/newProject")}></button>
+            <button className="nav-btn siguiente" onClick={() => navigate("../ProyeccionMacro")}></button>
           </div>
         </div>
       </div>
       <Footer />
     </div>
-  );
-};
+  )
+}
 
-export default NewProject;
+export default ProjectInfo;
