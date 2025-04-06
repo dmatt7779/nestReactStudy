@@ -21,6 +21,7 @@ const NewProject = () => {
       setError(null)
       try {
         const response = await axiosClient.get('/api/v1/project-info')
+        console.log(`newPorject all ${JSON.stringify(response, null, 2)}`)
         if (response && Array.isArray(response)) {
           const proyectosOrdenados = response.sort((a, b) => a.id - b.id)
           setProyectos(proyectosOrdenados)
@@ -81,24 +82,24 @@ const NewProject = () => {
         <form onSubmit={(e) => e.preventDefault()}>
           <div className="grid-proyectos">
             {Array.from({ length: NUM_CARDS }).map((_, index) => {
-              const proyecto = proyectos[index]
-              const proyectoId = proyecto ? proyecto.id : null
+              const project = proyectos[index]
+              const projectId = project ? project.id : null
 
               return (
                 <div
                   key={index}
                   className="proyecto-card"
                   onClick={() => {
-                    navigate('/projectInfo', { state: { proyectoId } })
+                    navigate('/projectInfo', { state: { projectId } })
                   }}
                 >
                   <div className="imagen-hover">
                     <img src={nuevoProyectoImg} alt="Nuevo Proyecto" className="proyecto-img" />
                   </div>
-                  {proyecto ? (
+                  {project ? (
                     <>
-                      <p>{proyecto.projectName}</p>
-                      <p>ID: {proyecto.id}</p>
+                      <p>{project.projectName}</p>
+                      <p>ID: {project.id}</p>
                     </>
                     ) : (
                       <p>Nuevo Proyecto</p>

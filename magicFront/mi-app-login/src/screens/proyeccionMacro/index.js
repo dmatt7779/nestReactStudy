@@ -444,7 +444,7 @@ La diferencia entre el Precio de Venta y el Costo Variable Promedio por unidad, 
           {/* Botones de Navegación */}
           <div className="buttons-container">
             <button className="nav-btn anterior" onClick={() => navigate(-1)}></button>
-            <button className="nav-btn siguiente" onClick={() => navigate("/newProject")}></button>
+            <button className="nav-btn siguiente" onClick={() => navigate("/costosGastos")}></button>
           </div>
         </div>
       </div>

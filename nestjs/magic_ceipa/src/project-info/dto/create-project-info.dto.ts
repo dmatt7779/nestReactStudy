@@ -1,4 +1,4 @@
-import { IsArray, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min, ValidateNested, ArrayMaxSize, ArrayMinSize } from 'class-validator';
+import { IsArray, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min, ValidateNested, ArrayMaxSize, ArrayMinSize, IsNumber } from 'class-validator';
 
 export class CreateProjectInfoDto {
   @IsNotEmpty()
@@ -21,8 +21,8 @@ export class CreateProjectInfoDto {
   @IsOptional()
   @IsNotEmpty()
   @IsArray()
-  @IsString({ each: true })
+  @IsNumber({}, { each: true })
   @ArrayMinSize(1)
   @ArrayMaxSize(5)
-  professor: string[];
+  professor: number[];
 }

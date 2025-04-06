@@ -19,7 +19,7 @@ export class ProjectInfo {
   openingYear: number;
 
   @Column('simple-array')
-  professor: string[];
+  professor: number[];
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'userEmail', referencedColumnName: 'email'})

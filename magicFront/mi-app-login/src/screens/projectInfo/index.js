@@ -15,13 +15,13 @@ import axiosClient from '../../utils/axios';
 const ProjectInfo = () => {
   const location = useLocation()
   const navigate = useNavigate()
-  const proyectoId = location.state?.proyectoId
+  const projectId = location.state?.projectId
   const [proyecto, setProyecto] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [projectName, setProjectName] = useState("")
   const [integrantes, setIntegrantes] = useState([{ cedula: "", nombre: "" }])
-  const [seleccionados, setSeleccionados] = useState([])
+  const [professors, setProfessors] = useState([])
   const [ano, setAno] = useState("2025")
 
   const profesoresLista = [
@@ -36,16 +36,15 @@ const ProjectInfo = () => {
       setLoading(true)
       setError(null)
       try {
-        if (proyectoId) {
-          const response = await axiosClient.get(`/api/v1/project-info/${proyectoId}`)
-          console.log(response)
-          console.log(response.length)
+        if (projectId) {
+          const response = await axiosClient.get(`/api/v1/project-info/${projectId}`)
+          console.log(`ProjectInfo ${JSON.stringify(response, null, 2)}`)
           if (response) {
             const proyectoData = response
             setProyecto(proyectoData)
             setProjectName(proyectoData.projectName || "")
             setIntegrantes(proyectoData.teamMembers ? proyectoData.teamMembers.map(member => ({ cedula: "", nombre: member })) : [{ cedula: "", nombre: "" }])
-            setSeleccionados(proyectoData.professor || [])
+            setProfessors(proyectoData.professor || [])
             setAno(proyectoData.openingYear ? proyectoData.openingYear.toString() : "2025")
           } else {
             setError("Proyecto no encontrado.")
@@ -61,7 +60,7 @@ const ProjectInfo = () => {
       }
     }
     fetchProyecto()
-  }, [proyectoId])
+  }, [projectId])
 
     const handleProjectNameChange = (e) => {
       setProjectName(e.target.value)
@@ -78,7 +77,7 @@ const ProjectInfo = () => {
     }
   
     const manejarCambio = (id) => {
-      setSeleccionados((prevSeleccionados) =>
+      setProfessors((prevSeleccionados) =>
         prevSeleccionados.includes(id)
           ? prevSeleccionados.filter((profesorId) => profesorId !== id)
           : [...prevSeleccionados, id]
@@ -100,29 +99,44 @@ const ProjectInfo = () => {
           projectName: projectName,
           teamMembers: integrantes.map(integrante => integrante.nombre),
           openingYear: parseInt(ano),
-          professor: seleccionados,
+          professor: professors,
         }
   
-        if (proyectoId) {
+        let response
+
+        if (projectId) {
           //TODO:
           // Si hay un ID, actualiza el proyecto existente (PUT o PATCH)
-          // const response = await axiosClient.put(`/api/v1/project-info/${proyectoId}`, dataToSend);
+          // const response = await axiosClient.put(`/api/v1/project-info/${projectId}`, dataToSend);
           // Suponiendo que el backend requiere todos los datos en PUT, sino usa PATCH
+          console.log("Actualizando proyecto existente")
+          navigate('/proyeccionMacro', { state: { projectId: projectId, openingYear: ano } })
         } else {
-          const response = await axiosClient.post('/api/v1/project-info', dataToSend)
-          if (response) {
-              navigate('/proyeccionMacro')
-          }
+          response = await axiosClient.postProjectInfo('/api/v1/project-info', dataToSend)
+          console.log("Creando nuevo proyecto")
         }
+
         console.log("ProjectInfo guardado con éxito!")
-  
+        
+        if (response && response.id) {
+            console.log(`Response && response.id from projectInfo ${response
+              }`)
+            navigate('/proyeccionMacro', { state: { projectId: projectId, openingYear: ano } })
+        } else if (projectId) {
+            navigate('/proyeccionMacro', { state: { projectId: projectId, openingYear: ano } })
+        } else {
+          console.warn("No se recibió un ID de proyecto al guardar.")
+          setError("No se recibió un ID de proyecto al guardar.")
+          navigate('../newProject', { state: { projectId: null } })
+        }
+
       } catch (err) {
-        console.error("Error al guardar el proyecto:", err);
-        setError(err.message || "Error al guardar el proyecto.");
+        console.error("Error al guardar el proyecto:", err)
+        setError(err.message || "Error al guardar el proyecto.")
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
   
     if (loading) {
       return <p>Cargando información del proyecto...</p>;
@@ -226,13 +240,13 @@ const ProjectInfo = () => {
                   <input
                     type="checkbox"
                     value={profesor.id}
-                    checked={seleccionados.includes(profesor.id)}
+                    checked={professors.includes(profesor.id)}
                     onChange={() => manejarCambio(profesor.id)}
                   />
                   {profesor.nombre}
                 </label>
               ))}
-              <p>Profesores seleccionados: {seleccionados.join(", ")}</p>
+              <p>Profesores seleccionados: {professors.join(", ")}</p>
             </div>
           </div>
 
@@ -261,7 +275,7 @@ const ProjectInfo = () => {
           {/* Botones de navegación */}
           <div className="buttons-container">
             <button className="nav-btn anterior" onClick={() => navigate(-1)}></button>
-            <button className="nav-btn siguiente" onClick={() => navigate("../ProyeccionMacro")}></button>
+            <button className="nav-btn siguiente" onClick={handleSubmit}></button>
           </div>
         </div>
       </div>
