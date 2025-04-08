@@ -100,18 +100,37 @@ const handleChange = (category, year, value) => {
     };
 
     // Estrategia MarketinInvesAnoBase
+
     const [estrategias, setEstrategias] = useState([
-      { nombre: "Fijación de Precios", valores: { 2025: "", 2026: "", 2027: "", 2028: "", 2029: "" } },
-      { nombre: "Producto-Distribución", valores: { 2025: "", 2026: "", 2027: "", 2028: "", 2029: "" } },
-      { nombre: "Comunicacionales", valores: { 2025: "", 2026: "", 2027: "", 2028: "", 2029: "" } },
-      { nombre: "Comercialización", valores: { 2025: "", 2026: "", 2027: "", 2028: "", 2029: "" } },
-      { nombre: "Community Manager", valores: { 2025: "", 2026: "", 2027: "", 2028: "", 2029: "" } },
+      { id: 1, nombre: "", cantidad: "", precioSinIVA: "", precioVenta: "", costoVariable: "" }
     ]);
+  
+    // Agregar un nuevo Estrategia (máximo 5)
+    const agregarEstrategia = () => {
+      if (estrategias.length < 5) {
+        setEstrategias([
+          ...estrategias,
+          { id: Date.now(), nombre: "", anio1: "", anio2: "", anio3: "", anio4: "", anio5: "" }
+        ]);
+      }
+    };
     
-    const manejarCambioEstrategia = (index, anio, valor) => {
-      const nuevasEstrategias = [...estrategias];
-      nuevasEstrategias[index].valores[anio] = valor;
-      setEstrategias(nuevasEstrategias);
+  
+    // Eliminar un Estrategia con confirmación
+    const eliminarEstrategia = (id) => {
+      const confirmarEliminar = window.confirm("¿Estás seguro de que deseas eliminar esta estrategia?");
+      if (confirmarEliminar) {
+        setEstrategias((estrategiasAnteriores) => estrategiasAnteriores.filter(estrategia => estrategia.id !== id));
+      }
+    };
+  
+    // Manejar cambios en los inputs de Estrategia
+    const manejarCambioEstrategia = (id, campo, valor) => {
+      setEstrategias((estrategiasAnteriores) =>
+        estrategiasAnteriores.map((estrategia) =>
+          estrategia.id === id ? { ...estrategia, [campo]: valor } : estrategia
+        )
+      );
     };
 
         // Crecimiento en Costos
@@ -222,67 +241,99 @@ const handleChange = (category, year, value) => {
               </div>
 
               {/* Tabla de productos - analisisMercado */}
-              <div id="tabla-productos" className="productos-container">
-                {productos.map((producto, index) => (
-                  <div key={producto.id} className="fila-producto">
-                    <span className="numero-producto">{index + 1}.</span> {/* Número del producto */}
-                    <CustomInput
-                      id={`producto-nombre-${producto.id}`} // ID único por producto
-                      label="Nombre del Producto"
-                      value={producto.nombre}
-                      onChange={(value) => manejarCambioProducto(producto.id, "nombre", value)}
-                      placeholder=""
-                      type="text"
-                    />
-                    <CustomInput
-                      id={`producto-cantidad-${producto.id}`} // ID único por producto
-                      label="Cantidad año 2025"
-                      value={producto.cantidad}
-                      onChange={(value) => manejarCambioProducto(producto.id, "cantidad", value)}
-                      placeholder=""
-                      type="number"
-                    />
-                    <CustomInput
-                      id={`producto-precioSinIVA-${producto.id}`} // ID único por producto
-                      label="Precio sin IVA año 2025"
-                      value={producto.precioSinIVA}
-                      onChange={(value) => manejarCambioProducto(producto.id, "precioSinIVA", value)}
-                      placeholder=""
-                      type="number"
-                    />
-                    <CustomInput
-                      id={`producto-precioVenta-${producto.id}`} // ID único por producto
-                      label="Precio de venta año 2025"
-                      value={producto.precioVenta}
-                      onChange={(value) => manejarCambioProducto(producto.id, "precioVenta", value)}
-                      placeholder=""
-                      type="number"
-                    />
-                    <CustomInput
-                      label={
-                        <span title="En el plan operativo, además de los procesos y demás elementos que contempla el protocolo, se debe establecer y registrar los costos variables, costos fijos y las inversiones requeridas en el proyecto.
-Determine el costo variable promedio para cada producto para el primer año (Debería ser menor al Precio de Venta)
-La diferencia entre el Precio de Venta y el Costo Variable Promedio por unidad, nos dará el Margen de Contribución del producto y/o Servicio">
+              <div className="proyeccion-container">
+                <table className="tabla-productos">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th className="producto-celda-nombre">Nombre del Producto</th>
+                      <th>Cantidad año 2025</th>
+                      <th>Precio sin IVA año 2025</th>
+                      <th>Precio de venta año 2025</th>
+                      <th>
+                        <span
+                          title="En el plan operativo, además de los procesos y demás elementos que contempla el protocolo, se debe establecer y registrar los costos variables, costos fijos y las inversiones requeridas en el proyecto.
+              Determine el costo variable promedio para cada producto para el primer año (Debería ser menor al Precio de Venta)
+              La diferencia entre el Precio de Venta y el Costo Variable Promedio por unidad, nos dará el Margen de Contribución del producto y/o Servicio"
+                        >
                           Costo Variable por Unidad Año 2025 ℹ️
                         </span>
-                      }
-                      id={`producto-costoVariable-${producto.id}`} // Nuevo campo con ID único
-                      value={producto.costoVariable}
-                      onChange={(value) => manejarCambioProducto(producto.id, "costoVariable", value)}
-                      placeholder=""
-                      type="number"
-                    />
-                    <button className="boton-eliminar" onClick={() => eliminarProducto(producto.id)}>
-                      🗑️
-                    </button>
-                  </div>
-                ))}
-              </div>
+                      </th>
+                      <th></th>
+                    </tr>
+                  </thead>
 
-              {/* Botón para agregar más productos */}
-              {productos.length < 10 && (
-                <button className="boton-agregar" onClick={agregarProducto}>+ Agregar Producto</button>
-              )}
+                  <tbody>
+                    {productos.map((producto, index) => (
+                      <tr key={producto.id}>
+                        <td>{index + 1}</td>
+
+                        <td className="producto-celda-nombre">
+                          <CustomInput
+                            id={`producto-nombre-${producto.id}`}
+                            value={producto.nombre}
+                            onChange={(value) => manejarCambioProducto(producto.id, "nombre", value)}
+                            placeholder=""
+                            type="text"
+                          />
+                        </td>
+
+                        <td>
+                          <CustomInput
+                            id={`producto-cantidad-${producto.id}`}
+                            value={producto.cantidad}
+                            onChange={(value) => manejarCambioProducto(producto.id, "cantidad", value)}
+                            placeholder=""
+                            type="number"
+                          />
+                        </td>
+
+                        <td>
+                          <CustomInput
+                            id={`producto-precioSinIVA-${producto.id}`}
+                            value={producto.precioSinIVA}
+                            onChange={(value) => manejarCambioProducto(producto.id, "precioSinIVA", value)}
+                            placeholder=""
+                            type="number"
+                          />
+                        </td>
+
+                        <td>
+                          <CustomInput
+                            id={`producto-precioVenta-${producto.id}`}
+                            value={producto.precioVenta}
+                            onChange={(value) => manejarCambioProducto(producto.id, "precioVenta", value)}
+                            placeholder=""
+                            type="number"
+                          />
+                        </td>
+
+                        <td>
+                          <CustomInput
+                            id={`producto-costoVariable-${producto.id}`}
+                            value={producto.costoVariable}
+                            onChange={(value) => manejarCambioProducto(producto.id, "costoVariable", value)}
+                            placeholder=""
+                            type="number"
+                          />
+                        </td>
+
+                        <td>
+                          <button className="producto-boton-eliminar" onClick={() => eliminarProducto(producto.id)}>
+                            🗑️
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                {productos.length < 10 && (
+                  <button className="boton-agregar" onClick={agregarProducto}>
+                    + Agregar Producto
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Crecimiento en Unidades*/}
@@ -367,37 +418,65 @@ La diferencia entre el Precio de Venta y el Costo Variable Promedio por unidad, 
             <div className="marketing-invest-container">
               <p>Nombre las estrategias de mercadeo a realizar en su proyecto y el gasto estimado para cada año, a fin de darse a conocer y atraer clientes en el mercado competitivo.
               </p>              
-              <table className="marketing-table">
-                <thead>
-                  <tr>
-                    <th>Estrategia</th>
-                    <th>Año 2025</th>
-                    <th>Año 2026</th>
-                    <th>Año 2027</th>
-                    <th>Año 2028</th>
-                    <th>Año 2029</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {estrategias.map((estrategia, index) => (
-                    <tr key={index}>
-                      <td className="estrategia-nombre">{estrategia.nombre}</td>
-                      {Object.keys(estrategia.valores).map((anio) => (
-                        <td key={anio}>
+              <div className="proyeccion-container">
+                <table className="tabla-estrategias">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th className="estrategia-celda-nombre">Nombre estrategia</th>
+                      {[2025, 2026, 2027, 2028, 2029].map((anio) => (
+                        <th key={`th-${anio}`}>Año {anio}</th>
+                      ))}
+                      <th></th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {estrategias.map((estrategia, index) => (
+                      <tr key={estrategia.id}>
+                        <td>{index + 1}</td>
+
+                        <td className="estrategia-celda-nombre">
                           <CustomInput
-                            id={`estrategia-${index}-${anio}`} // ID único
-                            type="number"
-                            value={estrategia.valores[anio]}
-                            onChange={(value) => manejarCambioEstrategia(index, anio, value)}
+                            id={`estrategia-nombre-${estrategia.id}`}
+                            value={estrategia.nombre}
+                            onChange={(value) => manejarCambioEstrategia(estrategia.id, "nombre", value)}
                             placeholder=""
-                            required
+                            type="text"
                           />
                         </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+
+                        {[1, 2, 3, 4, 5].map((num) => (
+                          <td key={`td-anio${num}-${estrategia.id}`}>
+                            <CustomInput
+                              id={`estrategia-anio${num}-${estrategia.id}`}
+                              value={estrategia[`anio${num}`]}
+                              onChange={(value) => manejarCambioEstrategia(estrategia.id, `anio${num}`, value)}
+                              placeholder=""
+                              type="number"
+                            />
+                          </td>
+                        ))}
+
+                        <td>
+                          <button
+                            className="estrategia-boton-eliminar"
+                            onClick={() => eliminarEstrategia(estrategia.id)}
+                          >
+                            🗑️
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                {estrategias.length < 5 && (
+                  <button className="estrategia-boton-agregar" onClick={agregarEstrategia}>
+                    + Agregar Estrategia
+                  </button>
+                )}
+              </div>
             </div>
               
             {/* Crecimiento en Costos*/}

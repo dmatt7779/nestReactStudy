@@ -73,7 +73,6 @@ a {
 }
 
 button {
-    width: 80%; /* Ocupa todo el ancho del contenedor */
     padding: 12px; /* Espaciado interno para mejor apariencia */
     background-color: #EFA020; /* Color de fondo */
     color: white; /* Texto en blanco */
@@ -397,11 +396,6 @@ button:active {
     margin-bottom: 5px;
   }
 
-  .profesor label {
-    /*display: flex; */
-    font-size: 14px;
-  }
-  
   .integrantes-container {
     display: flex;
     flex-direction: column;
@@ -450,48 +444,22 @@ button:active {
   
   /*********************************Sección: Seleccionar profesor************************/
 
-  .profesor-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .profesor-option {
-    display: flex;
-    align-items: center; /* Alinea el checkbox y el nombre verticalmente */
-    gap: 10px; /* Espacio entre el checkbox y el texto */
-    white-space: nowrap; /* Evita que el nombre se divida en varias líneas */
-    font-size: 14px;
-  }
-  
-  .profesor-checkbox {
-    margin: 0; /* Elimina margen extra */
-  }
-
-  .profesor-nombre {
-    display: inline-block;
-    white-space: nowrap;
-  }  
- 
   .robot-img2 {
     width: 100%;
     margin-top: 40px;
   }
-  
-  .anio-container {
+  .profesor-lista {
     display: flex;
-    align-items: center; /* Alinea verticalmente el label y el input */
-    gap: 8px; /* Espacio entre el label y el input */
+    flex-direction: column;
+    align-items: flex-start; /* Alinea todo a la izquierda */
+    gap: 10px;
   }
   
-  .anio-container label {
-    white-space: nowrap; /* Evita que el texto del label se divida en varias líneas */
-  }
-
-  .custom-input:disabled {
-    background-color: #e0e0e0;
-    color: #888;
-    cursor: not-allowed;
+  .profesor-item {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Espacio entre el checkbox y el nombre */
+    white-space: nowrap; /* Evita que el nombre se divida en varias líneas */
   }
   
   /* Botón base sin fondo ni borde */
@@ -640,7 +608,7 @@ button:active {
   margin-top: 20px;
 }
 
-/*-----------------------------------Styles Analisis Info--------------------------------------*/
+/*-----------------------------------Styles Proyección Macro--------------------------------------*/
 
 .white-container-n {
   background-color: #fff;
@@ -760,27 +728,95 @@ input {
   margin-bottom: 20px;
 }
 
-.productos-container {
-  display: flex;
-  flex-direction: column;
+.tabla-productos {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
 }
 
-.fila-producto {
-  display: flex;
-  align-items: center;
-  gap: 20px; /* Espaciado entre elementos */
-  margin-bottom: 10px;
-}
-
-.numero-producto {
-  width: 10px; /* Espacio reservado para los números */
+.tabla-productos th,
+.tabla-productos td {
+  border: 1px solid #ddd;
+  padding: 8px;
   text-align: center;
+}
+
+.tabla-productos {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.tabla-productos th,
+.tabla-productos td {
+  border: 1px solid #e0e0e0;
+  padding: 8px;
+  text-align: center;
+  background-color: white;
+}
+
+.tabla-productos th {
+  background-color: #f9fafb;
+  font-weight: 600;
+  color: #333;
+}
+
+/* .tabla-productos td:first-child,
+.tabla-productos th:first-child {
+  border-left: none;
+} */
+
+.tabla-productos td:last-child,
+.tabla-productos th:last-child {
+  border-right: none;
+}
+
+/* .tabla-productos tr:first-child th {
+  border-top: none;
+} */
+
+.tabla-productos tr:last-child td {
+  border-bottom: none;
+}
+
+/* Columna de nombre más ancha */
+.producto-celda-nombre {
+  min-width: 220px;
+  text-align: left;
+}
+
+.producto-boton-eliminar {
+  background: transparent;
+  border: none;
+  cursor: pointer;
   font-size: 14px;
-  margin-top: 30px;
+}
+
+.producto-boton-eliminar:hover {
+  background: #d6d4d1;
+}
+
+.producto-boton-agregar {
+  margin-top: 12px;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+.tabla-productos td,
+.tabla-productos th {
+  border-radius: 6px;
 }
 
 .boton-eliminar {
-  background: #d6d4d1;
+  background: #f9f9f9;
   color: white;
   border: none;
   border-radius: 5px;
@@ -797,13 +833,7 @@ input {
 }
 
 .boton-eliminar:hover {
-  background: #9c9696;
-}
-
-.boton-agregar-container {
-  display: flex;
-  justify-content: center; /* Centra horizontalmente */
-  margin-top: 15px;
+  background: #d6d4d1;
 }
 
 .boton-agregar {
@@ -870,33 +900,157 @@ input {
   color: #757575; /* Texto gris oscuro */
   cursor: not-allowed;
 }
-.marketing-table {
-  max-width: 700px;
-  margin: 20px auto;
-  font-size: 14px;
+.proyeccion-container {
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.marketing-table table {
+.proyeccion-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.proyeccion-header {
+  display: flex;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  gap: 1rem;
+}
+
+.proyeccion-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  background-color: #f9fafb;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.nombre-col {
+  width: 20%;
+}
+
+.year-col {
+  width: 16%;
+  text-align: center;
+}
+
+.proyeccion-btn {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.proyeccion-btn:hover {
+  background-color: #1d4ed8;
+}
+
+.proyeccion-btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.numero-col {
+  width: 5%;
+  text-align: center;
+  font-weight: bold;
+  padding: 0.5rem;
+}
+
+.tabla-estrategias {
   width: 100%;
-  border-collapse: collapse;  
-}
-
- .marketing-table td {
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 1rem;
+  font-size: 12px;
   border: 1px solid #ddd;
-  padding: 5px;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.marketing-table th{
-  background-color: #f8f8f8;
-  border: 1px solid #ddd;
-  padding: 6px;
+.tabla-estrategias th,
+.tabla-estrategias td {
+  padding: 8px;
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: 1px solid #eee;
 }
 
-.estrategia-nombre {
+.tabla-estrategias th {
+  background-color: #f9f9f9;
+  font-weight: 600;
+  color: #333;
+}
+
+.tabla-estrategias tr:last-child td {
+  border-bottom: none;
+}
+
+/* Esquinas redondeadas a la primera y última celda del encabezado */
+.tabla-estrategias th:first-child {
+  border-top-left-radius: 8px;
+}
+.tabla-estrategias th:last-child {
+  border-top-right-radius: 8px;
+}
+
+/* Bordes redondeados en la última fila si quieres que la tabla tenga efecto "card" */
+.tabla-estrategias tr:last-child td:first-child {
+  border-bottom-left-radius: 8px;
+}
+.tabla-estrategias tr:last-child td:last-child {
+  border-bottom-right-radius: 8px;
+}
+
+.estrategia-celda-nombre {
+  width: 200px; /* O cualquier valor mayor que los demás */
+  min-width: 160px;
   text-align: left;
 }
 
+.estrategia-boton-eliminar {
+  background: #f9f9f9;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 2px 5px;
+  font-size: 14px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
 
+.estrategia-boton-eliminar:hover {
+  background: #d6d4d1;
+}
+
+.estrategia-boton-agregar {
+  background-color: #1F2738; /* Azul */
+  color: white;
+  border: none;
+  padding: 10px 20px;  
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 100%;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.estrategia-boton-agregar:hover {
+  background-color: #005f72; /* Azul más oscuro al pasar el mouse */
+}
 /*---------------------------------Costos Gastos---------------------------------------------*/
 
 .costos-gastos-container  h3{
@@ -941,7 +1095,7 @@ input {
 }
 
 .boton-eliminar-costos {
-  background: #d6d4d1;
+  background: #f9f9f9;
   color: white;
   border: none;
   border-radius: 5px;

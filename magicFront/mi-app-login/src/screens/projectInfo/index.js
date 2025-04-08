@@ -30,6 +30,21 @@ const ProjectInfo = () => {
     { id: 3, nombre: "Profesor Diana" },
     { id: 4, nombre: "Profesor Cristina" }
   ];
+
+  const [formularioCompleto, setFormularioCompleto] = useState(false);
+
+  useEffect(() => {
+    const nombreValido = projectName.trim() !== "";
+    const integrantesValidos = integrantes.every(
+      (i) => i.cedula.trim() !== "" && i.nombre.trim() !== ""
+    );
+    const profesoresValidos = professors.length > 0;
+    const anoValido = /^\d{4}$/.test(ano);
+  
+    setFormularioCompleto(
+      nombreValido && integrantesValidos && profesoresValidos && anoValido
+    );
+  }, [projectName, integrantes, professors, ano]);
   
   useEffect(() => {
     const fetchProyecto = async () => {
@@ -227,16 +242,16 @@ const ProjectInfo = () => {
           </div>
 
           {/* Sección de Seleccionar Profesor */}
-          <div className="section">
+          <div className="profesor-lista">
             <img src={profesorImg} alt="Selecciona tu profesor" className="section-img3" />
-            <div className="profesor">
               <p>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam
                 nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
                 volutpat.
               </p>
               {profesoresLista.map((profesor) => (
-                <label key={profesor.id} style={{ display: "block", margin: "5px 0" }}>
+                <label key={profesor.id}
+                className="profesor-item">
                   <input
                     type="checkbox"
                     value={profesor.id}
@@ -247,7 +262,6 @@ const ProjectInfo = () => {
                 </label>
               ))}
               <p>Profesores seleccionados: {professors.join(", ")}</p>
-            </div>
           </div>
 
           <div className="robot-container">
@@ -275,7 +289,15 @@ const ProjectInfo = () => {
           {/* Botones de navegación */}
           <div className="buttons-container">
             <button className="nav-btn anterior" onClick={() => navigate(-1)}></button>
-            <button className="nav-btn siguiente" onClick={handleSubmit}></button>
+            <button
+              className="nav-btn siguiente"
+              onClick={handleSubmit}
+              disabled={!formularioCompleto}
+              style={{
+                opacity: formularioCompleto ? 1 : 0.5,
+                cursor: formularioCompleto ? 'pointer' : 'not-allowed'
+              }}
+            ></button>
           </div>
         </div>
       </div>
