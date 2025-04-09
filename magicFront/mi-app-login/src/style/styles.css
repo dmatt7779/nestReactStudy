@@ -682,7 +682,7 @@ input.percentage-input {
 
 label {
   font-size: 12px;
-  font-weight: bold;
+  /* font-weight: bold; */
 }
 
 input {
@@ -1055,7 +1055,7 @@ input {
 
 .costos-gastos-container  h3{
   width: 100%;
-  margin: 10px;
+  margin: 15px 0 15px;
 }
 
 .encabezados-costos {
@@ -1114,3 +1114,14 @@ input {
   background: #969696;
 }
 
+.gastos-const {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.gastos-const label{
+  font-size: 14px;
+  margin-bottom: -5px;
+}

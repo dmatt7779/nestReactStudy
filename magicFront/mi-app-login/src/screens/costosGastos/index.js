@@ -5,8 +5,8 @@ import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
 import CustomInput from "../../components/CustomInput";
 
-import analisisImg from "../../images/cabezote_analisis.png";
-import tituloAnalisiImg from "../../images/titulo_analisis_de_entorno.png";
+import cabezoteEgresos from "../../images/cabezote_egresos.png";
+import tituloEgresos from "../../images/titulo_egresos.png";
 
 
   const CostosGastos = () => {
@@ -41,6 +41,9 @@ import tituloAnalisiImg from "../../images/titulo_analisis_de_entorno.png";
       };
 
       // Gastos Administrativos
+
+      const [gastosConst, setGastosConst] = useState(" $ 0 ");
+
       const [gastos, setGastos] = useState([
         { id: Date.now(), concepto: "", valorMes: "" }, // Inicializa con un gasto
       ]);
@@ -94,20 +97,14 @@ import tituloAnalisiImg from "../../images/titulo_analisis_de_entorno.png";
       <Navbar />
       <div className="white-container-n">
         <div className="robot-container-an">
-          <img src={analisisImg} alt="Robot" className="robot-img-an" />
+          <img src={cabezoteEgresos} alt="Robot" className="robot-img-an" />
         </div>
         <div className="contenido-container">
           {/* Sección de Análisis del Entorno */}
           <div className="section">
-            <img src={tituloAnalisiImg} alt="Análisis del entorno" className="section-img1" />
+            <img src={tituloEgresos} alt="Análisis del entorno" className="section-img5" />
           </div>
-          <p>
-          Dentro del mundo de los egresos, existe en el ámbito financiero tres (3) términos con diferencias claras:  Los costos son todos aquellos egresos que están relacionados
-          directamente con la generación de la producción o prestación del servicio, mientras que los gastos son los que están relacionados con la parte administrativa y comercial.</p>  
           
-          <p>Finalmente las inversiones corresponde a la adquisición de la infraestructura necesaria para la consolidación y capacidad máxima del proyecto.
-          </p>
-
           <p>Detalle los conceptos de costos fijos asociados al proyecto y el valor mensual para el primer año.
             No incluya depreciación y gastos financieros que serán proyectados en forma independiente.
           </p>
@@ -174,6 +171,16 @@ import tituloAnalisiImg from "../../images/titulo_analisis_de_entorno.png";
             {/* Sección de Gastos Administrativos */}
             <div className="costos-gastos-container">
             <h3>Costos de de gastos administrativos y valor mes</h3>
+            {/* Input Gastos de constitución */}
+            <div className="gastos-const">
+                <label htmlFor="input-gastos-const">Gastos de constitución:</label> {/* Label asociado al ID */}
+                <CustomInput 
+                id="input-gastos-const"  // ID único para este campo
+                type="number" 
+                value={gastosConst} 
+                onChange={setGastosConst} 
+                />
+              </div>
               <div className="tabla-costos-gastos titulo-costos">
                 {/* Filas dinámicas */}
                 {gastos.map((gasto, index) => (
