@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateProyeccionMacroDto } from './dto/create-proyeccion-macro.dto';
 import { UpdateProyeccionMacroDto } from './dto/update-proyeccion-macro.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -50,7 +50,7 @@ export class ProyeccionMacroService {
       where: { projectInfoId },
     });
     if(!proyeccionMacro){
-      throw new BadRequestException('Project is not found');
+      throw new NotFoundException('Project is not found');
     }
     this.validateOwnerShip(proyeccionMacro, user)
     return proyeccionMacro;
