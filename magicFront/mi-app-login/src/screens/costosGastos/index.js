@@ -8,88 +8,86 @@ import CustomInput from "../../components/CustomInput";
 import cabezoteEgresos from "../../images/cabezote_egresos.png";
 import tituloEgresos from "../../images/titulo_egresos.png";
 
+const CostosGastos = () => {
+  const navigate = useNavigate();
 
-  const CostosGastos = () => {
+  // Estados para Costos fijos
+  const [costos, setCostos] = useState([
+    { id: Date.now(), concepto: "", valorMes: "" },
+  ]);
 
-      const navigate = useNavigate();
-      // Costos fijos
-      const [costos, setCostos] = useState([
-        { id: Date.now(), concepto: "", valorMes: "" }, // Inicializa con un costo
+  const agregarCosto = () => {
+    if (costos.length < 10) {
+      setCostos([
+        ...costos,
+        { id: Date.now(), concepto: "", valorMes: "" },
       ]);
+    }
+  };
 
-      const agregarCosto = () => {
-        if (costos.length < 10) {
-          setCostos([
-            ...costos,
-            { id: Date.now(), concepto: "", valorMes: "" },
-          ]);
-        }
-      };
-    
-      const eliminarCosto = (id) => {
-        if (window.confirm("¿Está seguro de eliminar este producto?")) {
-          setCostos(costos.filter((costo) => costo.id !== id));
-        }
-      };
-    
-      const manejarCambioCosto = (id, campo, valor) => {
-        setCostos(
-          costos.map((costo) =>
-            costo.id === id ? { ...costo, [campo]: valor } : costo
-          )
-        );
-      };
+  const eliminarCosto = (id) => {
+    if (window.confirm("¿Está seguro de eliminar este costo?")) {
+      setCostos(costos.filter((costo) => costo.id !== id));
+    }
+  };
 
-      // Gastos Administrativos
+  const manejarCambioCosto = (id, campo, valor) => {
+    setCostos((prev) =>
+      prev.map((costo) =>
+        costo.id === id ? { ...costo, [campo]: valor } : costo
+      )
+    );
+  };
 
-      const [gastosConst, setGastosConst] = useState(" $ 0 ");
+  // Estados para Gastos administrativos
+  const [gastosConst, setGastosConst] = useState(" $ 0 ");
+  const [gastos, setGastos] = useState([
+    { id: Date.now(), concepto: "", valorMes: "" },
+  ]);
 
-      const [gastos, setGastos] = useState([
-        { id: Date.now(), concepto: "", valorMes: "" }, // Inicializa con un gasto
+  const agregarGasto = () => {
+    if (gastos.length < 10) {
+      setGastos([
+        ...gastos,
+        { id: Date.now(), concepto: "", valorMes: "" },
       ]);
+    }
+  };
 
-      const agregarGasto = () => {
-        if (gastos.length < 10) {
-          setGastos([
-            ...gastos,
-            { id: Date.now(), concepto: "", valorMes: "" },
-          ]);
-        }
-      };
-    
-      const eliminarGasto = (id) => {
-        if (window.confirm("¿Está seguro de eliminar este producto?")) {
-          setGastos(gastos.filter((gasto) => gasto.id !== id));
-        }
-      };
-    
-      const manejarCambioGasto = (id, campo, valor) => {
-        setGastos(
-          gastos.map((gasto) =>
-            gasto.id === id ? { ...gasto, [campo]: valor } : gasto
-          )
-        );
-      };
-  
-      // Crecimiento en Costos y gastos - incrementoEgresos
-    const [opcionSeleccionadaEgresos, setOpcionSeleccionadaEgresos] = useState("");
-    const [incrementoEgresos, setIncrementoEgresos] = useState({
-        2025: "", 2026: "", 2027: "", 2028: "", 2029: "",
-      });
-      
-    const manejarCambioEgresos = (e) => {
-        setOpcionSeleccionadaEgresos(e.target.value);
-      };
+  const eliminarGasto = (id) => {
+    if (window.confirm("¿Está seguro de eliminar este gasto?")) {
+      setGastos(gastos.filter((gasto) => gasto.id !== id));
+    }
+  };
 
-    const manejarCambioCrecEgresos = (anio, valor) => {
-        setIncrementoEgresos((prev) => ({ ...prev, [anio]: valor }));
-      };
+  const manejarCambioGasto = (id, campo, valor) => {
+    setGastos((prev) =>
+      prev.map((gasto) =>
+        gasto.id === id ? { ...gasto, [campo]: valor } : gasto
+      )
+    );
+  };
 
-  // Enviar formulario
+  // Crecimiento en Costos y gastos - incrementoEgresos
+  const [opcionSeleccionadaEgresos, setOpcionSeleccionadaEgresos] = useState("");
+  const [incrementoEgresos, setIncrementoEgresos] = useState({
+    2025: "",
+    2026: "",
+    2027: "",
+    2028: "",
+    2029: "",
+  });
+
+  const manejarCambioEgresos = (e) => {
+    setOpcionSeleccionadaEgresos(e.target.value);
+  };
+
+  const manejarCambioCrecEgresos = (anio, valor) => {
+    setIncrementoEgresos((prev) => ({ ...prev, [anio]: valor }));
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    //console.log("Valores enviados:", values);
-    // Aquí podrías hacer una petición a la API para guardar los datos
   };
 
   return (
@@ -100,144 +98,168 @@ import tituloEgresos from "../../images/titulo_egresos.png";
           <img src={cabezoteEgresos} alt="Robot" className="robot-img-an" />
         </div>
         <div className="contenido-container">
-          {/* Sección de Análisis del Entorno */}
           <div className="section">
-            <img src={tituloEgresos} alt="Análisis del entorno" className="section-img5" />
+            <img
+              src={tituloEgresos}
+              alt="Análisis del entorno"
+              className="section-img5"
+            />
           </div>
-          
-          <p>Detalle los conceptos de costos fijos asociados al proyecto y el valor mensual para el primer año.
-            No incluya depreciación y gastos financieros que serán proyectados en forma independiente.
+
+          <p>
+            Detalle los conceptos de costos fijos asociados al proyecto y el
+            valor mensual para el primer año. No incluya depreciación y gastos
+            financieros que serán proyectados en forma independiente.
           </p>
 
           <form onSubmit={handleSubmit}>
-            <div className="costos-gastos-container">
-              <h3>Costos de costos fijos y valor mes</h3>
-              <div className="tabla-costos-gastos titulo-costos">
-                {/* Filas dinámicas */}
-                {costos.map((costo, index) => (
-                  <div key={costo.id} className="fila-costos-producto">
-                    <span className="numero-costos">{index + 1}.</span>
-
-                    {/* Concepto de Costo Fijo */}
-                    <div className="contenedor-input">
-                      <CustomInput
-                        id={`concepto-${costo.id}`}
-                        type="text"
-                        value={costo.concepto}
-                        onChange={(value) => manejarCambioCosto(costo.id, "concepto", value)}
-                        placeholder="Concepto de costo fijo"
-                        className="input-costos"
-                      />
-                    </div>
-
-                    {/* Valor Mes */}
-                    <div className="contenedor-input">
-                      <CustomInput
-                        id={`valor-${costo.id}`}
-                        type="number"
-                        value={costo.valorMes}
-                        onChange={(value) => manejarCambioCosto(costo.id, "valorMes", value)}
-                        placeholder="Valor mes"
-                        className="input-costos"
-                      />
-                    </div>
-
-                    {/* Botón eliminar */}
-                    <button
-                      className="boton-eliminar-costos"
-                      onClick={() => eliminarCosto(costo.id)}
-                      disabled={costos.length === 1}
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              {/* Botón para agregar más costos */}
+            {/* Costos Fijos */}
+            <div className="proyeccion-container">
+              <h3>Costos fijos y valor mensual</h3>
+              <table className="tabla-estrategias">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th className="estrategia-celda-nombre">Concepto de costo fijo</th>
+                    <th>Valor mensual</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {costos.map((costo, index) => (
+                    <tr key={costo.id}>
+                      <td>{index + 1}</td>
+                      <td className="estrategia-celda-nombre">
+                        <CustomInput
+                          id={`concepto-costo-${costo.id}`}
+                          value={costo.concepto}
+                          onChange={(value) =>
+                            manejarCambioCosto(costo.id, "concepto", value)
+                          }
+                          type="text"
+                          placeholder="Ej: Internet"
+                        />
+                      </td>
+                      <td>
+                        <CustomInput
+                          id={`valor-costo-${costo.id}`}
+                          value={costo.valorMes}
+                          onChange={(value) =>
+                            manejarCambioCosto(costo.id, "valorMes", value)
+                          }
+                          type="number"
+                          placeholder="0"
+                        />
+                      </td>
+                      <td>
+                        <button
+                          className="estrategia-boton-eliminar"
+                          onClick={() => eliminarCosto(costo.id)}
+                          disabled={costos.length === 1}
+                        >
+                          🗑️
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
               {costos.length < 10 && (
-                <button className="boton-agregar" onClick={agregarCosto}>
+                <button
+                  className="estrategia-boton-agregar"
+                  onClick={agregarCosto}
+                  disabled={costos.length >= 10}
+                >
                   + Agregar Costo Fijo
                 </button>
               )}
             </div>
 
             <p>
-            Detalle los conceptos de gastos administrativos (incluye los de administracion y ventas) asociados al proyecto y el valor mensual para el primer año.
+            Detalle los conceptos de gastos administrativos (incluye los de administracion y ventas) asociados al proyecto y el valor mensual para el primer año. 
             No incluya salarios, depreciación y gastos financieros que serán proyectados en forma independiente más debajo de esta plantilla
-            </p>
+          </p>
 
-
-            {/* Sección de Gastos Administrativos */}
-            <div className="costos-gastos-container">
-            <h3>Costos de de gastos administrativos y valor mes</h3>
-            {/* Input Gastos de constitución */}
-            <div className="gastos-const">
-                <label htmlFor="input-gastos-const">Gastos de constitución:</label> {/* Label asociado al ID */}
-                <CustomInput 
-                id="input-gastos-const"  // ID único para este campo
-                type="number" 
-                value={gastosConst} 
-                onChange={setGastosConst} 
+            {/* Gastos Administrativos */}
+            <div className="proyeccion-container">
+              <h3>Gastos administrativos y valor mensual</h3>
+              <div className="gastos-const">
+                <label htmlFor="input-gastos-const">Gastos de constitución:</label>
+                <CustomInput
+                  id="input-gastos-const"
+                  type="number"
+                  value={gastosConst}
+                  onChange={(value) => setGastosConst(value)}
                 />
               </div>
-              <div className="tabla-costos-gastos titulo-costos">
-                {/* Filas dinámicas */}
-                {gastos.map((gasto, index) => (
-                  <div key={gasto.id} className="fila-costos-producto">
-                    <span className="numero-costos">{index + 1}.</span>
 
-                    {/* Concepto de Gastos administrativos */}
-                    <div className="contenedor-input">
-                       <CustomInput
-                        id={`concepto-${gasto.id}`}
-                        label=""
-                        type="text"
-                        value={gasto.concepto}
-                        onChange={(value) => manejarCambioGasto(gasto.id, "concepto", value)}
-                        placeholder="Concepto de gasto administrativo"
-                        className="input-costos"
-                      />
-                    </div>
-
-                    {/* Valor Mes */}
-                    <div className="contenedor-input">
-                      <CustomInput
-                        id={`valor-${gasto.id}`}
-                        label=""
-                        type="number"
-                        value={gasto.valorMes}
-                        onChange={(value) => manejarCambioGasto(gasto.id, "valorMes", value)}
-                        placeholder="Valor mes"
-                        className="input-costos"
-                      />
-                    </div>
-
-                    {/* Botón eliminar */}
-                    <button
-                      className="boton-eliminar-costos" onClick={() => eliminarGasto(gasto.id)}
-                      disabled={gastos.length === 1}
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              {/* Botón para agregar más gastos*/}
-                {gastos.length < 10 && (
-                <button className="boton-agregar" onClick={agregarGasto}>
+              <table className="tabla-estrategias">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th className="estrategia-celda-nombre">Concepto de gasto administrativo</th>
+                    <th>Valor mensual</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {gastos.map((gasto, index) => (
+                    <tr key={gasto.id}>
+                      <td>{index + 1}</td>
+                      <td className="estrategia-celda-nombre">
+                        <CustomInput
+                          id={`concepto-gasto-${gasto.id}`}
+                          value={gasto.concepto}
+                          onChange={(value) =>
+                            manejarCambioGasto(gasto.id, "concepto", value)
+                          }
+                          type="text"
+                          placeholder="Ej: Arriendo"
+                        />
+                      </td>
+                      <td>
+                        <CustomInput
+                          id={`valor-gasto-${gasto.id}`}
+                          value={gasto.valorMes}
+                          onChange={(value) =>
+                            manejarCambioGasto(gasto.id, "valorMes", value)
+                          }
+                          type="number"
+                          placeholder="0"
+                        />
+                      </td>
+                      <td>
+                        <button
+                          className="estrategia-boton-eliminar"
+                          onClick={() => eliminarGasto(gasto.id)}
+                          disabled={gastos.length === 1}
+                        >
+                          🗑️
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {gastos.length < 10 && (
+                <button
+                  className="estrategia-boton-agregar"
+                  onClick={agregarGasto}
+                  disabled={gastos.length >= 10}
+                >
                   + Agregar Gasto Administrativo
                 </button>
               )}
             </div>
 
-            {/* Crecimiento en Egreso*/}
-            <p>El crecimiento en costos y gastos está representado en inflación o en otro porcentaje establecido en el plan operativo.</p>
+            <p>
+              El crecimiento en COSTOS y GASTOS está representado en inflación
+              o en otro porcentaje establecido en el plan operativo.
+            </p>
+
             <div id="crecimiento-egresos" className="contenedor-crecimiento">
               <CustomInput
                 id="opciones-incremento-egresos"
-                label=""
                 type="radio"
                 value={opcionSeleccionadaEgresos}
                 onChange={manejarCambioEgresos}
@@ -246,19 +268,19 @@ import tituloEgresos from "../../images/titulo_egresos.png";
               />
             </div>
 
-            {/* Campos de Crecimiento en Egresos (Solo si elige Estrategia) */}
             {opcionSeleccionadaEgresos === "Estrategia" && (
               <div id="incremento-egresos-estrategia">
                 <p className="texto-estrategia">
-                  En caso de que los gastos aumenten por otro porcentaje, ingrese manualmente el mismo por cada año.
+                  En caso de que los gastos aumenten por otro porcentaje,
+                  ingrese manualmente el mismo por cada año.
                 </p>
-                <h3>Incremento en Egresos</h3>   
+                <h3>Incremento en Egresos</h3>
                 <div className="fila-crecimiento">
                   {Object.keys(incrementoEgresos).map((anio) => (
                     <div key={anio} className="contenedor-input">
-                      <span className="anio">Año {anio}</span> {/* Título del año */}
+                      <span className="anio">Año {anio}</span>
                       <CustomInput
-                        id={`incremento-egresos-${anio}`} // ID único para cada año
+                        id={`incremento-egresos-${anio}`}
                         type="percentage"
                         value={incrementoEgresos[anio]}
                         onChange={(value) => manejarCambioCrecEgresos(anio, value)}
@@ -269,14 +291,8 @@ import tituloEgresos from "../../images/titulo_egresos.png";
                 </div>
               </div>
             )}
-            {/* Sección de Análisis de mercadeo y ventas - analisisMercado */}
-            {/* <div className="section">
-              <img src={tituloMercadeoImg} alt="Análisis del entorno" className="section-img5" />
-            </div> */} 
-
           </form>
 
-          {/* Botones de Navegación */}
           <div className="buttons-container">
             <button className="nav-btn anterior" onClick={() => navigate(-1)}></button>
             <button className="nav-btn siguiente" onClick={() => navigate("/newProject")}></button>

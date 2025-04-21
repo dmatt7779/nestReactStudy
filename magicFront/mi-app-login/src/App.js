@@ -8,7 +8,9 @@ import ProjectInfo from './screens/projectInfo';
 import NewProject from './screens/newProject';
 import ProyeccionMacro from './screens/proyeccionMacro';
 import CostosGastos from './screens/costosGastos';
-
+import PlanFinanciero from './screens/planFinanciero';
+import SalarioAdmins from './screens/salarioAdmins';
+import ActivosFijos from './screens/activosFijos';
 function App() {
   return(
     <BrowserRouter> 
@@ -19,6 +21,9 @@ function App() {
         <Route path="/NewProject/" element={<NewProject />} />
         <Route path="/ProyeccionMacro/" element={<ProyeccionMacro />} />
         <Route path="/CostosGastos/" element={<CostosGastos />} />
+        <Route path="/PlanFinanciero/" element={<PlanFinanciero />} />
+        <Route path="/SalarioAdmins/" element={<SalarioAdmins />} />
+        <Route path="/ActivosFijos/" element={<ActivosFijos />} />
       </Routes>
     </BrowserRouter>
   );
