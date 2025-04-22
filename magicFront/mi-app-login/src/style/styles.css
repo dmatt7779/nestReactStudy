@@ -1051,6 +1051,13 @@ input {
 .estrategia-boton-agregar:hover {
   background-color: #005f72; /* Azul más oscuro al pasar el mouse */
 }
+
+.section-img6 {
+  width: 320px;              /* Ajusta según tu diseño */
+  max-width: 100%;
+  height: auto;
+}
+
 /*---------------------------------Costos Gastos---------------------------------------------*/
 
 .costos-gastos-container  h3{
@@ -1257,6 +1264,105 @@ input {
     width: 100%;
     margin-top: 0.75rem;
   }
+}
+
+/* -----------------------------------------Estilos para ActivosFijos--------------------------------------------------------- */
+
+.activos-container {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.titulo-seccion {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.tabla-wrapper {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  overflow-x: auto;
+}
+
+.tabla-activos th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+}
+
+.tabla-activos {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.tabla-horizontal {
+  flex: 1;
+  border-collapse: collapse;
+  min-width: 60%;
+}
+
+.tabla-horizontal th,
+.tabla-horizontal td {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.campos-laterales {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 1rem;
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+  min-width: 240px;
+}
+
+.campos-laterales label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #1f2937;
+}
+
+.campos-laterales input {
+  margin-top: 0.25rem;
+}
+
+.boton-agregar {
+  margin-top: 1.5rem;
+  padding: 0.75rem 1rem;
+  background-color: #1f2937;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.boton-agregar:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.estrategia-boton-eliminar {
+  font-size: 1.2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #dc2626;
 }
 
 

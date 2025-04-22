@@ -8,6 +8,7 @@ import CustomInput from "../../components/CustomInput";
 import analisisImg from "../../images/cabezote_analisis.png";
 import tituloAnalisiImg from "../../images/titulo_analisis_de_entorno.png";
 import tituloMercadeoImg from "../../images/titulo_analisis_de_mercadeo_y_ventas.png";
+import tituloMarketingImg from "../../images/titulo_marketing_publicidad.png";
 
 const ProyeccionMacro = () => {
 
@@ -416,6 +417,9 @@ const handleChange = (category, year, value) => {
 
             {/* Tabla estrategias marketingInvestAnoBase */}
             <div className="marketing-invest-container">
+            <div className="section">
+              <img src={tituloMarketingImg} alt="Marteting" className="section-img6" />
+            </div>
               <p>Nombre las estrategias de mercadeo a realizar en su proyecto y el gasto estimado para cada año, a fin de darse a conocer y atraer clientes en el mercado competitivo.
               </p>              
               <div className="proyeccion-container">
