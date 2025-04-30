@@ -4,6 +4,11 @@ import { ProyeccionMacro } from '../../proyeccion-macro/entities/proyeccion-macr
 import { CostosGasto } from '../../costos-gastos/entities/costos-gasto.entity';
 import { ActivoFijo } from '../../activos-fijos/entities/activos-fijo.entity';
 
+export interface TeamMember {
+  name: string;
+  id: string;
+}
+
 @Entity()
 export class ProjectInfo {
   @PrimaryGeneratedColumn()
@@ -12,8 +17,8 @@ export class ProjectInfo {
   @Column()
   projectName: string;
 
-  @Column('simple-array')
-  teamMembers: string[];
+  @Column({ type: 'json' })
+  teamMembers: TeamMember[];
 
   @Column()
   openingYear: number;

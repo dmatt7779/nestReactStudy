@@ -36,7 +36,6 @@ class CrecimientoDto {
 
     @IsOptional()
     @IsArray()
-    @ArrayMaxSize(4)
     crecimientoCantidades?: number[];
 }
 

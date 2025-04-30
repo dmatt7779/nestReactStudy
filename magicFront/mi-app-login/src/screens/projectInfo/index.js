@@ -16,7 +16,7 @@ const ProjectInfo = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const projectId = location.state?.projectId
-  const [proyecto, setProyecto] = useState(null)
+  const [_, setProyecto] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [projectName, setProjectName] = useState("")
@@ -58,7 +58,11 @@ const ProjectInfo = () => {
             const proyectoData = response
             setProyecto(proyectoData)
             setProjectName(proyectoData.projectName || "")
-            setIntegrantes(proyectoData.teamMembers ? proyectoData.teamMembers.map(member => ({ cedula: "", nombre: member })) : [{ cedula: "", nombre: "" }])
+            setIntegrantes(
+              proyectoData.teamMembers
+                ? proyectoData.teamMembers.map((member) => ({ cedula: member.id || "", nombre: member.name || "" }))
+                : [{ cedula: "", nombre: "" }]
+            )
             setProfessors(proyectoData.professor || [])
             setAno(proyectoData.openingYear ? proyectoData.openingYear.toString() : "2025")
           } else {
@@ -112,7 +116,7 @@ const ProjectInfo = () => {
       try {
         const dataToSend = {
           projectName: projectName,
-          teamMembers: integrantes.map(integrante => integrante.nombre),
+          teamMembers: integrantes.map(integrante => ({ id: integrante.cedula, name: integrante.nombre })),
           openingYear: parseInt(ano),
           professor: professors,
         }
@@ -120,10 +124,6 @@ const ProjectInfo = () => {
         let response
 
         if (projectId) {
-          //TODO:
-          // Si hay un ID, actualiza el proyecto existente (PUT o PATCH)
-          // const response = await axiosClient.put(`/api/v1/project-info/${projectId}`, dataToSend);
-          // Suponiendo que el backend requiere todos los datos en PUT, sino usa PATCH
           console.log("Actualizando proyecto existente")
           navigate('/proyeccionMacro', { state: { projectId: projectId, openingYear: ano } })
         } else {

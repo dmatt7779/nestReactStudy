@@ -81,6 +81,15 @@ class AxiosClient {
     }
   }
 
+  async postProyeccionMacro(url, body) {
+    try {
+      const response = await this.axiosInstance.post(url, body);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   // Método genérico para cualquier verbo HTTP
   async request(method, url, data = null, config = {}) {
     try {
