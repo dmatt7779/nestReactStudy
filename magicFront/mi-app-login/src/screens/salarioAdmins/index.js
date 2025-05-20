@@ -192,4 +192,5 @@ const SalarioAdmins = () => {
   );
 };
 
+
 export default SalarioAdmins;
