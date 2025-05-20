@@ -38,7 +38,7 @@ const SalarioAdmins = () => {
   };
 
   
-  // Incremento en salarios
+  // Incremento en salarios e inactiva 2025...
   const [opcionSeleccionadaSalarios, setOpcionSeleccionadaSalarios] = useState("");
   const [incrementoSalarios, setIncrementoSalarios] = useState({
     2025: "",
@@ -72,7 +72,7 @@ const SalarioAdmins = () => {
             Una vez determinadas las necesidades de personal, la estructura organizacional y las características de la misma, se requiere
             tener el detalle de los empleados con su asignación salarial y carga social y prestacional, la cual corre por parte de los dueños del proyecto
             Ingrese el concepto de empleados que no sean costos y, el valor mensual incluyendo factor prestacional.  Si son varios empleados con el mismo
-            cargo, ingrese el total mensual de los mismos, identificando la cantida dde empleados en la descripción
+            cargo, ingrese el total mensual de los mismos, identificando la cantidad de empleados en la descripción
             En este punto no incluya los cargos que tengan que ver con los costos fijos (estos van en la sección de Costos Fijos)
           </p>
 
@@ -87,7 +87,7 @@ const SalarioAdmins = () => {
                     <th>#</th>
                     <th className="estrategia-celda-nombre">Cargo</th>
                     <th>Valor mensual</th>
-                    <th></th>
+                    <th>Carga prestacional</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -117,10 +117,21 @@ const SalarioAdmins = () => {
                         />
                       </td>
                       <td>
+                        <CustomInput
+                          id={`valor-prest-${cargo.id}`}
+                          value={cargo.prest}
+                          onChange={(value) =>
+                            manejarCambioCargo(cargo.id, "valorPrest", value)
+                          }
+                          type="number"
+                          placeholder="0"
+                        />
+                      </td>
+                      <td>
                         <button
                           className="estrategia-boton-eliminar"
                           onClick={() => eliminarCargos(cargo.id)}
-                          disabled={cargo.length === 1}
+                          disabled={cargos.length === 1}
                         >
                           🗑️
                         </button>

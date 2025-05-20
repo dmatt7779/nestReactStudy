@@ -1303,43 +1303,6 @@ input {
   margin-top: 1rem;
 }
 
-.tabla-horizontal {
-  flex: 1;
-  border-collapse: collapse;
-  min-width: 60%;
-}
-
-.tabla-horizontal th,
-.tabla-horizontal td {
-  border: 1px solid #ddd;
-  padding: 0.5rem;
-  text-align: left;
-}
-
-.campos-laterales {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 1rem;
-  background-color: #f9fafb;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
-  min-width: 240px;
-}
-
-.campos-laterales label {
-  display: flex;
-  flex-direction: column;
-  font-weight: 500;
-  font-size: 0.95rem;
-  color: #1f2937;
-}
-
-.campos-laterales input {
-  margin-top: 0.25rem;
-}
-
 .boton-agregar {
   margin-top: 1.5rem;
   padding: 0.75rem 1rem;
