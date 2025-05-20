@@ -6,7 +6,7 @@ import Navbar from "../../components/Navbar";
 import CustomInput from "../../components/CustomInput";
 import cabezoteActivos from "../../images/cabezote_activos_fijos.png";
 
-// Configuración de secciones con campos condicionales
+// Configuración de secciones con campos condicionales para cada activo fijo
 const SECCIONES = [
   { id: "muebles", nombre: "Muebles y enseres", campos: ["vidaUtil", "valorSalvamento"] },
   { id: "maquinaria", nombre: "Maquinaria y equipos", campos: ["vidaUtil", "valorSalvamento"] },

@@ -38,7 +38,7 @@ const SalarioAdmins = () => {
   };
 
   
-  // Incremento en salarios
+  // Incremento en salarios e inactiva 2025
   const [opcionSeleccionadaSalarios, setOpcionSeleccionadaSalarios] = useState("");
   const [incrementoSalarios, setIncrementoSalarios] = useState({
     2025: "",
