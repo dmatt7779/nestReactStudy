@@ -6,131 +6,165 @@ import Navbar from "../../components/Navbar";
 import CustomInput from "../../components/CustomInput";
 import cabezoteActivos from "../../images/cabezote_activos_fijos.png";
 
-const categorias = [
-    "Muebles y enseres",
-    "Maquinaria y equipos",
-    "Vehículos",
-    "Terrenos",
-    "Edificaciones",
-    "Equipos de computo",
-    "Activos Diferidos (Software e intangibles)"
-  ];
-  
-  const ActivosFijos = () => {
-    const navigate = useNavigate();
-    const initialActivo = {
-      nombre: "",
-      valor: "",
-      vidaUtil: "",
-      valorSalvamento: ""
-    };
-  
-    const [activosPorCategoria, setActivosPorCategoria] = useState(
-      categorias.reduce((acc, categoria) => {
-        acc[categoria] = Array(10).fill().map(() => ({ ...initialActivo }));
-        return acc;
-      }, {})
-    );
-  
-    const handleChange = (categoria, index, field, value) => {
-      const updated = [...activosPorCategoria[categoria]];
-      updated[index][field] = value;
-      setActivosPorCategoria({ ...activosPorCategoria, [categoria]: updated });
-    };
-  
-    const agregarActivo = (categoria) => {
-      setActivosPorCategoria({
-        ...activosPorCategoria,
-        [categoria]: [...activosPorCategoria[categoria], { ...initialActivo }]
-      });
-    };
-  
-    const eliminarActivo = (categoria, index) => {
-      const updated = activosPorCategoria[categoria].filter((_, i) => i !== index);
-      setActivosPorCategoria({ ...activosPorCategoria, [categoria]: updated });
-    };
-  
-  const handleSubmit = (event) => {
-    event.preventDefault();
+// Configuración de secciones con campos condicionales para cada activo fijo
+const SECCIONES = [
+  { id: "muebles", nombre: "Muebles y enseres", campos: ["vidaUtil", "valorSalvamento"] },
+  { id: "maquinaria", nombre: "Maquinaria y equipos", campos: ["vidaUtil", "valorSalvamento"] },
+  { id: "vehiculos", nombre: "Vehículos", campos: ["vidaUtil", "valorSalvamento"] },
+  { id: "terrenos", nombre: "Terrenos", campos: [] },
+  { id: "edificaciones", nombre: "Edificaciones", campos: ["vidaUtil", "valorSalvamento"] },
+  { id: "computo", nombre: "Equipos de cómputo", campos: ["vidaUtil", "valorSalvamento"] },
+  { id: "intangibles", nombre: "Activos Diferidos (Software e intangibles)", campos: ["vidaUtil"] },
+];
+
+const ActivosFijos = () => {
+  const navigate = useNavigate();
+
+  const [secciones, setSecciones] = useState(() =>
+    Object.fromEntries(
+      SECCIONES.map(({ id }) => [id, [{ id: Date.now(), nombre: "", valor: "", vidaUtil: "", valorSalvamento: "" }]])
+    )
+  );
+
+  const agregarActivo = (seccionId) => {
+    if (secciones[seccionId].length < 100) {
+      const nuevoActivo = {
+        id: Date.now(),
+        nombre: "",
+        valor: "",
+        vidaUtil: "",
+        valorSalvamento: "",
+      };
+      setSecciones((prev) => ({
+        ...prev,
+        [seccionId]: [...prev[seccionId], nuevoActivo],
+      }));
+    }
   };
 
-  return (
+  const eliminarActivo = (seccionId, index) => {
+    const confirmar = window.confirm("¿Está seguro que desea eliminar el activo?");
+    if (confirmar) {
+      setSecciones((prev) => ({
+        ...prev,
+        [seccionId]: prev[seccionId].filter((_, i) => i !== index),
+      }));
+    }
+  };
+
+  const handleChange = (seccionId, index, field, value) => {
+    setSecciones((prev) => ({
+      ...prev,
+      [seccionId]: prev[seccionId].map((item, i) =>
+        i === index ? { ...item, [field]: value ?? "" } : item
+      ),
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Datos enviados:", secciones);
+    // Aquí podrías enviar al backend
+  };
+
+ return (
     <div className="project-info-container">
       <Navbar />
       <div className="white-container-n">
         <div className="robot-container-an">
           <img src={cabezoteActivos} alt="Robot" className="robot-img-an" />
         </div>
+
         <div className="contenido-container">
           <p>
             Ingrese cada uno de los activos fijos necesarios al inicio del proyecto para conformar su infraestructura, determinando su clasificación en grupo y el valor.
-         </p>
+          </p>
           <p>
             Ingrese además la vida útil de los activos, y el Valor de Salvamento o Valor Residual (Una estimación de venta de dichos activos luego de la vida útil registrada).
           </p>
+
           <form onSubmit={handleSubmit}>
-            {/* Cargos */}
-            <div className="activos-container">
-      {categorias.map((categoria) => (
-        <div key={categoria} className="categoria-section">
-          <div className="categoria-title">{categoria}</div>
-          <table className="activos-table">
-            <thead>
-              <tr>
-                <th>Nombre del activo</th>
-                <th>Valor</th>
-                <th>Vida útil (años)</th>
-                <th>Valor salvamento</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {activosPorCategoria[categoria].map((activo, index) => (
-                <tr key={index}>
-                  <td>
-                    <CustomInput
-                      value={activo.nombre}
-                      onChange={(e) => handleChange(categoria, index, "nombre", e.target.value)}
-                      type="text"
-                    />
-                  </td>
-                  <td>
-                    <CustomInput
-                      value={activo.valor}
-                      onChange={(e) => handleChange(categoria, index, "valor", e.target.value)}
-                      type="number"
-                    />
-                  </td>
-                  <td>
-                    <CustomInput
-                      value={activo.vidaUtil}
-                      onChange={(e) => handleChange(categoria, index, "vidaUtil", e.target.value)}
-                      type="number"
-                    />
-                  </td>
-                  <td>
-                    <CustomInput
-                      value={activo.valorSalvamento}
-                      onChange={(e) => handleChange(categoria, index, "valorSalvamento", e.target.value)}
-                      type="number"
-                    />
-                  </td>
-                  <td>
-                    {activosPorCategoria[categoria].length > 10 && (
-                      <button onClick={() => eliminarActivo(categoria, index)} className="eliminar-btn">Eliminar</button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <button onClick={() => agregarActivo(categoria)} className="agregar-btn">Agregar activo</button>
-        </div>
-      ))}
-    </div>
+            {SECCIONES.map(({ id, nombre, campos }) => (
+              <div key={id} className="activos-container">
+                <h3 className="section-title">{nombre}</h3>
+                <div className="tabla-activos">
+                  <table className="tabla-estrategias">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th className="estrategia-celda-nombre">Nombre del activo</th>
+                        <th>Valor</th>
+                        {campos.includes("vidaUtil") && <th>Vida útil (años)</th>}
+                        {campos.includes("valorSalvamento") && <th>Valor de salvamento</th>}
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {secciones[id].map((activo, index) => (
+                        <tr key={activo.id}>
+                          <td>{index + 1}</td>
+                          <td className="estrategia-celda-nombre">
+                            <CustomInput
+                              value={activo.nombre}
+                              onChange={(e) => handleChange(id, index, "nombre", e)}
+                              placeholder="Ej: Escritorio"
+                              type="text"
+                            />
+                          </td>
+                          <td>
+                            <CustomInput
+                              value={activo.valor}
+                              onChange={(e) => handleChange(id, index, "valor", e)}
+                              placeholder="0"
+                              type="number"
+                            />
+                          </td>
+                          {campos.includes("vidaUtil") && (
+                            <td>
+                              <CustomInput
+                                value={activo.vidaUtil}
+                                onChange={(e) => handleChange(id, index, "vidaUtil", e)}
+                                placeholder="5"
+                                type="number"
+                              />
+                            </td>
+                          )}
+                          {campos.includes("valorSalvamento") && (
+                            <td>
+                              <CustomInput
+                                value={activo.valorSalvamento}
+                                onChange={(e) => handleChange(id, index, "valorSalvamento", e)}
+                                placeholder="0"
+                                type="number"
+                              />
+                            </td>
+                          )}
+                          <td>
+                            <button
+                              type="button"
+                              className="estrategia-boton-eliminar"
+                              onClick={() => eliminarActivo(id, index)}
+                              disabled={secciones[id].length === 1}
+                            >
+                              🗑️
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
 
-
-           
+                <button
+                  type="button"
+                  className="boton-agregar"
+                  onClick={() => agregarActivo(id)}
+                  disabled={secciones[id].length >= 100}
+                >
+                  + Agregar activo
+                </button>
+              </div>
+            ))}
           </form>
 
           <div className="buttons-container">
@@ -143,5 +177,4 @@ const categorias = [
     </div>
   );
 };
-
 export default ActivosFijos;

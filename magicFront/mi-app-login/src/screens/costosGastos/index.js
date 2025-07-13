@@ -17,7 +17,7 @@ const CostosGastos = () => {
   ]);
 
   const agregarCosto = () => {
-    if (costos.length < 10) {
+    if (costos.length < 100) {
       setCostos([
         ...costos,
         { id: Date.now(), concepto: "", valorMes: "" },
@@ -46,7 +46,7 @@ const CostosGastos = () => {
   ]);
 
   const agregarGasto = () => {
-    if (gastos.length < 10) {
+    if (gastos.length < 100) {
       setGastos([
         ...gastos,
         { id: Date.now(), concepto: "", valorMes: "" },
@@ -164,11 +164,11 @@ const CostosGastos = () => {
                   ))}
                 </tbody>
               </table>
-              {costos.length < 10 && (
+              {costos.length < 100 && (
                 <button
                   className="estrategia-boton-agregar"
                   onClick={agregarCosto}
-                  disabled={costos.length >= 10}
+                  disabled={costos.length >= 100}
                 >
                   + Agregar Costo Fijo
                 </button>
@@ -241,11 +241,11 @@ const CostosGastos = () => {
                   ))}
                 </tbody>
               </table>
-              {gastos.length < 10 && (
+              {gastos.length < 100 && (
                 <button
                   className="estrategia-boton-agregar"
                   onClick={agregarGasto}
-                  disabled={gastos.length >= 10}
+                  disabled={gastos.length >= 100}
                 >
                   + Agregar Gasto Administrativo
                 </button>

@@ -1,3 +1,4 @@
+import tituloMarketingImg from "../../images/titulo_marketing_publicidad.png";
 import React, { useState, useEffect, useCallback, useRef } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import "../../style/styles.css"
@@ -770,7 +771,7 @@ const ProyeccionMacro = () => {
 
                         {/* Tabla estrategias marketingInvestAnoBase */}
                         <div className="section">
-                            <img src={tituloAnalisiImg} alt="MARKETING" className="section-img1" />
+                            <img src={tituloMarketingImg} alt="Marteting" className="section-img6" />
                         </div>
                         <div className="marketing-invest-container">
                             <p>Nombre las estrategias de mercadeo a realizar en su proyecto y el gasto estimado para cada año, a fin de darse a conocer y atraer clientes en el mercado competitivo.
