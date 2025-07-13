@@ -134,8 +134,7 @@ const ProjectInfo = () => {
         console.log("ProjectInfo guardado con éxito!")
         
         if (response && response.id) {
-            console.log(`Response && response.id from projectInfo ${response
-              }`)
+            console.log(`Response && response.id from projectInfo ${response}`)
             navigate('/proyeccionMacro', { state: { projectId: projectId, openingYear: ano } })
         } else if (projectId) {
             navigate('/proyeccionMacro', { state: { projectId: projectId, openingYear: ano } })

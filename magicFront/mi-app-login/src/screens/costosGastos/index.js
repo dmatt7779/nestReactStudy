@@ -295,7 +295,7 @@ const CostosGastos = () => {
 
           <div className="buttons-container">
             <button className="nav-btn anterior" onClick={() => navigate(-1)}></button>
-            <button className="nav-btn siguiente" onClick={() => navigate("/newProject")}></button>
+            <button className="nav-btn siguiente" onClick={() => navigate("/activosFijos")}></button>
           </div>
         </div>
       </div>

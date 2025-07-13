@@ -132,9 +132,6 @@ const ProyeccionMacro = () => {
                     previousProjectId.current = projectId 
 
                     if (response) {
-                        
-
-                        
                         if (response.proyeccionesMacroeconomicas) {
                             setValues(prevValues => {
                                 const updatedValues = { ...prevValues }
@@ -150,12 +147,9 @@ const ProyeccionMacro = () => {
                             })
                         }
 
-
-                        
                         setTasaIVA(response.analisisMercado?.tasaIva?.toString() || "")
 
                         if (response.analisisMercado?.productos && response.analisisMercado.productos.length > 0) {
-                            
                             setProductos(response.analisisMercado.productos.map(producto => ({
                                 id: producto.id || Date.now(), 
                                 nombre: producto.nombre || "",
@@ -164,59 +158,88 @@ const ProyeccionMacro = () => {
                                 precioVenta: producto.precioVenta?.toString() || "0",
                                 costoVariable: producto.costoVarProdAnoBase?.toString() || "0",
                             })))
-                        } else {
-                            
-                            
-                            
                         }
 
-                        
-                        if (response.analisisMercado?.crecimientoUnidades?.crecimientoCantidades) {
-                            setCrecimientoUnidades(years.reduce((acc, year, index) => {
-                                acc[year] = response.analisisMercado.crecimientoUnidades.crecimientoCantidades[index]?.toString() || ""
-                                return acc
-                            }, {}))
+                        if (response.analisisMercado?.crecimientoUnidades) {
+                            // Determinar qué opción está activa según los booleanos
+                            if (response.analisisMercado.crecimientoUnidades.pib === true) {
+                                setOpcionSeleccionadaUnidades("PIB");
+                            } else if (response.analisisMercado.crecimientoUnidades.estrategia === true) {
+                                setOpcionSeleccionadaUnidades("Estrategia");
+                            } else if (response.analisisMercado.crecimientoUnidades.ipc === true) {
+                                setOpcionSeleccionadaUnidades("IPC");
+                            }
+    
+                            // Cargar valores de crecimientoCantidades
+                            if (response.analisisMercado.crecimientoUnidades.crecimientoCantidades) {
+                                setCrecimientoUnidades(years.reduce((acc, year, index) => {
+                                    acc[year] = response.analisisMercado.crecimientoUnidades.crecimientoCantidades[index]?.toString() || ""
+                                    return acc
+                                }, {}))
+                            }
+                        }
+    
+                        // Establecer valores para radio buttons de Precios
+                        if (response.analisisMercado?.crecimientoPrecios) {
+                            // Determinar qué opción está activa según los booleanos
+                            if (response.analisisMercado.crecimientoPrecios.pib === true) {
+                                setOpcionSeleccionadaPrecios("PIB");
+                            } else if (response.analisisMercado.crecimientoPrecios.estrategia === true) {
+                                setOpcionSeleccionadaPrecios("Estrategia");
+                            } else if (response.analisisMercado.crecimientoPrecios.ipc === true) {
+                                setOpcionSeleccionadaPrecios("IPC");
+                            }
+    
+                            // Cargar valores de crecimientoCantidades
+                            if (response.analisisMercado.crecimientoPrecios.crecimientoCantidades) {
+                                setCrecimientoPrecios(years.reduce((acc, year, index) => {
+                                    acc[year] = response.analisisMercado.crecimientoPrecios.crecimientoCantidades[index]?.toString() || ""
+                                    return acc
+                                }, {}))
+                            }
+                        }
+    
+                        // Establecer valores para radio buttons de Costos
+                        if (response.analisisMercado?.crecimientoCostos) {
+                            // Determinar qué opción está activa según los booleanos
+                            if (response.analisisMercado.crecimientoCostos.pib === true) {
+                                setOpcionSeleccionadaCostos("PIB");
+                            } else if (response.analisisMercado.crecimientoCostos.estrategia === true) {
+                                setOpcionSeleccionadaCostos("Estrategia");
+                            } else if (response.analisisMercado.crecimientoCostos.ipc === true) {
+                                setOpcionSeleccionadaCostos("IPC");
+                            }
+    
+                            // Cargar valores de crecimientoCantidades
+                            if (response.analisisMercado.crecimientoCostos.crecimientoCantidades) {
+                                setCrecimientoCostos(years.reduce((acc, year, index) => {
+                                    acc[year] = response.analisisMercado.crecimientoCostos.crecimientoCantidades[index]?.toString() || ""
+                                    return acc
+                                }, {}))
+                            }
                         }
 
-                        
-                         if (response.analisisMercado?.crecimientoPrecios?.crecimientoCantidades) {
-                             setCrecimientoPrecios(years.reduce((acc, year, index) => {
-                                 acc[year] = response.analisisMercado.crecimientoPrecios.crecimientoCantidades[index]?.toString() || ""
-                                 return acc
-                             }, {}))
-                         }
+                        if (response.analisisMercado?.marketingInvestAnoBase) {
+                            const backendMarketingData = response.analisisMercado.marketingInvestAnoBase
+                            const frontendMarketingKeys = ["precio", "producto", "comunicacionales", "distribucion", "comunityManager"] 
 
-                        
-                         if (response.analisisMercado?.crecimientoCostos?.crecimientoCantidades) {
-                             setCrecimientoCostos(years.reduce((acc, year, index) => {
-                                 acc[year] = response.analisisMercado.crecimientoCostos.crecimientoCantidades[index]?.toString() || ""
-                                 return acc
-                             }, {}))
-                         }
+                            setEstrategias(prevEstrategias => {
+                                return prevEstrategias.map((estrategia, index) => {
+                                    const backendKey = frontendMarketingKeys[index] 
+                                    const backendValues = backendMarketingData?.[backendKey]
 
-                        
-                         if (response.analisisMercado?.marketingInvestAnoBase) {
-                             const backendMarketingData = response.analisisMercado.marketingInvestAnoBase
-                             const frontendMarketingKeys = ["precio", "producto", "comunicacionales", "distribucion", "comunityManager"] 
-
-                             setEstrategias(prevEstrategias => {
-                                 return prevEstrategias.map((estrategia, index) => {
-                                     const backendKey = frontendMarketingKeys[index] 
-                                     const backendValues = backendMarketingData?.[backendKey]
-
-                                     return {
-                                         ...estrategia,
-                                         
-                                         nombre: estrategia.nombre || backendKey || `Estrategia ${index + 1}`,
-                                         valores: years.reduce((acc, year, yearIndex) => {
-                                             acc[year] = backendValues?.[yearIndex]?.toString() || ""
-                                             return acc
-                                         }, {}),
-                                     }
-                                 })
-                             })
-                         }
-
+                                    return {
+                                        ...estrategia,
+                                        
+                                        nombre: estrategia.nombre || backendKey || `Estrategia ${index + 1}`,
+                                        valores: years.reduce((acc, year, yearIndex) => {
+                                            acc[year] = backendValues?.[yearIndex]?.toString() || ""
+                                            return acc
+                                        }, {}),
+                                    }
+                                })
+                            })
+                        }
                     }
                 } catch (proyeccionMacroError) {
                     if (proyeccionMacroError.statusCode === 404) {
@@ -346,7 +369,7 @@ const ProyeccionMacro = () => {
         setLoading(true)
         setError(null)
 
-        try {
+    try {
             if (!projectId) {
                 setError("projectId es requerido para guardar los datos.")
                 return
@@ -418,13 +441,21 @@ const ProyeccionMacro = () => {
             }
             console.log(JSON.stringify(dataToSend, null, 2))
             try {
-                const response = await axiosClient.postProyeccionMacro(`/api/v1/proyeccion-macro/${projectId}`, dataToSend)
+                await axiosClient.get(`/api/v1/proyeccion-macro/${projectId}`)
+                const response = true
+                console.log("Actualizando proyecto existente ProyeccionMacro")
                 if (response) {
-                    navigate("/costosGastos")
+                    navigate('/costosGastos', { state: { projectId: projectId, openingYear: openingYear } });
                 }
-            } catch (axiosError) {
-                console.error("Error al guardar la proyeccion macro:", axiosError)
-                setError(axiosError.message || "Error al guardar la proyeccion macro.")
+            } catch (error) {
+                if (error && error.statusCode === 404) {
+                    const response = await axiosClient.postProyeccionMacro(`/api/v1/proyeccion-macro/${projectId}`, dataToSend)
+                    if (response) {
+                        navigate('/costosGastos', { state: { projectId: projectId, openingYear: openingYear } });
+                    }
+                } else {
+                    throw error;
+                }
             }
         } catch (error) {
             console.error("Error al guardar la proyeccion macro:", error)
@@ -613,7 +644,7 @@ const ProyeccionMacro = () => {
                                 </table>
 
                                 {productos.length < 10 && (
-                                    <button className="boton-agregar" onClick={agregarProducto}>
+                                    <button type="button" className="boton-agregar" onClick={agregarProducto}>
                                         + Agregar Producto
                                     </button>
                                 )}
@@ -798,7 +829,7 @@ const ProyeccionMacro = () => {
                                 </table>
 
                                 {estrategias.length < 5 && (
-                                    <button className="estrategia-boton-agregar" onClick={agregarEstrategia}>
+                                    <button type="button" className="estrategia-boton-agregar" onClick={agregarEstrategia}>
                                         + Agregar Estrategia
                                     </button>
                                 )}
