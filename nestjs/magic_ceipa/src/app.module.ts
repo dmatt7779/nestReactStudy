@@ -16,6 +16,8 @@ import { User } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 // import { CorsModule } from '@nestjs/platform-express';
 import { ConfigModule } from '@nestjs/config';
+import { EstrategiaMarketing } from './proyeccion-macro/entities/estrategia-marketing.entity';
+import { Producto } from './proyeccion-macro/entities/producto.entity';
 
 @Module({
   imports: [
@@ -27,7 +29,8 @@ import { ConfigModule } from '@nestjs/config';
       username: 'user_crud',
       password: 'root',
       database: 'db_crud',
-      entities: [ProjectInfo, ProyeccionMacro, CostosGasto, PlanFinanciero, ActivoFijo, User],
+      // entities: [ProjectInfo, ProyeccionMacro, CostosGasto, PlanFinanciero, ActivoFijo, User, EstrategiaMarketing, Producto],
+      autoLoadEntities: true,
       synchronize: true
     }),
     // CorsModule.forRoot({

@@ -7,23 +7,23 @@ export class Producto {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => ProyeccionMacro, proyeccion_macro => proyeccion_macro.analisis_mercado.productos, { onDelete: 'CASCADE' })
-    proyeccion_macro: ProyeccionMacro;
+    @ManyToOne(() => ProyeccionMacro, proyeccionMacro => proyeccionMacro.productos, { onDelete: 'CASCADE' })
+    proyeccionMacro: ProyeccionMacro;
 
     @Column()
     nombre: string;
 
     @Column({ type: 'decimal', precision: 10, scale: 2 })
-    costo_var_prod_ano_base: number;
+    costoVarProdAnoBase: number;
 
     @Column({ type: 'decimal', precision: 10, scale: 2 })
-    cantidad_facturar: number;
+    cantidadFacturar: number;
 
     @Column({ type: 'decimal', precision: 10, scale: 2 })
-    precio_sin_iva: number;
+    precioSinIva: number;
 
     @Column({ type: 'decimal', precision: 10, scale: 2 })
-    precio_venta: number;
+    precioVenta: number;
 
     @DeleteDateColumn()
     deletedAt: Date;

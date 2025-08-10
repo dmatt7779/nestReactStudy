@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import '../../style/styles.css';
-import Footer from "../../components/Footer";
-import Navbar from "../../components/Navbar";
-import CustomInput from "../../components/CustomInput"; 
-import nuevoProyectoImg1 from "../../images/titulo_nuevo_proyecto_1.png";       
-import tituloProyectoImg from "../../images/titulo_nombre.png";     
-import integrantesImg from "../../images/titulo_integrantes.png";         
-import profesorImg from "../../images/titulo_profesor.png"; 
-import momentoDatos from "../../images/momento_datos.png";
-import momentoAnios from "../../images/titulo_anio.png";
-import axiosClient from '../../utils/axios';
+import React, { useState, useEffect } from "react"
+import { useNavigate, useLocation } from "react-router-dom"
+import '../../style/styles.css'
+import Footer from "../../components/Footer"
+import Navbar from "../../components/Navbar"
+import CustomInput from "../../components/CustomInput" 
+import nuevoProyectoImg1 from "../../images/titulo_nuevo_proyecto_1.png"       
+import tituloProyectoImg from "../../images/titulo_nombre.png"     
+import integrantesImg from "../../images/titulo_integrantes.png"         
+import profesorImg from "../../images/titulo_profesor.png" 
+import momentoDatos from "../../images/momento_datos.png"
+import momentoAnios from "../../images/titulo_anio.png"
+import axiosClient from '../../utils/axios'
 
 const ProjectInfo = () => {
   const location = useLocation()
@@ -29,22 +29,22 @@ const ProjectInfo = () => {
     { id: 2, nombre: "Profesor Antonio" },
     { id: 3, nombre: "Profesor Diana" },
     { id: 4, nombre: "Profesor Cristina" }
-  ];
+  ]
 
-  const [formularioCompleto, setFormularioCompleto] = useState(false);
+  const [formularioCompleto, setFormularioCompleto] = useState(false)
 
   useEffect(() => {
-    const nombreValido = projectName.trim() !== "";
+    const nombreValido = projectName.trim() !== ""
     const integrantesValidos = integrantes.every(
       (i) => i.cedula.trim() !== "" && i.nombre.trim() !== ""
-    );
-    const profesoresValidos = professors.length > 0;
-    const anoValido = /^\d{4}$/.test(ano);
+    )
+    const profesoresValidos = professors.length > 0
+    const anoValido = /^\d{4}$/.test(ano)
   
     setFormularioCompleto(
       nombreValido && integrantesValidos && profesoresValidos && anoValido
-    );
-  }, [projectName, integrantes, professors, ano]);
+    )
+  }, [projectName, integrantes, professors, ano])
   
   useEffect(() => {
     const fetchProyecto = async () => {
@@ -109,55 +109,47 @@ const ProjectInfo = () => {
         setAno(valor)
       }
     }
-  
-    const handleSubmit = async () => {
+
+  const handleSubmit = async () => {
       setLoading(true)
       setError(null)
       try {
-        const dataToSend = {
-          projectName: projectName,
-          teamMembers: integrantes.map(integrante => ({ id: integrante.cedula, name: integrante.nombre })),
-          openingYear: parseInt(ano),
-          professor: professors,
-        }
-  
-        let response
+          const dataToSend = {
+              projectName: projectName,
+              teamMembers: integrantes.map(integrante => ({ id: integrante.cedula, name: integrante.nombre })),
+              openingYear: parseInt(ano),
+              professor: professors,
+          }
 
-        if (projectId) {
-          console.log("Actualizando proyecto existente")
-          navigate('/proyeccionMacro', { state: { projectId: projectId, openingYear: ano } })
-        } else {
-          response = await axiosClient.postProjectInfo('/api/v1/project-info', dataToSend)
-          console.log("Creando nuevo proyecto")
+          if (projectId) {
+              console.log("ProjectInfo - Actualizando proyecto existente con ID:", projectId)
+              // await axiosClient.put(`/api/v1/project-info/${projectId}`, dataToSend) // Asumiendo un endpoint PUT/PATCH
+              navigate('/proyeccionMacro', { state: { projectId: projectId, openingYear: ano } })
+          }else {
+            console.log("ProjectInfo - Creando nuevo proyecto...")
+            const response = await axiosClient.postProjectInfo('/api/v1/project-info', dataToSend)
+            if (response && response.id) {
+                console.log("ProjectInfo - Proyecto creado con éxito. Nuevo ID:", response.id)
+                navigate('/proyeccionMacro', { state: { projectId: response.id, openingYear: ano } })
+            } else {
+                console.error("Error: El backend no devolvió un ID para el nuevo proyecto.")
+                setError("No se pudo obtener un ID para el nuevo proyecto. Intente de nuevo.")
+            }
+          }
+        } catch (err) {
+            console.error("Error al guardar el proyecto:", err)
+            setError(err.message || "Error al guardar el proyecto.")
+        } finally {
+            setLoading(false)
         }
-
-        console.log("ProjectInfo guardado con éxito!")
-        
-        if (response && response.id) {
-            console.log(`Response && response.id from projectInfo ${response}`)
-            navigate('/proyeccionMacro', { state: { projectId: projectId, openingYear: ano } })
-        } else if (projectId) {
-            navigate('/proyeccionMacro', { state: { projectId: projectId, openingYear: ano } })
-        } else {
-          console.warn("No se recibió un ID de proyecto al guardar.")
-          setError("No se recibió un ID de proyecto al guardar.")
-          navigate('../newProject', { state: { projectId: null } })
-        }
-
-      } catch (err) {
-        console.error("Error al guardar el proyecto:", err)
-        setError(err.message || "Error al guardar el proyecto.")
-      } finally {
-        setLoading(false)
-      }
     }
   
     if (loading) {
-      return <p>Cargando información del proyecto...</p>;
+      return <p>Cargando información del proyecto...</p>
     }
   
     if (error) {
-      return <p style={{ color: 'red' }}>{error}</p>;
+      return <p style={{ color: 'red' }}>{error}</p>
     }  
 
   return (
@@ -305,4 +297,4 @@ const ProjectInfo = () => {
   )
 }
 
-export default ProjectInfo;
+export default ProjectInfo

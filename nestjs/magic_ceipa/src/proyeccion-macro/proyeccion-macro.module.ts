@@ -6,9 +6,10 @@ import { ProyeccionMacro } from './entities/proyeccion-macro.entity';
 import { Producto } from './entities/producto.entity';
 import { ProjectInfoService } from '../project-info/project-info.service';
 import { ProjectInfo } from '../project-info/entities/project-info.entity';
+import { EstrategiaMarketing } from './entities/estrategia-marketing.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ProyeccionMacro, Producto, ProjectInfo])],
+  imports: [TypeOrmModule.forFeature([ProyeccionMacro, Producto, EstrategiaMarketing, ProjectInfo])],
   controllers: [ProyeccionMacroController],
   providers: [ProyeccionMacroService, ProjectInfoService],
 })

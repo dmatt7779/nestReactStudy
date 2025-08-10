@@ -1,28 +1,30 @@
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import "../../style/styles.css";
+import Footer from "../../components/Footer";
+import Navbar from "../../components/Navbar";
+import CustomInput from "../../components/CustomInput";
+import analisisImg from "../../images/cabezote_analisis.png";
+import tituloAnalisiImg from "../../images/titulo_analisis_de_entorno.png";
+import tituloMercadeoImg from "../../images/titulo_analisis_de_mercadeo_y_ventas.png";
 import tituloMarketingImg from "../../images/titulo_marketing_publicidad.png";
-import React, { useState, useEffect, useCallback, useRef } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
-import "../../style/styles.css"
-import Footer from "../../components/Footer"
-import Navbar from "../../components/Navbar"
-import CustomInput from "../../components/CustomInput"
-import analisisImg from "../../images/cabezote_analisis.png"
-import tituloAnalisiImg from "../../images/titulo_analisis_de_entorno.png"
-import tituloMercadeoImg from "../../images/titulo_analisis_de_mercadeo_y_ventas.png"
-import axiosClient from "../../utils/axios"
+import axiosClient from "../../utils/axios";
 
 const ProyeccionMacro = () => {
     const location = useLocation()
     const navigate = useNavigate()
-    const [projectId, setProjectId] = useState(location.state?.projectId || null) 
+    const [projectId, setProjectId] = useState(() => {
+        return location.state?.projectId || sessionStorage.getItem('currentProjectId');
+    })
     const [openingYear, setOpeningYear] = useState(new Date().getFullYear().toString())
-    const [_loading, setLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState(null)
     const [proyeccionMacroData, setProyeccionMacroData] = useState(null)
-    const previousProjectId = useRef(null) 
+    const previousProjectId = useRef(null)
 
-    
     const calculateYears = useCallback((year) => {
         const startYear = parseInt(year, 10)
+        // eslint-disable-next-line no-unused-vars
         return Array.from({ length: 5 }, (_, i) => startYear + i)
     }, [])
 
@@ -32,7 +34,6 @@ const ProyeccionMacro = () => {
         setYears(calculateYears(openingYear))
     }, [openingYear, calculateYears])
 
-    
     const [values, setValues] = useState(() => {
         const categories = ["IPC", "Devaluation", "InterestRate", "PIB"]
         const initialValues = {}
@@ -45,12 +46,14 @@ const ProyeccionMacro = () => {
         return initialValues
     })
 
-    
     const [tasaIVA, setTasaIVA] = useState("")
+
     const [productos, setProductos] = useState(() => [
-        { id: Date.now(), nombre: "", cantidad: "0", precioSinIVA: "0", precioVenta: "0", costoVariable: "0" } 
+        { id: Date.now(), nombre: "", cantidad: "0", precioSinIVA: "0", precioVenta: "0", costoVariable: "0" }
     ])
+
     const [opcionSeleccionadaUnidades, setOpcionSeleccionadaUnidades] = useState("")
+
     const [crecimientoUnidades, setCrecimientoUnidades] = useState(() => {
         const initialCrecimiento = {}
         years.forEach(year => {
@@ -58,7 +61,9 @@ const ProyeccionMacro = () => {
         })
         return initialCrecimiento
     })
+
     const [opcionSeleccionadaPrecios, setOpcionSeleccionadaPrecios] = useState("")
+
     const [crecimientoPrecios, setCrecimientoPrecios] = useState(() => {
         const initialCrecimiento = {}
         years.forEach(year => {
@@ -66,7 +71,9 @@ const ProyeccionMacro = () => {
         })
         return initialCrecimiento
     })
+
     const [opcionSeleccionadaCostos, setOpcionSeleccionadaCostos] = useState("")
+
     const [crecimientoCostos, setCrecimientoCostos] = useState(() => {
         const initialCrecimiento = {}
         years.forEach(year => {
@@ -75,7 +82,6 @@ const ProyeccionMacro = () => {
         return initialCrecimiento
     })
 
-    
     const [estrategias, setEstrategias] = useState(() => {
         return [
             {
@@ -91,54 +97,34 @@ const ProyeccionMacro = () => {
 
     useEffect(() => {
         const fetchProyeccionMacro = async () => {
-            
             if (!projectId) {
-                 setLoading(false) 
-                 return
-            }
-
-            
-            
-            if (previousProjectId.current === projectId && proyeccionMacroData !== null) {
-                setLoading(false)
+                setIsLoading(false)
                 return
             }
 
-            setLoading(true)
-            setError(null)
-            setProyeccionMacroData(null) 
+            if (projectId !== previousProjectId.current) {
+                setIsLoading(true)
+                setError(null)
+                setProyeccionMacroData(null)
+                previousProjectId.current = projectId
 
-            try {
-                
-                const projectInfoResponse = await axiosClient.get(`/api/v1/project-info/${projectId}`)
-                const openingYearFromApi = projectInfoResponse?.openingYear?.toString()
-
-                
-                if (openingYearFromApi !== openingYear) {
-                    setOpeningYear(openingYearFromApi || new Date().getFullYear().toString())
-                }
-
-                
-                const newYears = calculateYears(openingYearFromApi || new Date().getFullYear().toString())
-                 
-                if (JSON.stringify(newYears) !== JSON.stringify(years)) {
-                    setYears(newYears)
-                }
-
-
-                
                 try {
-                    const response = await axiosClient.get(`/api/v1/proyeccion-macro/${projectId}`)
-                    setProyeccionMacroData(response) 
-                    previousProjectId.current = projectId 
+                    const projectInfoResponse = await axiosClient.get(`/api/v1/project-info/${projectId}`)
+                    const openingYearFromApi = projectInfoResponse?.openingYear?.toString() || new Date().getFullYear().toString()
 
-                    if (response) {
+                    setOpeningYear(openingYearFromApi)
+                    const newYears = calculateYears(openingYearFromApi)
+                    setYears(newYears)
+
+                    try {
+                        const response = await axiosClient.get(`/api/v1/proyeccion-macro/${projectId}`)
+                        setProyeccionMacroData(response)
+
                         if (response.proyeccionesMacroeconomicas) {
                             setValues(prevValues => {
                                 const updatedValues = { ...prevValues }
                                 const macroData = response.proyeccionesMacroeconomicas
-
-                                years.forEach((year, index) => {
+                                newYears.forEach((year, index) => {
                                     updatedValues["IPC"][year] = macroData?.ipc?.[index]?.toString() || ""
                                     updatedValues["Devaluation"][year] = macroData?.devaluacion?.[index]?.toString() || ""
                                     updatedValues["InterestRate"][year] = macroData?.tasaInteres?.[index]?.toString() || ""
@@ -150,19 +136,20 @@ const ProyeccionMacro = () => {
 
                         setTasaIVA(response.analisisMercado?.tasaIva?.toString() || "")
 
-                        if (response.analisisMercado?.productos && response.analisisMercado.productos.length > 0) {
-                            setProductos(response.analisisMercado.productos.map(producto => ({
-                                id: producto.id || Date.now(), 
+                        if (response.producto && response.producto.length > 0) {
+                            setProductos(response.producto.map((producto, index) => ({
+                                id: `producto-${Date.now()}-${index}`,
                                 nombre: producto.nombre || "",
                                 cantidad: producto.cantidadFacturar?.toString() || "0",
                                 precioSinIVA: producto.precioSinIva?.toString() || "0",
                                 precioVenta: producto.precioVenta?.toString() || "0",
                                 costoVariable: producto.costoVarProdAnoBase?.toString() || "0",
-                            })))
+                            })));
+                        } else {
+                            setProductos([{ id: Date.now(), nombre: "", cantidad: "0", precioSinIVA: "0", precioVenta: "0", costoVariable: "0" }]);
                         }
 
                         if (response.analisisMercado?.crecimientoUnidades) {
-                            // Determinar qué opción está activa según los booleanos
                             if (response.analisisMercado.crecimientoUnidades.pib === true) {
                                 setOpcionSeleccionadaUnidades("PIB");
                             } else if (response.analisisMercado.crecimientoUnidades.estrategia === true) {
@@ -170,19 +157,22 @@ const ProyeccionMacro = () => {
                             } else if (response.analisisMercado.crecimientoUnidades.ipc === true) {
                                 setOpcionSeleccionadaUnidades("IPC");
                             }
-    
-                            // Cargar valores de crecimientoCantidades
+                            
                             if (response.analisisMercado.crecimientoUnidades.crecimientoCantidades) {
-                                setCrecimientoUnidades(years.reduce((acc, year, index) => {
-                                    acc[year] = response.analisisMercado.crecimientoUnidades.crecimientoCantidades[index]?.toString() || ""
-                                    return acc
-                                }, {}))
+                                const apiCantidades = response.analisisMercado.crecimientoUnidades.crecimientoCantidades;
+                                const newState = newYears.reduce((acc, year, index) => {
+                                    if (index === 0) {
+                                        acc[year] = ""; 
+                                    } else {
+                                        acc[year] = apiCantidades[index]?.toString() || "";
+                                    }
+                                    return acc;
+                                }, {});
+                                setCrecimientoUnidades(newState);
                             }
                         }
-    
-                        // Establecer valores para radio buttons de Precios
+
                         if (response.analisisMercado?.crecimientoPrecios) {
-                            // Determinar qué opción está activa según los booleanos
                             if (response.analisisMercado.crecimientoPrecios.pib === true) {
                                 setOpcionSeleccionadaPrecios("PIB");
                             } else if (response.analisisMercado.crecimientoPrecios.estrategia === true) {
@@ -190,19 +180,22 @@ const ProyeccionMacro = () => {
                             } else if (response.analisisMercado.crecimientoPrecios.ipc === true) {
                                 setOpcionSeleccionadaPrecios("IPC");
                             }
-    
-                            // Cargar valores de crecimientoCantidades
+
                             if (response.analisisMercado.crecimientoPrecios.crecimientoCantidades) {
-                                setCrecimientoPrecios(years.reduce((acc, year, index) => {
-                                    acc[year] = response.analisisMercado.crecimientoPrecios.crecimientoCantidades[index]?.toString() || ""
-                                    return acc
-                                }, {}))
+                                const apiCantidades = response.analisisMercado.crecimientoPrecios.crecimientoCantidades;
+                                const newState = newYears.reduce((acc, year, index) => {
+                                    if (index === 0) {
+                                        acc[year] = "";
+                                    } else {
+                                        acc[year] = apiCantidades[index]?.toString() || "";
+                                    }
+                                    return acc;
+                                }, {});
+                                setCrecimientoPrecios(newState);
                             }
                         }
-    
-                        // Establecer valores para radio buttons de Costos
+
                         if (response.analisisMercado?.crecimientoCostos) {
-                            // Determinar qué opción está activa según los booleanos
                             if (response.analisisMercado.crecimientoCostos.pib === true) {
                                 setOpcionSeleccionadaCostos("PIB");
                             } else if (response.analisisMercado.crecimientoCostos.estrategia === true) {
@@ -210,60 +203,62 @@ const ProyeccionMacro = () => {
                             } else if (response.analisisMercado.crecimientoCostos.ipc === true) {
                                 setOpcionSeleccionadaCostos("IPC");
                             }
-    
-                            // Cargar valores de crecimientoCantidades
+
                             if (response.analisisMercado.crecimientoCostos.crecimientoCantidades) {
-                                setCrecimientoCostos(years.reduce((acc, year, index) => {
-                                    acc[year] = response.analisisMercado.crecimientoCostos.crecimientoCantidades[index]?.toString() || ""
-                                    return acc
-                                }, {}))
+                                const apiCantidades = response.analisisMercado.crecimientoCostos.crecimientoCantidades;
+                                const newState = newYears.reduce((acc, year, index) => {
+                                    if (index === 0) {
+                                        acc[year] = "";
+                                    } else {
+                                        acc[year] = apiCantidades[index]?.toString() || "";
+                                    }
+                                    return acc;
+                                }, {});
+                                setCrecimientoCostos(newState);
                             }
                         }
 
-                        if (response.analisisMercado?.marketingInvestAnoBase) {
-                            const backendMarketingData = response.analisisMercado.marketingInvestAnoBase
-                            const frontendMarketingKeys = ["precio", "producto", "comunicacionales", "distribucion", "comunityManager"] 
+                        if (response.estrategiaMarketing && response.estrategiaMarketing.length > 0) {
+                            setEstrategias(response.estrategiaMarketing.map((estrategia, index) => ({
+                                id: `estrategia-${Date.now()}-${index}`,
+                                nombre: estrategia.nombre,
+                                valores: newYears.reduce((acc, year, yearIndex) => {
+                                    acc[year] = estrategia.valores[yearIndex]?.toString() || "";
+                                    return acc;
+                                }, {})
+                            })));
+                        } else {
+                            setEstrategias([{ id: Date.now(), nombre: "", valores: newYears.reduce((acc, year) => ({ ...acc, [year]: "" }), {}) }]);
+                        }
 
-                            setEstrategias(prevEstrategias => {
-                                return prevEstrategias.map((estrategia, index) => {
-                                    const backendKey = frontendMarketingKeys[index] 
-                                    const backendValues = backendMarketingData?.[backendKey]
-
-                                    return {
-                                        ...estrategia,
-                                        
-                                        nombre: estrategia.nombre || backendKey || `Estrategia ${index + 1}`,
-                                        valores: years.reduce((acc, year, yearIndex) => {
-                                            acc[year] = backendValues?.[yearIndex]?.toString() || ""
-                                            return acc
-                                        }, {}),
-                                    }
-                                })
-                            })
+                    } catch (proyeccionMacroError) {
+                        if (proyeccionMacroError.statusCode === 404) {
+                            console.warn("No se encontraron datos de ProyeccionMacro. Mostrando formulario vacío.")
+                        } else {
+                            setError(proyeccionMacroError.message || "Error al obtener la proyeccion macro.")
                         }
                     }
-                } catch (proyeccionMacroError) {
-                    if (proyeccionMacroError.statusCode === 404) {
-                        console.warn("No se encontraron datos de ProyeccionMacro para este proyecto. Mostrando formulario vacío.")
-                        setProyeccionMacroData(null) 
-                    } else {
-                        setError(proyeccionMacroError.message || "Error al obtener la proyeccion macro.")
-                    }
+                } catch (projectInfoError) {
+                    setError(projectInfoError.message || "Error al obtener información del proyecto.")
+                    navigate(-1)
+                } finally {
+                    setIsLoading(false)
                 }
-            } catch (projectInfoError) {
-                setError(projectInfoError.message || "Error al obtener información del proyecto.")
-                navigate(-1) 
-            }
-            finally {
-                setLoading(false)
+            } else {
+                setIsLoading(false)
             }
         }
 
         fetchProyeccionMacro()
-    }, [projectId, navigate, calculateYears, years]) 
+    }, [projectId, navigate, calculateYears])
 
-    
-    const handleChange = (category, year, value) => { 
+    useEffect(() => {
+        if (projectId) {
+            sessionStorage.setItem('currentProjectId', projectId)
+        }
+    }, [projectId])
+
+    const handleChange = (category, year, value) => {
         setValues(prevValues => ({
             ...prevValues,
             [category]: {
@@ -274,10 +269,10 @@ const ProyeccionMacro = () => {
     }
 
     const agregarProducto = () => {
-        if (productos.length < 10) { 
+        if (productos.length < 10) {
             setProductos((productosAnteriores) => [
                 ...productosAnteriores,
-                { id: Date.now(), nombre: "", cantidad: "0", precioSinIVA: "0", precioVenta: "0", costoVariable: "0" } 
+                { id: Date.now(), nombre: "", cantidad: "0", precioSinIVA: "0", precioVenta: "0", costoVariable: "0" }
             ])
         }
     }
@@ -301,7 +296,7 @@ const ProyeccionMacro = () => {
         setOpcionSeleccionadaUnidades(e.target.value)
     }
 
-    const manejarCambioCrecUnidades = (anio, value) => { 
+    const manejarCambioCrecUnidades = (anio, value) => {
         setCrecimientoUnidades((prev) => ({ ...prev, [anio]: value }))
     }
 
@@ -309,21 +304,20 @@ const ProyeccionMacro = () => {
         setOpcionSeleccionadaPrecios(e.target.value)
     }
 
-    const manejarCambioCrecPrecios = (anio, value) => { 
+    const manejarCambioCrecPrecios = (anio, value) => {
         setCrecimientoPrecios((prev) => ({ ...prev, [anio]: value }))
     }
 
-    const manejarCambioCostos = (e) => { 
+    const manejarCambioCostos = (e) => {
         setOpcionSeleccionadaCostos(e.target.value)
     }
 
-    const manejarCambioCrecCostos = (anio, value) => { 
+    const manejarCambioCrecCostos = (anio, value) => {
         setCrecimientoCostos((prev) => ({ ...prev, [anio]: value }))
     }
 
-
     const agregarEstrategia = () => {
-        if (estrategias.length < 5) { 
+        if (estrategias.length < 5) {
             setEstrategias((estrategiasAnteriores) => [
                 ...estrategiasAnteriores,
                 {
@@ -347,30 +341,33 @@ const ProyeccionMacro = () => {
         }
     }
 
-    const manejarCambioEstrategia = (id, campo, value) => { 
+    const manejarCambioEstrategia = (id, campo, value) => {
         setEstrategias((estrategiasAnteriores) =>
-            estrategiasAnteriores.map((estrategia) =>
-                estrategia.id === id
-                    ? {
+            estrategiasAnteriores.map((estrategia) => {
+                if (estrategia.id !== id) {
+                    return estrategia
+                }
+                if (campo === "nombre") {
+                    return { ...estrategia, nombre: value }
+                } else {
+                    return {
                         ...estrategia,
                         valores: {
                             ...estrategia.valores,
-                            [campo]: value, 
+                            [campo]: value,
                         },
                     }
-                    : estrategia
-            )
+                }
+            })
         )
     }
 
-
-    
     const handleSubmit = async (event) => {
         event.preventDefault()
-        setLoading(true)
+        setIsLoading(true)
         setError(null)
 
-    try {
+        try {
             if (!projectId) {
                 setError("projectId es requerido para guardar los datos.")
                 return
@@ -379,21 +376,21 @@ const ProyeccionMacro = () => {
             const isPibUnidades = opcionSeleccionadaUnidades === "PIB"
             const isEstrategiaUnidades = opcionSeleccionadaUnidades === "Estrategia"
             const isIpcUnidades = opcionSeleccionadaUnidades === "IPC"
-    
+
             const isPibPrecios = opcionSeleccionadaPrecios === "PIB"
             const isEstrategiaPrecios = opcionSeleccionadaPrecios === "Estrategia"
             const isIpcPrecios = opcionSeleccionadaPrecios === "IPC"
-    
+
             const isPibCostos = opcionSeleccionadaCostos === "PIB"
             const isEstrategiaCostos = opcionSeleccionadaCostos === "Estrategia"
             const isIpcCostos = opcionSeleccionadaCostos === "IPC"
 
             const dataToSend = {
                 proyeccionesMacroeconomicas: {
-                    ipc: years.map(year => parseFloat(values.IPC[year]) || 0), 
-                    devaluacion: years.map(year => parseFloat(values.Devaluation[year]) || 0), 
-                    tasaInteres: years.map(year => parseFloat(values.InterestRate[year]) || 0), 
-                    pib: years.map(year => parseFloat(values.PIB[year]) || 0), 
+                    ipc: years.map(year => parseFloat(values.IPC[year]) || 0),
+                    devaluacion: years.map(year => parseFloat(values.Devaluation[year]) || 0),
+                    tasaInteres: years.map(year => parseFloat(values.InterestRate[year]) || 0),
+                    pib: years.map(year => parseFloat(values.PIB[year]) || 0),
                 },
                 analisisMercado: {
                     tasaIva: parseFloat(tasaIVA) || 0,
@@ -408,8 +405,7 @@ const ProyeccionMacro = () => {
                         pib: isPibUnidades,
                         estrategia: isEstrategiaUnidades,
                         ipc: isIpcUnidades,
-                        // Solo enviar crecimientoCantidades con valores si estrategia es true
-                        crecimientoCantidades: isEstrategiaUnidades 
+                        crecimientoCantidades: isEstrategiaUnidades
                             ? years.map(year => parseFloat(crecimientoUnidades[year]) || 0)
                             : []
                     },
@@ -417,7 +413,6 @@ const ProyeccionMacro = () => {
                         pib: isPibPrecios,
                         estrategia: isEstrategiaPrecios,
                         ipc: isIpcPrecios,
-                        // Solo enviar crecimientoCantidades con valores si estrategia es true
                         crecimientoCantidades: isEstrategiaPrecios
                             ? years.map(year => parseFloat(crecimientoPrecios[year]) || 0)
                             : []
@@ -426,47 +421,43 @@ const ProyeccionMacro = () => {
                         ipc: isIpcCostos,
                         estrategia: isEstrategiaCostos,
                         pib: isPibCostos,
-                        // Solo enviar crecimientoCantidades con valores si estrategia es true
                         crecimientoCantidades: isEstrategiaCostos
                             ? years.map(year => parseFloat(crecimientoCostos[year]) || 0)
                             : []
                     },
-                    marketingInvestAnoBase: {
-                        precio: years.map(year => (estrategias[0]?.valores?.[year] ? parseFloat(estrategias[0].valores[year]) : 0)),
-                        producto: years.map(year => (estrategias[1]?.valores?.[year] ? parseFloat(estrategias[1].valores[year]) : 0)),
-                        comunicacionales: years.map(year => (estrategias[2]?.valores?.[year] ? parseFloat(estrategias[2].valores[year]) : 0)),
-                        distribucion: years.map(year => (estrategias[3]?.valores?.[year] ? parseFloat(estrategias[3].valores[year]) : 0)),
-                        comunityManager: years.map(year => (estrategias[4]?.valores?.[year] ? parseFloat(estrategias[4].valores[year]) : 0)),
-                    }
+                    estrategiaMarketing: estrategias.map(estrategia => ({
+                        nombre: estrategia.nombre,
+                        valores: years.map(year => parseFloat(estrategia.valores[year]) || 0)
+                    })),
                 }
             }
-            console.log(JSON.stringify(dataToSend, null, 2))
+            console.log("proyeccionMacro - Data to send: ", JSON.stringify(dataToSend, null, 2))
             try {
                 await axiosClient.get(`/api/v1/proyeccion-macro/${projectId}`)
                 const response = true
-                console.log("Actualizando proyecto existente ProyeccionMacro")
+                console.log(`proyeccionMacro - Actualizando proyecto existente ProyeccionMacro: ${projectId}`)
                 if (response) {
-                    navigate('/costosGastos', { state: { projectId: projectId, openingYear: openingYear } });
+                    navigate('/costosGastos', { state: { projectId: projectId, openingYear: openingYear } })
                 }
             } catch (error) {
                 if (error && error.statusCode === 404) {
+                    console.log(`proyeccionMacro - Guardando proyecto nuevo ProyeccionMacro: ${projectId}`)
                     const response = await axiosClient.postProyeccionMacro(`/api/v1/proyeccion-macro/${projectId}`, dataToSend)
                     if (response) {
-                        navigate('/costosGastos', { state: { projectId: projectId, openingYear: openingYear } });
+                        navigate('/costosGastos', { state: { projectId: projectId, openingYear: openingYear } })
                     }
                 } else {
-                    throw error;
+                    throw error
                 }
             }
         } catch (error) {
             console.error("Error al guardar la proyeccion macro:", error)
             setError(error.message || "Error al guardar la proyeccion macro.")
         } finally {
-            setLoading(false)
+            setIsLoading(false)
         }
     }
 
-    
     if (error) {
         return <p style={{ color: 'red' }}>{error}</p>
     }
@@ -521,7 +512,7 @@ const ProyeccionMacro = () => {
                                                         id={`input-${key}-${year}`}
                                                         type="percentage"
                                                         value={values[key]?.[year] || ""}
-                                                        onChange={(value) => handleChange(key, year, value)} 
+                                                        onChange={(value) => handleChange(key, year, value)}
                                                     />
                                                 </td>
                                             ))}
@@ -552,7 +543,7 @@ const ProyeccionMacro = () => {
                                     id="input-tasa-iva"
                                     type="percentage"
                                     value={tasaIVA}
-                                    onChange={setTasaIVA} 
+                                    onChange={setTasaIVA}
                                 />
                             </div>
 
@@ -683,7 +674,7 @@ const ProyeccionMacro = () => {
                                                 type="percentage"
                                                 value={crecimientoUnidades[anio]}
                                                 onChange={(value) => manejarCambioCrecUnidades(anio, value)}
-                                                disabled={anio === years[0]} 
+                                                disabled={anio === years[0]}
                                             />
                                         </div>
                                     ))}
@@ -718,7 +709,7 @@ const ProyeccionMacro = () => {
                                         <div key={anio} className="contenedor-input">
                                             <span className="anio">Año {anio}</span> {/* Título del año */}
                                             <CustomInput
-                                                id={`crecimiento-unidades-${anio}`} 
+                                                id={`crecimiento-unidades-${anio}`}
                                                 type="percentage"
                                                 value={crecimientoPrecios[anio]}
                                                 onChange={(value) => manejarCambioCrecPrecios(anio, value)}
@@ -757,7 +748,7 @@ const ProyeccionMacro = () => {
                                         <div key={anio} className="contenedor-input">
                                             <span className="anio">Año {anio}</span> {/* Título del año */}
                                             <CustomInput
-                                                id={`crecimiento-costos-${anio}`} 
+                                                id={`crecimiento-costos-${anio}`}
                                                 type="percentage"
                                                 value={crecimientoCostos[anio]}
                                                 onChange={(value) => manejarCambioCrecCostos(anio, value)}

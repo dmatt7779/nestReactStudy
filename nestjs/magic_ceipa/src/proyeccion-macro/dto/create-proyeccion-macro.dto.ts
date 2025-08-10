@@ -39,21 +39,14 @@ class CrecimientoDto {
     crecimientoCantidades?: number[];
 }
 
-class MarketingInvestAnoBaseDto {
-    @IsArray()
-    precio: number[];
+export class EstrategiaMarketingDto {
+    @IsString()
+    nombre: string;
 
     @IsArray()
-    producto: number[];
-
-    @IsArray()
-    distribucion: number[];
-
-    @IsArray()
-    comunicacionales: number[];
-
-    @IsArray()
-    comunityManager: number[];
+    @IsNumber({}, { each: true })
+    @ArrayMaxSize(5)
+    valores: number[];
 }
 
 class AnalisisMercadoDto {
@@ -80,9 +73,10 @@ class AnalisisMercadoDto {
     @Type(() => CrecimientoDto)
     crecimientoCostos: CrecimientoDto;
 
-    @ValidateNested()
-    @Type(() => MarketingInvestAnoBaseDto)
-    marketingInvestAnoBase: MarketingInvestAnoBaseDto;
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => EstrategiaMarketingDto)
+    estrategiaMarketing: EstrategiaMarketingDto[];
 }
 
 class proyecciones_macroeconomicasDto {

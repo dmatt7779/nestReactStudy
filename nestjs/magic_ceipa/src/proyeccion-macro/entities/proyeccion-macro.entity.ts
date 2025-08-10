@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, OneToOne, OneToMany } from 'typeorm';
 import { Producto } from './producto.entity';
 import { ProjectInfo } from '../../project-info/entities/project-info.entity';
 import { User } from '../../users/entities/user.entity';
+import { EstrategiaMarketing } from './estrategia-marketing.entity';
 
 @Entity()
 export class ProyeccionMacro {
@@ -21,7 +22,7 @@ export class ProyeccionMacro {
   @Column({ type: 'json' })
   analisisMercado: {
     tasaIva: number;
-    productos: Producto[];
+    // productos: Producto[];
     crecimientoUnidades: {
       pib: boolean;
       estrategia: boolean;
@@ -40,14 +41,14 @@ export class ProyeccionMacro {
       pib: boolean;
       estrategiaValues: number[];
     };
-    marketingInvestAnoBase: {
-      precio: number[];
-      producto: number[];
-      distribucion: number[];
-      comunicacionales: number[];
-      comunityManager: number[];
-    };
+    // estrategiaMarketing: EstrategiaMarketing[];
   };
+
+  @OneToMany(() => Producto, producto => producto.proyeccionMacro, { cascade: true })
+  producto: Producto[];
+
+  @OneToMany(() => EstrategiaMarketing, estrategia => estrategia.proyeccionMacro, { cascade: true })
+  estrategiaMarketing: EstrategiaMarketing[];
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'userEmail', referencedColumnName: 'email'})
@@ -56,8 +57,8 @@ export class ProyeccionMacro {
   @Column()
   userEmail: string;
 
-  @OneToOne(() => ProjectInfo, (projectInfo) => projectInfo.proyeccionMacro) // Inverse side of the relation
-  @JoinColumn({name: 'projectInfoId'}) //specifies the column name of the joining relation.
+  @OneToOne(() => ProjectInfo, (projectInfo) => projectInfo.proyeccionMacro)
+  @JoinColumn({name: 'projectInfoId'})
   projectInfo: ProjectInfo;
 
   @Column({name: 'projectInfoId'})
