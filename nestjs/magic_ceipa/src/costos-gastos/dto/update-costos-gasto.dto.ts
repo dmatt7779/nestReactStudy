@@ -8,7 +8,7 @@ export class UpdateIncrementoEgresosDto extends PartialType(IncrementoEgresosDto
 class UpdateIncrementoEgresosDataDto {
     @IsOptional()    
     @IsBoolean()
-    otros_porcentajes?: boolean;
+    pib?: boolean;
 
     @IsOptional()
     @IsBoolean()
@@ -17,7 +17,7 @@ class UpdateIncrementoEgresosDataDto {
     @IsOptional()
     @IsArray()
     @ArrayMaxSize(4)
-    incremento_egresos?: number[];
+    estrategia?: number[];
 }
 
 class UpdateCostosGastosDataDto {
@@ -30,7 +30,7 @@ class UpdateCostosGastosDataDto {
     @IsOptional()
     @ValidateNested()
     @Type(() => UpdateIncrementoEgresosDto)
-    incremento_egresos?: UpdateIncrementoEgresosDto;
+    incrementoEgresosCantidades?: UpdateIncrementoEgresosDto;
 }
 
 export class UpdateCostosGastoDto {

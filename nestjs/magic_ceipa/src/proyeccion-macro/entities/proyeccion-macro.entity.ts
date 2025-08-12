@@ -22,7 +22,6 @@ export class ProyeccionMacro {
   @Column({ type: 'json' })
   analisisMercado: {
     tasaIva: number;
-    // productos: Producto[];
     crecimientoUnidades: {
       pib: boolean;
       estrategia: boolean;
@@ -41,7 +40,6 @@ export class ProyeccionMacro {
       pib: boolean;
       estrategiaValues: number[];
     };
-    // estrategiaMarketing: EstrategiaMarketing[];
   };
 
   @OneToMany(() => Producto, producto => producto.proyeccionMacro, { cascade: true })

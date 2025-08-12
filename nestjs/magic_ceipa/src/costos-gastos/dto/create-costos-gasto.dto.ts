@@ -1,31 +1,22 @@
-import { ArrayMaxSize, IsArray, IsBoolean, IsNotEmptyObject, IsOptional, ValidateNested } from 'class-validator';
+import { IsArray, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-
-export class IncrementoEgresosDto {
-    @IsBoolean()
-    otrosPorcentajes: boolean;
-
-    @IsBoolean()
-    ipc: boolean;
-
-    @IsOptional()
-    @IsArray()
-    @ArrayMaxSize(4)
-    incrementoEgresos: number[];
-}
-
-class CostosGastosDto {
-    costos: any;
-    gastos: any;
-
-    @IsOptional()
-    @ValidateNested()
-    @Type(() => IncrementoEgresosDto)
-    incrementoEgresos: IncrementoEgresosDto;
-}
+import { CostoGastoItemDto } from './costos-gasto-item.dto';
+import { IncrementoEgresosDto } from './increment-egresos.dto';
 
 export class CreateCostosGastoDto {
-    @IsNotEmptyObject()
-    @Type(() => CostosGastosDto)
-    costosGastos: CostosGastosDto;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CostoGastoItemDto)
+  costos: CostoGastoItemDto[];
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CostoGastoItemDto)
+  gastos: CostoGastoItemDto[];
+
+  @ValidateNested({ each: true })
+  @Type(() => IncrementoEgresosDto)
+  incrementoEgresos: IncrementoEgresosDto;
 }
+
+export { IncrementoEgresosDto };

@@ -1,56 +1,53 @@
-import { ProjectInfo } from "../../project-info/entities/project-info.entity";
-import { User } from "../../users/entities/user.entity";
-import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { 
+    Entity, 
+    PrimaryGeneratedColumn, 
+    Column, 
+    OneToOne, 
+    JoinColumn, 
+    ManyToOne
+} from 'typeorm';
+import { ProjectInfo } from '../../project-info/entities/project-info.entity';
+import { User } from 'src/users/entities/user.entity';
 
-@Entity()
+interface ICostoGastoItem {
+    nombre: string;
+    valor: number;
+}
+
+interface IncrementoEgresos {
+    pib: boolean;
+    ipc: boolean;
+    estrategia: boolean;
+    incrementoEgresosCantidades: number[];
+}
+
+@Entity('costos_gastos')
 export class CostosGasto {
 
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column({ type: 'json' })
-    costosGastos: {
-        costos: Record<string, any>;
-        gastos: Record<string, any>;
-        incrementoEgresos: {
-            otrosPorcentajes: boolean;
-            ipc: boolean;
-            incrementoEgresos: number[];
-        };
-    };
+    costos: ICostoGastoItem[];
 
-    @BeforeInsert()
-    @BeforeUpdate()
-    processCostosGastos() {
-        this.costosGastos.costos = this.processDynamicKeys(this.costosGastos.costos);
-        this.costosGastos.gastos = this.processDynamicKeys(this.costosGastos.gastos);
-    }
+    @Column({ type: 'json' })
+    gastos: ICostoGastoItem[];
 
-    private processDynamicKeys(obj: any) {
-        if (typeof obj !== 'object' || obj === null) {
-            return obj;
-        }
-        const newObj = {};
-        for (const key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                let newKey = key.toLowerCase().replace(/\s+/g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                newObj[newKey] = typeof obj[key] === 'object' ? this.processDynamicKeys(obj[key]) : obj[key];
-            }
-        }
-        return newObj;
-    };
+    @Column()
+    projectInfoId: number;
+
+    @Column()
+    userEmail: string;
+
+    @Column({ type: 'json' })
+    incrementoEgresos: IncrementoEgresos;
 
     @ManyToOne(() => User)
     @JoinColumn({ name: 'userEmail', referencedColumnName: 'email' })
     user: User;
 
-    @Column()
-    userEmail: string;
-
-    @OneToOne(() => ProjectInfo, (projectInfo) => projectInfo.proyeccionMacro)
+    @OneToOne(() => ProjectInfo, projectInfo => projectInfo.costosGastos)
     @JoinColumn({ name: 'projectInfoId' })
     projectInfo: ProjectInfo;
 
-    @Column({ name: 'projectInfoId' })
-    projectInfoId: number
 }
