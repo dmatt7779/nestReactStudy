@@ -1,63 +1,68 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsPositive, ValidateNested } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 
-interface Items {
-    [key: string]: number;
+export class Items {
+    @IsOptional()
+    @IsString()
+    nombre: string;
+    
+    @IsOptional()
+    @IsNumber()
+    @IsPositive()
+    @Min(0)
+    valor: number;
+    
+    @IsOptional()
+    @IsNumber()
+    @IsPositive()
+    vidaUtilAnos: number;
+
+    @IsOptional()
+    @IsNumber()
+    @IsPositive()
+    valorSalvamento: number;
 }
 
 export class ActivoFijoDataDto {
-    @ApiPropertyOptional()
-    @IsOptional()
-    @IsNumber()
-    @IsPositive()
-    vidaUtilAnos?: number;
-
-    @ApiPropertyOptional()
-    @IsOptional()
-    @IsNumber()
-    @IsPositive()
-    valorSalvamento?: number;
-
-    @ApiProperty({type: 'object', additionalProperties: { type: 'number'}})
-    @IsNotEmpty()
-    // @Type(() => ItemDto)
+    @ValidateNested({ each: true })
+    @Type(() => Items)
     items: Items;
 }
 
 
 export class CreateActivosFijoDto {
-    @ApiProperty()
+    @IsOptional()
     @ValidateNested()
     @Type(() => ActivoFijoDataDto)
     mueblesEnseres: ActivoFijoDataDto;
 
-    @ApiProperty()
+    @IsOptional()
     @ValidateNested()
     @Type(() => ActivoFijoDataDto)
     maquinariaEquipos: ActivoFijoDataDto;
 
-    @ApiProperty()
+    @IsOptional()
     @ValidateNested()
     @Type(() => ActivoFijoDataDto)
     vehiculos: ActivoFijoDataDto;
 
-    @ApiProperty()
+    @IsOptional()
     @ValidateNested()
     @Type(() => ActivoFijoDataDto)
     terrenos: ActivoFijoDataDto;
 
-    @ApiProperty()
+    @IsOptional()
     @ValidateNested()
     @Type(() => ActivoFijoDataDto)
     edificaciones: ActivoFijoDataDto;
 
-    @ApiProperty()
+    @IsOptional()
     @ValidateNested()
     @Type(() => ActivoFijoDataDto)
     equiposComputo: ActivoFijoDataDto;
 
-    @ApiProperty()
+    @IsOptional()
     @ValidateNested()
     @Type(() => ActivoFijoDataDto)
     activosDiferidos: ActivoFijoDataDto;

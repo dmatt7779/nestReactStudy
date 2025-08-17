@@ -31,17 +31,17 @@ export class ActivoFijo {
     @Column({ type: 'json' })
     activosFijos: ActivosFijos;
 
+    @Column()
+    userEmail: string;
+
+    @Column({ name: 'projectInfoId' })
+    projectInfoId: number
+
     @ManyToOne(() => User)
     @JoinColumn({ name: 'userEmail', referencedColumnName: 'email' })
     user: User;
 
-    @Column()
-    userEmail: string;
-
     @OneToOne(() => ProjectInfo, (projectInfo) => projectInfo.proyeccionMacro)
     @JoinColumn({ name: 'projectInfoId' })
     projectInfo: ProjectInfo;
-
-    @Column({ name: 'projectInfoId' })
-    projectInfoId: number
 }

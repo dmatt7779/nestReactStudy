@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateActivosFijoDto } from './dto/create-activos-fijo.dto';
 import { UpdateActivosFijoDto } from './dto/update-activos-fijo.dto';
 import { ActivoFijo } from './entities/activos-fijo.entity';
@@ -51,7 +51,7 @@ export class ActivosFijosService {
       where: { projectInfoId },
     });
     if(!isActivoFijo){
-      throw new BadRequestException('Project is not found');
+      throw new NotFoundException('Project is not found');
     }
     this.validateOwnerShip(isActivoFijo, user)
     return isActivoFijo;

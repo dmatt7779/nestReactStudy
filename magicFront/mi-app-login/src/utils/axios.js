@@ -34,7 +34,7 @@ class AxiosClient {
       (error) => {
         if (error.response && error.response.status === 401) {
           localStorage.removeItem('token')
-          window.location.href = '/login' // o usa react-router para la redirección
+          window.location.href = '/'
         }
         if (!error.response) {
           return Promise.reject("Error contact administrator.");
@@ -90,7 +90,7 @@ class AxiosClient {
     }
   }
 
-    async postcostosGastos(url, body) {
+  async postCostosGastos(url, body) {
     try {
       const response = await this.axiosInstance.post(url, body);
       return response;
@@ -98,6 +98,15 @@ class AxiosClient {
       throw error;
     }
   }
+
+  async postActivosFijos(url, body) {
+    try {
+      const response = await this.axiosInstance.post(url, body);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  } 
 
   // Método genérico para cualquier verbo HTTP
   async request(method, url, data = null, config = {}) {
