@@ -1,28 +1,41 @@
-import { IsArray, IsNotEmpty, IsNotEmptyObject, IsObject, IsOptional, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class IncrementoSalarialDto {
+    @IsBoolean()
     @IsOptional()
-    @IsNotEmpty()
     ipc: boolean;
 
+    @IsBoolean()
     @IsOptional()
-    @IsNotEmpty()
-    otros_porcentajes: boolean;
+    otroPorcentaje: boolean;
 
     @IsOptional()
-    @IsNotEmpty()
     @IsArray()
-    incremento_egresos: number[];
+    incrementoEgresos: number[];
+}
+
+class SalarioAdminDto {
+    
+    @IsString()
+    @IsNotEmpty()
+    cargo: string;
+
+    @IsNumber()
+    @IsNotEmpty()
+    valorMensual: number;
+
+    @IsNumber()
+    @IsNotEmpty()
+    cargaPrestacional: number;
 }
 
 export class CreateSalarioAdminDto {
-    @IsObject()
-    @IsNotEmptyObject()
-    salario_admins: Record<string, any>;
+    @ValidateNested({ each: true })
+    @Type(() => SalarioAdminDto)
+    salarioAdmins: SalarioAdminDto[];
 
-    @ValidateNested()
-    @IsNotEmptyObject()
+    @ValidateNested({ each: true })
     @Type(() => IncrementoSalarialDto)
-    incremento_salarial: IncrementoSalarialDto;
+    incrementoSalarial: IncrementoSalarialDto;
 }

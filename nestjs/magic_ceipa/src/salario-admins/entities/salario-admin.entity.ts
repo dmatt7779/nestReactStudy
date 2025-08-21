@@ -1,14 +1,22 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { ProjectInfo } from 'src/project-info/entities/project-info.entity';
+import { User } from 'src/users/entities/user.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
 
 interface IncrementoSalarial {
   ipc: boolean;
-  otros_porcentajes: boolean;
-  incremento_egresos: number[];
+  otroPorcentaje: boolean;
+  incrementoEgresos: number[];
+}
+
+interface SalarioAdminItem{
+    cargo: string;
+    valorMensual: number;
+    cargaPrestacional: number;
 }
 
 interface SalarioAdmins {
-  [key: string]: number | null | IncrementoSalarial;
-  incremento_salarial: IncrementoSalarial;
+  salarioAdmins: SalarioAdminItem[];
+  incrementoSalarial: IncrementoSalarial;
 }
 
 @Entity()
@@ -17,5 +25,16 @@ export class SalarioAdmin {
   id: number;
 
   @Column({ type: 'json' })
-  salario_admins: SalarioAdmins;
+  salarioAdmins: SalarioAdmins;
+
+  @Column()
+  userEmail: string;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'userEmail', referencedColumnName: 'email' })
+  user: User;
+
+  @OneToOne(() => ProjectInfo, projectInfo => projectInfo.costosGastos)
+  @JoinColumn({ name: 'projectInfoId' })
+  projectInfo: ProjectInfo;
 }
