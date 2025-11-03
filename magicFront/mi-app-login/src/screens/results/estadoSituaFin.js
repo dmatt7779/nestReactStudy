@@ -120,8 +120,7 @@ const EstadoSituaFin = () => {
         <form onSubmit={handleGuardar}>
           <div className="contenido-container">
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed diam nonummy nibh
-              euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+              El estado de situación financiera, también llamado balance general, es un informe contable que muestra los activos (bienes y derechos), pasivos (obligaciones y deudas) y el patrimonio (capital) de una entidad en un momento específico, actuando como una "fotografía" de su situación económica para evaluar su liquidez y solvencia.
             </p>
 
             <div className="container-titulo">
@@ -258,7 +257,7 @@ const EstadoSituaFin = () => {
               <button
                 className="nav-btn siguiente"
                 type="button"
-                onClick={() => navigate("/estadoResultados")}
+                onClick={() => navigate("/flujoCaja")}
               ></button>
             </div>
           </div>

@@ -80,7 +80,7 @@ const Indicadores = () => {
         <form onSubmit={handleGuardar}>
           <div className="contenido-container">
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+              Los indicadores financieros son herramientas cuantitativas, como ratios o métricas, que se derivan de los estados financieros para medir y evaluar la salud, el rendimiento y la posición financiera de una empresa en un periodo específico. Permiten a directivos, inversionistas y otros interesados tomar decisiones informadas al analizar la liquidez, solvencia, rentabilidad y eficiencia de la organización, comparando su desempeño con su historial o con el de otras empresas del sector.
             </p>
 
             {/* Tabla Rentabilidad */}

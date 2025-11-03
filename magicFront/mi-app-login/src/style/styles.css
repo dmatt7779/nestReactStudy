@@ -317,7 +317,7 @@ button:active {
   /* Contenedor de los botones a la derecha */
   .nav-buttons {
     display: flex;
-    gap: 20px;                 /* Espacio horizontal entre botones */
+    gap: 10px;                 /* Espacio horizontal entre botones */
   }
   
   .nav-btn {
@@ -348,6 +348,37 @@ button:active {
     height: auto;
     display: block;
     margin-bottom: 53px;  } 
+
+  .dropdown {
+    position: relative;
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 100%; /* aparece justo debajo del botón */
+    left: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    list-style: none; /* quita las viñetas */
+    margin: 0;
+    padding: 4px 0;
+    width: 180px;
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+    z-index: 2000;
+  }
+
+  .dropdown-menu li {
+    padding: 7px 10px;
+    font-size: 13px; /* texto más pequeño */
+    cursor: pointer; /* muestra la mano al pasar */
+    transition: background-color 0.2s ease;
+  }
+
+  .dropdown-menu li:hover {
+    background-color: #f0f0f0; 
+  }
+
 
 /*---------------------------------- Styles Project Info ----------------------------------------*/
 
@@ -468,7 +499,7 @@ button:active {
   border: none;
   cursor: pointer;
   width: 120px; /* Ajusta el tamaño */
-  height: 50px;
+  height: 40px;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -529,6 +560,11 @@ button:active {
     justify-content: center;
     align-items: flex-start;    
     width: 100%;         /* Puedes ajustar un ancho fijo si lo prefieres */
+}
+
+.contenido-container h4 {
+    font-size: 16px;
+    margin: 40px 0 0px 0;   /* 0 arriba, 0 a los lados, 10px abajo */
 }
 
 .contenido-container p {

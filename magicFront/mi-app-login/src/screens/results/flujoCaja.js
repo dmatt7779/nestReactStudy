@@ -302,7 +302,7 @@ const FlujoCaja = () => {
             {/* Navegación */}
             <div className="buttons-container">
               <button className="nav-btn anterior" type="button" onClick={() => navigate(-1)}></button>
-              <button className="nav-btn siguiente" type="button" onClick={() => navigate("/estadoResultados")}></button>
+              <button className="nav-btn siguiente" type="button" onClick={() => navigate("/wacc")}></button>
             </div>
           </div>
         </form>

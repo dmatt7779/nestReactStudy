@@ -4,13 +4,13 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './screens/login';
 import Register from './screens/register';
-import ProjectInfo from './screens/projectInfo';
 import NewProject from './screens/newProject';
+import ProjectInfo from './screens/projectInfo';
 import ProyeccionMacro from './screens/proyeccionMacro';
 import CostosGastos from './screens/costosGastos';
-import PlanFinanciero from './screens/planFinanciero';
-import SalarioAdmins from './screens/salarioAdmins';
 import ActivosFijos from './screens/activosFijos';
+import SalarioAdmins from './screens/salarioAdmins';
+import PlanFinanciero from './screens/planFinanciero';
 import EstadoResultados from './screens/results/estadoResultados';
 import FlujoEfectivo from './screens/results/flujoEfectivo';
 import EstadoSituaFin from './screens/results/estadoSituaFin';
@@ -29,8 +29,8 @@ function App() {
         <Route path="/NewProject/" element={<NewProject />} />
         <Route path="/ProyeccionMacro/" element={<ProyeccionMacro />} />
         <Route path="/CostosGastos/" element={<CostosGastos />} />
-        <Route path="/PlanFinanciero/" element={<PlanFinanciero />} />
         <Route path="/SalarioAdmins/" element={<SalarioAdmins />} />
+        <Route path="/PlanFinanciero/" element={<PlanFinanciero />} />
         <Route path="/ActivosFijos/" element={<ActivosFijos />} />
         <Route path="/EstadoResultados/" element={<EstadoResultados />} />
         <Route path="/FlujoEfectivo/" element={<FlujoEfectivo />} />
