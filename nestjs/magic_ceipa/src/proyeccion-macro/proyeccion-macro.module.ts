@@ -12,5 +12,6 @@ import { EstrategiaMarketing } from './entities/estrategia-marketing.entity';
   imports: [TypeOrmModule.forFeature([ProyeccionMacro, Producto, EstrategiaMarketing, ProjectInfo])],
   controllers: [ProyeccionMacroController],
   providers: [ProyeccionMacroService, ProjectInfoService],
+  exports: [ProyeccionMacroModule, ProyeccionMacroService],
 })
 export class ProyeccionMacroModule {}

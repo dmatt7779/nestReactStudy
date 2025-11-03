@@ -1,60 +1,49 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { ProjectInfo } from "../../project-info/entities/project-info.entity";
+import { User } from "../../users/entities/user.entity";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
+interface PropuestaFinanciera {
+    activosFijos: number[];
+    utilidadNetaDividendo: number[];
+}
+interface PlanFinancieroInterface {
+    disponibleInicial: number;
+    diasInventarioInicial: number;
+    financiacionPropia: number;
+    plazoCredito: number;
+    tasaCredito: number;
+    tasaProveedores: number;
+    tmrr: number;
+    tasaReinversion: number;
+    impuestosRenta: number;
+    diasCartera: number;
+    diasInventario: number;
+    diasPagoProveedores: number;
+    tarfiaIndCcio: number;
+    gmf4xmil: number;
+    saldoMinCaja: number;
+    propuestaFinanciera: PropuestaFinanciera;
+}
 @Entity()
 export class PlanFinanciero {
 
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
-    disponible_inicial: number;
-
-    @Column()
-    dias_inventario_inicial: number;
-
-    @Column({ type: 'decimal', precision: 15, scale: 2 })
-    financiacion_propia: number;
-
-    @Column()
-    plazo_credito: number;
-
-    @Column()
-    tasa_credito: number;
-
-    @Column()
-    tasa_proveedores: number;
-
-    @Column()
-    tmrr: number;
-
-    @Column()
-    tasa_reinversion: number;
-
-    @Column()
-    impuestos_renta: number;
-
-    @Column()
-    dias_cartera: number;
-
-    @Column()
-    dias_inventario: number;
-
-    @Column()
-    dias_pago_proveedores: number;
-
-    @Column()
-    tarfia_ind_ccio: number;
-
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
-    gmf4xmil: number;
-
-    @Column({ type: 'decimal', precision: 15, scale: 2 })
-    saldo_min_caja: number;
-
     @Column({ type: 'json' })
-    propuesta_financiera: {
-        activos_fijos: number[];
-        utilidad_neta_dividendo: number[];
-    };
+    planFinanciero: PlanFinancieroInterface;
 
+    @Column()
+    userEmail: string;
+
+    @Column({ name: 'projectInfoId' })
+    projectInfoId: number
+
+    @ManyToOne(() => User)
+    @JoinColumn({ name: 'userEmail', referencedColumnName: 'email' })
+    user: User;
+
+    @OneToOne(() => ProjectInfo, (projectInfo) => projectInfo.proyeccionMacro)
+    @JoinColumn({ name: 'projectInfoId' })
+    projectInfo: ProjectInfo;
 }

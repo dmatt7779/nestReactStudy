@@ -1,107 +1,97 @@
 import { Type } from "class-transformer";
-import { ArrayMaxSize, ArrayMinSize, IsArray, IsInt, IsNotEmpty, IsNotEmptyObject, IsNumber, IsPositive, Max, Min, ValidateNested } from "class-validator";
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsInt, IsNotEmpty, IsNotEmptyObject, IsNumber, IsOptional, IsPositive, Max, Min, ValidateNested } from "class-validator";
 
 export class PropuestaFinancieraDto {
 
     @IsArray()
-    @ArrayMinSize(5)
-    @ArrayMaxSize(5)
     @IsNumber({}, { each: true })
-    activos_fijos: number[];
+    activosFijos: number[];
 
     @IsArray()
-    @ArrayMinSize(4)
-    @ArrayMaxSize(4)
     @IsNumber({}, { each: true })
-    utilidad_neta_dividendo: number[];
+    utilidadNetaDividendo: number[];
 }
 
 export class CreatePlanFinancieroDto {
+    @IsOptional()
     @IsInt()
     @IsNumber()
     @IsNotEmpty()
-    @IsPositive()
-    disponible_inicial: number;
+    disponibleInicial: number;
 
+    @IsOptional()
     @IsInt()
     @IsNumber()
     @IsNotEmpty()
-    @IsPositive()
-    dias_inventario_inicial: number;
+    diasInventarioInicial: number;
 
     @IsNumber()
     @IsNotEmpty()
-    @IsPositive()
-    financiacion_propia: number;
+    financiacionPropia: number;
 
+    @IsOptional()
     @IsInt()
     @IsNotEmpty()
     @Min(1)
-    plazo_credito: number;
+    plazoCredito: number;
 
+    @IsOptional()
     @IsInt()
-    @IsPositive()
     @Max(100)
     @IsNotEmpty()
-    tasa_credito: number;
+    tasaCredito: number;
 
+    @IsOptional()
     @IsInt()
     @IsNotEmpty()
-    @Min(0)
-    @Max(100)
-    tasa_proveedores: number;
+    tasaProveedores: number;
 
+    @IsOptional()
     @IsInt()
     @IsNotEmpty()
-    @Min(0)
-    @Max(100)
     tmrr: number;
 
+    @IsOptional()
     @IsInt()
     @IsNotEmpty()
-    @Min(0)
-    @Max(100)
-    tasa_reinversion: number;
+    tasaReinversion: number;
 
+    @IsOptional()
     @IsInt()
     @IsNotEmpty()
-    @Min(0)
-    @Max(100)
-    impuestos_renta: number;
+    impuestosRenta: number;
 
+    @IsOptional()
     @IsInt()
     @IsNotEmpty()
-    @IsPositive()
-    dias_cartera: number;
+    diasCartera: number;
 
+    @IsOptional()
     @IsInt()
     @IsNotEmpty()
-    @IsPositive()
-    dias_inventario: number;
+    diasInventario: number;
 
+    @IsOptional()
     @IsInt()
     @IsNotEmpty()
-    @IsPositive()
-    dias_pago_proveedores: number;
+    diasPagoProveedores: number;
 
-    @IsInt()
+    @IsOptional()
+    @IsNumber()
     @IsNotEmpty()
-    @IsPositive()
-    tarfia_ind_ccio: number;
+    tarfiaIndCcio: number;
 
     @IsNumber()
     @IsNotEmpty()
-    @Min(0)
-    @Max(1)
     gmf4xmil: number;
 
     @IsNumber()
     @IsNotEmpty()
-    @IsPositive()
-    saldo_min_caja: number;
+    saldoMinCaja: number;
 
+    @IsOptional()
     @IsNotEmptyObject()
     @ValidateNested()
     @Type(() => PropuestaFinancieraDto)
-    propuesta_financiera: PropuestaFinancieraDto;
+    propuestaFinanciera: PropuestaFinancieraDto;
 }

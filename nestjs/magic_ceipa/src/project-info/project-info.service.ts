@@ -12,7 +12,7 @@ export class ProjectInfoService {
 
   constructor(
       @InjectRepository(ProjectInfo)
-      private readonly ProjectInfo: Repository<ProjectInfo>
+      private readonly ProjectInfoRepository: Repository<ProjectInfo>
   ) {}
     
   async create(createProjectInfoDto: CreateProjectInfoDto, user: UserActiveInterface) {
@@ -21,8 +21,8 @@ export class ProjectInfoService {
       throw new BadRequestException("Project already exist")
     }
     try{
-        const project = this.ProjectInfo.create(createProjectInfoDto)
-        return await this.ProjectInfo.save({
+        const project = this.ProjectInfoRepository.create(createProjectInfoDto)
+        return await this.ProjectInfoRepository.save({
           ...project,
           userEmail: user.email
         });
@@ -32,7 +32,7 @@ export class ProjectInfoService {
   }
 
   async findProjectByOneByEmail(projectName: string, email: string){
-    return await this.ProjectInfo.findOne({
+    return await this.ProjectInfoRepository.findOne({
       where: {projectName: projectName, userEmail: email},
       select: ['id', 'projectName', 'teamMembers', 'openingYear', 'professor', 'userEmail']
     })
@@ -40,15 +40,15 @@ export class ProjectInfoService {
 
   async findAll(user: UserActiveInterface) {
     if(user.role === Role.ADMIN){
-      return await this.ProjectInfo.find();
+      return await this.ProjectInfoRepository.find();
     }
-    return await this.ProjectInfo.find({
+    return await this.ProjectInfoRepository.find({
       where: {userEmail: user.email}
     });
   }
 
   async findOne(id: number, user: UserActiveInterface) {
-    const project = await this.ProjectInfo.findOne({
+    const project = await this.ProjectInfoRepository.findOne({
       where: { id },
       relations: ['proyeccionMacro'],
     });
@@ -61,12 +61,12 @@ export class ProjectInfoService {
 
   async update(id: number, updateProjectInfoDto: UpdateProjectInfoDto, user: UserActiveInterface) {
     await this.findOne(id, user);
-    return await this.ProjectInfo.update(id, updateProjectInfoDto)
+    return await this.ProjectInfoRepository.update(id, updateProjectInfoDto)
   }
 
   async remove(id: number, user: UserActiveInterface) {
     const projectToDelete = await this.findOne(id, user);
-    await this.ProjectInfo.softDelete({id});
+    await this.ProjectInfoRepository.softDelete({id});
     return projectToDelete;
   }
 

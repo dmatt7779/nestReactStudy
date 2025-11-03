@@ -10,5 +10,6 @@ import { ProjectInfo } from '../project-info/entities/project-info.entity';
   imports: [TypeOrmModule.forFeature([CostosGasto, ProjectInfo])],
   controllers: [CostosGastosController],
   providers: [CostosGastosService, ProjectInfoService],
+  exports: [CostosGastosModule, CostosGastosService],
 })
 export class CostosGastosModule {}

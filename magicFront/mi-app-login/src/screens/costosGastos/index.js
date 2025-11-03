@@ -160,7 +160,7 @@ const CostosGastos = () => {
                 console.log("Datos de Costos y Gastos actualizados.");
             } else {
                 // Si no existían, creamos con POST
-                await axiosClient.postcostosGastos(`/api/v1/costos-gastos/${projectId}`, dataToSend);
+                await axiosClient.postCostosGastos(`/api/v1/costos-gastos/${projectId}`, dataToSend);
                 console.log("Datos de Costos y Gastos creados.");
             }
             // Navegamos a la siguiente página si todo fue exitoso

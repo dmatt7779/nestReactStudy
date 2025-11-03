@@ -11,7 +11,6 @@ interface IncrementoSalarial {
 interface SalarioAdminItem{
     cargo: string;
     valorMensual: number;
-    cargaPrestacional: number;
 }
 
 interface SalarioAdmins {

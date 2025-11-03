@@ -8,6 +8,6 @@ import { ProjectInfo } from './entities/project-info.entity';
   imports: [TypeOrmModule.forFeature([ProjectInfo])],
   controllers: [ProjectInfoController],
   providers: [ProjectInfoService],
-  exports: [ProjectInfoService],
+  exports: [ProjectInfoService, ProjectInfoModule],
 })
 export class ProjectInfoModule {}

@@ -28,8 +28,8 @@ const SalarioAdmins = () => {
     const [years, setYears] = useState(() => calculateYears(openingYear));
 
     // --- 2. ESTADOS ESPECÍFICOS PARA ESTA PANTALLA ---
-    // Unificamos los nombres para que coincidan con la API: cargo, valorMensual, cargaPrestacional
-    const [cargos, setCargos] = useState([{ id: Date.now(), cargo: "", valorMensual: "", cargaPrestacional: "" }]);
+    // Unificamos los nombres para que coincidan con la API: cargo, valorMensual
+    const [cargos, setCargos] = useState([{ id: Date.now(), cargo: "", valorMensual: "" }]);
     const [opcionSeleccionadaSalarios, setOpcionSeleccionadaSalarios] = useState("");
     const [incrementoSalarios, setIncrementoSalarios] = useState(() => years.reduce((acc, year) => ({ ...acc, [year]: "" }), {}));
 
@@ -60,7 +60,6 @@ const SalarioAdmins = () => {
                         id: `api-cargo-${index}`,
                         cargo: item.cargo,
                         valorMensual: item.valorMensual.toString(),
-                        cargaPrestacional: item.cargaPrestacional.toString(),
                     })));
                 }
 
@@ -82,7 +81,7 @@ const SalarioAdmins = () => {
                 if (salarioAdminsError.statusCode === 404) {
                     console.warn("No se encontraron datos de SalarioAdmins. Mostrando formulario vacío.");
                     setDataExists(false);
-                    setCargos([{ id: Date.now(), cargo: "", valorMensual: "", cargaPrestacional: "" }]);
+                    setCargos([{ id: Date.now(), cargo: "", valorMensual: ""}]);
                     setOpcionSeleccionadaSalarios("");
                 } else {
                     setError(salarioAdminsError.message || "Error al cargar los datos.");
@@ -96,7 +95,7 @@ const SalarioAdmins = () => {
     }, [projectId, years]);
 
     const agregarCargo = () => {
-        setCargos([...cargos, { id: Date.now(), cargo: "", valorMensual: "", cargaPrestacional: "" }]);
+        setCargos([...cargos, { id: Date.now(), cargo: "", valorMensual: ""}]);
     };
 
     const eliminarCargo = (id) => {
@@ -127,7 +126,6 @@ const SalarioAdmins = () => {
                 .map(c => ({
                     cargo: c.cargo.trim(),
                     valorMensual: parseFloat(c.valorMensual) || 0,
-                    cargaPrestacional: parseFloat(c.cargaPrestacional) || 0,
                 })),
             incrementoSalarial: {
                 ipc: opcionSeleccionadaSalarios === "IPC",
@@ -175,7 +173,6 @@ const SalarioAdmins = () => {
                                         <th>#</th>
                                         <th className="estrategia-celda-nombre">Cargo</th>
                                         <th>Valor mensual</th>
-                                        <th>Carga prestacional</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -188,9 +185,6 @@ const SalarioAdmins = () => {
                                             </td>
                                             <td>
                                                 <CustomInput type="number" value={cargo.valorMensual} onChange={(value) => manejarCambioCargo(cargo.id, "valorMensual", value)} />
-                                            </td>
-                                            <td>
-                                                <CustomInput type="number" value={cargo.cargaPrestacional} onChange={(value) => manejarCambioCargo(cargo.id, "cargaPrestacional", value)} />
                                             </td>
                                             <td>
                                                 <button type="button" className="estrategia-boton-eliminar" onClick={() => eliminarCargo(cargo.id)}>🗑️</button>

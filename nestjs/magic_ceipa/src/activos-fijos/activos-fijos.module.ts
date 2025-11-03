@@ -10,5 +10,6 @@ import { ProjectInfo } from '../project-info/entities/project-info.entity';
   imports: [TypeOrmModule.forFeature([ActivoFijo, ProjectInfo])],
   controllers: [ActivosFijosController],
   providers: [ActivosFijosService, ProjectInfoService],
+  exports: [ActivosFijosModule, ActivosFijosService],
 })
 export class ActivosFijosModule {}

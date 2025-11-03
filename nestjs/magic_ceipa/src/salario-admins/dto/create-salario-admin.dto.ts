@@ -24,10 +24,6 @@ class SalarioAdminDto {
     @IsNumber()
     @IsNotEmpty()
     valorMensual: number;
-
-    @IsNumber()
-    @IsNotEmpty()
-    cargaPrestacional: number;
 }
 
 export class CreateSalarioAdminDto {

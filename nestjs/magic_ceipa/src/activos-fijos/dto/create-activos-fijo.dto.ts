@@ -1,6 +1,5 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, Min, ValidateNested } from 'class-validator';
+import { IsNumber, IsOptional, IsPositive, IsString, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 
 export class Items {
     @IsOptional()
@@ -20,7 +19,6 @@ export class Items {
 
     @IsOptional()
     @IsNumber()
-    @IsPositive()
     valorSalvamento: number;
 }
 

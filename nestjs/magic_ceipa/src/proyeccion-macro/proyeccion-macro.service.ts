@@ -29,34 +29,28 @@ export class ProyeccionMacroService {
     if(isProyeccionMacro){
       throw new BadRequestException('ProyeccionMacro already exists for this project');
     }
-
-    // 1. Separar los datos del DTO
+    
     const { analisisMercado, proyeccionesMacroeconomicas } = createProyeccionMacroDto;
     const { productos, estrategiaMarketing, ...restOfAnalisisMercado } = analisisMercado;
-
-    // 2. Crear la entidad ProyeccionMacro principal (sin las relaciones)
     const proyeccionMacro = this.proyeccionMacroRepository.create({
       proyeccionesMacroeconomicas,
-      analisisMercado: restOfAnalisisMercado, // Guardamos la parte simple de analisisMercado
+      analisisMercado: restOfAnalisisMercado, 
       projectInfo: { id: projectInfoId },
       userEmail: user.email,
     });
 
-    // 3. Guardar la entidad principal para obtener su ID
     const savedProyeccion = await this.proyeccionMacroRepository.save(proyeccionMacro);
-
-    // 4. Crear y guardar las entidades relacionadas (Estrategias)
+    
     if (estrategiaMarketing && estrategiaMarketing.length > 0) {
       const estrategias = estrategiaMarketing.map(dto => 
         this.estrategiaMarketingRepository.create({
           ...dto,
-          proyeccionMacro: savedProyeccion, // <-- Enlace clave
+          proyeccionMacro: savedProyeccion, 
         })
       );
       await this.estrategiaMarketingRepository.save(estrategias);
     }
     
-    // 5. Crear y guardar las entidades relacionadas (Productos) - MISMO PATRÓN
     if (productos && productos.length > 0) {
         const productosEntidades = productos.map(dto => 
             this.productoRepository.create({
@@ -66,8 +60,6 @@ export class ProyeccionMacroService {
         );
         await this.productoRepository.save(productosEntidades);
     }
-
-    // 6. Devolver la proyección completa (puedes volver a buscarla para que incluya todo)
     return this.findOne(projectInfoId, user);
   }
 
@@ -83,7 +75,6 @@ export class ProyeccionMacroService {
   async findOne(projectInfoId: number, user: UserActiveInterface) {
       const proyeccionMacro = await this.proyeccionMacroRepository.findOne({
         where: { projectInfoId },
-        // AÑADE ESTA LÍNEA PARA CARGAR LAS RELACIONES
         relations: ['producto', 'estrategiaMarketing'],
       })
       

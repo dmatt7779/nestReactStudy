@@ -18,6 +18,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { EstrategiaMarketing } from './proyeccion-macro/entities/estrategia-marketing.entity';
 import { Producto } from './proyeccion-macro/entities/producto.entity';
+import { ProjectSummaryModule } from './project-summary/project-summary.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { Producto } from './proyeccion-macro/entities/producto.entity';
     ActivosFijosModule,
     UsersModule,
     AuthModule,
+    ProjectSummaryModule,
   ],
   controllers: [],
   providers: [],

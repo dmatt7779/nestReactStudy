@@ -1,39 +1,74 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreatePlanFinancieroDto } from './dto/create-plan-financiero.dto';
 import { UpdatePlanFinancieroDto } from './dto/update-plan-financiero.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PlanFinanciero } from './entities/plan-financiero.entity';
+import { ProjectInfoService } from '../project-info/project-info.service';
+import { UserActiveInterface } from '../common/interfaces/active-user.interface';
+import { Role } from 'src/common/enums/rol.enum';
 
 @Injectable()
 export class PlanFinancieroService {
   constructor(
     @InjectRepository(PlanFinanciero)
-    private readonly planFinanciero: Repository<PlanFinanciero>
+    private readonly planFinancieroRepository: Repository<PlanFinanciero>,
+    private readonly projectInfoService: ProjectInfoService,
   ) {}
 
-  async create(createPlanFinancieroDto: CreatePlanFinancieroDto) {
+  async create(createPlanFinancieroDto: CreatePlanFinancieroDto, projectInfoId: number, user: UserActiveInterface) {
+    await this.projectInfoService.findOne(projectInfoId, user)
+    const isplanFinanciero = await this.planFinancieroRepository.findOne({
+      where: { projectInfoId },
+    });
+    if(isplanFinanciero){
+      throw new BadRequestException('Plan Financiero already exists for this project');
+    }
     try{
-      const proyeccionMacro = this.planFinanciero.create(createPlanFinancieroDto)
-      return await this.planFinanciero.save(proyeccionMacro);
+      const newPlanFinanciero = this.planFinancieroRepository.create({
+        planFinanciero: createPlanFinancieroDto,
+        projectInfo: { id: projectInfoId },
+        userEmail: user.email,
+      })
+      return await this.planFinancieroRepository.save(newPlanFinanciero);
     }catch (error){
         console.log(error);
     }
   }
 
-  async findAll() {
-    return await this.planFinanciero.find();
+  async findAll(user: UserActiveInterface) {
+    if(user.role===Role.ADMIN){
+      return await this.planFinancieroRepository.find();
+    }
+    return await this.planFinancieroRepository.find({
+      where: {userEmail: user.email}
+    })
   }
 
-  async findOne(id: number) {
-    return await this.planFinanciero.findOneBy({id});
+  async findOne(projectInfoId: number, user: UserActiveInterface) {
+    const isPlanFinanciero = await this.planFinancieroRepository.findOne({
+      where: {projectInfoId}
+    })
+    if(!isPlanFinanciero){
+      throw new NotFoundException('Project is not found')
+    }
+    this.validateOwnerShip(isPlanFinanciero, user)
+    return isPlanFinanciero
   }
 
-  async update(id: number, updatePlanFinancieroDto: UpdatePlanFinancieroDto) {
-    return await this.planFinanciero.update(id, updatePlanFinancieroDto);
+  // async update(id: number, updatePlanFinancieroDto: UpdatePlanFinancieroDto) {
+  //   return await this.planFinancieroRepository.update(id, updatePlanFinancieroDto);
+  // }
+
+  async remove(id: number, user: UserActiveInterface) {
+    const projectToDelete = await this.findOne(id, user);
+    await this.planFinancieroRepository.softDelete({id});
+    return projectToDelete;
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} planFinanciero`;
+  private validateOwnerShip(project: PlanFinanciero, user: UserActiveInterface){
+    if(user.role !== Role.ADMIN && project.userEmail !== user.email) {
+      throw new UnauthorizedException();
+    }
   }
 }

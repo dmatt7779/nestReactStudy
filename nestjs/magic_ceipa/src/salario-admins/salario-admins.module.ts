@@ -10,5 +10,6 @@ import { ProjectInfoService } from '../project-info/project-info.service';
   imports: [TypeOrmModule.forFeature([SalarioAdmin, ProjectInfo])],
   controllers: [SalarioAdminsController],
   providers: [SalarioAdminsService, ProjectInfoService],
+  exports: [SalarioAdminsModule, SalarioAdminsService],
 })
 export class SalarioAdminsModule {}

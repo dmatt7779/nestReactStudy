@@ -1,10 +1,6 @@
 import { ProjectInfo } from '../../project-info/entities/project-info.entity';
 import { User } from '../../users/entities/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
-
-interface Items {
-    [key: string]: number | null;
-}
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
 
 interface ActivoFijoData {
     vidaUtilAnos?: number;
