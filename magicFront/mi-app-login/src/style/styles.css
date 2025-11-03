@@ -1332,13 +1332,13 @@ input {
 /*--------------------Estilo estado de resultados------------------------------*/
 
 .estado-tabla-container {
-  background-color: white;
-  padding: 24px;
+  /*background-color: white;*/
+  padding: 0px;
+  margin-top: -10px;
   border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  /*box-shadow: 0 0 10px rgba(0,0,0,0.1);*/
   width: 100%;
   overflow-x: auto;
-  margin-top: 1rem;
 }
 
 .estado-tabla {
@@ -1353,7 +1353,7 @@ input {
 
 /* Encabezado */
 .estado-tabla-encabezado th {
-  background-color: #f9a825;
+  background-color: #cd8030;
   color: #fff;
   font-weight: bold;
   padding: 10px;
@@ -1376,7 +1376,7 @@ input {
 
 /* Celdas numéricas */
 .estado-celda {
-  border: 1px solid #ccc;
+  border: 1px solid #d1d5db;
   text-align: right;
   padding: 6px 10px;
 }
@@ -1388,7 +1388,7 @@ input {
   border: 1px solid #d1d5db;
 }
 
-/* 🔶 Fila sombreada completa para "utilidades" intermedias */
+/* Fila sombreada completa para "utilidades" intermedias */
 .fila-negrita {
   background-color: #eeeeee;
   font-weight: 600;
@@ -1401,22 +1401,22 @@ input {
   border: 1px solid #d1d5db;
 }
 
-/* 🖤 Fila negra para "Utilidad neta" */
+/* Fila negra para "Utilidad neta" */
 .fila-black {
-  background-color: black;
+  background-color: rgb(15, 13, 23);
   color: white;
   font-weight: bold;
 }
 
-.fila-black .estado-celda,
 .fila-black .estado-concepto {
-  background-color: black;
+  background-color: rgb(15, 13, 23);
   color: white;
   font-weight: bold;
   border: 1px solid #d1d5db;
 }
 
-/* 💬 Contenedor del análisis */
+
+/* Contenedor del análisis */
 .estado-analisis-container {
   margin-top: 24px;
 }
@@ -1452,6 +1452,11 @@ input {
   padding-right: 6px;
 }
 
+.fila-decision-roja td {
+  background-color: #e61010; /* rojo claro */
+  color: #f3f3f3;           /* texto rojo oscuro */
+  font-weight: bold;
+}
 
 /*--------------------Estilo flujo de efectivo------------------------------*/
 
@@ -1509,22 +1514,9 @@ input {
 }
 
 .fila-black {
-  background-color: #000;
+  background-color: rgb(15, 13, 23);
   color: white;
   font-weight: bold;
-}
-
-.fila-red {
-  background-color: #dc2626;
-  color: white;
-  font-weight: bold;
-}
-
-.fila-red .flujo-celda,
-.fila-red .flujo-concepto {
-  background-color: #dc2626;
-  color: white;
-  border: 1px solid #d1d5db;
 }
 
 .mensaje-explicacion {
@@ -1543,7 +1535,7 @@ input {
   color: white;
   font-weight: bold;
   padding: 10px;
-  text-transform: uppercase;
+  text-align: center;
   border: 1px solid #d1d5db;
 }
 
@@ -1635,6 +1627,62 @@ input {
   text-align: left;
 }
 
+.container-titulo{
+  flex: 1; /* Asegura que tome el espacio a la izquierda */
+  display: flex;
+  justify-content: center; /* Centra el titulo */
+  align-items: center;
+}
+
+.titulo-img-es-si{
+  width: 94%;
+}
+
+.estado-celda-gray{
+  border: 1px solid #d1d5db;
+  text-align: right;
+  padding: 6px 10px; 
+}
+
+.fila-gray {
+  background-color: #b3acac;
+  color: rgb(8, 8, 8);
+  font-weight: bold;
+}
+
+.fila-gray .estado-concepto {
+  background-color: rgb(147, 144, 144);
+  color: white;
+  font-weight: bold;
+  border: 1px solid #d1d5db;
+}
+
+.estado-celda-blue{
+  border: 1px solid #b19090;
+  text-align: right;
+  padding: 6px 10px;
+ 
+}
+
+.fila-blue {
+    background-color: #4aa0bc;
+    color: rgb(255, 254, 254);
+    font-weight: bold;
+}
+
+.fila-blue .estado-concepto {
+  background-color: rgb(15, 13, 23);
+  color: white;
+  font-weight: bold;
+  border: 1px solid #d1d5db;
+}
+
+.fila-imagen-centro {
+  text-align: center;
+  padding: 10px 0;
+  background: #fff; /* opcional */
+}
+
 /*--------------------Estilo flujo de caja------------------------------*/
 
 .robot-img-fl-ca {
@@ -1642,14 +1690,241 @@ input {
 }
 
 .empty-row {
-  height: 25px;   /* ajusta el espacio */
+  height: 15px;   /* ajusta el espacio */
   border: none;   /* sin bordes */
   background: transparent;
 }
 
+.celda-titulo-azul {
+  background-color: #4DB6D2; /* azul claro */
+  font-weight: bold;
+  color: #f7f8f9; 
+  text-align: left;
+}
+
+.estado-celda-f {
+  border: 1px solid #d1d5db;
+  text-align: left;
+  padding: 6px 10px;
+}
+
+.celda-titulo-azul {
+  background-color: #4DB6D2;
+  font-weight: bold;
+  color: white;
+}
+
+.celda-titulo-naranja {
+  background-color: #F28C28;
+  font-weight: bold;
+  color: white;
+}
+
+.bloque-tir,
+.bloque-punto-equilibrio {
+  margin-top: 20px;
+}
+
+.encabezado-pe {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(90deg, #0077A3, #004466);
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.icono-equilibrio {
+  width: 40px;
+  margin-right: 10px;
+}
+
+.bloque-inversionista {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.tabla-inversionista {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.celda-titulo-azul {
+  background-color: #4DA6C3;
+  color: white;
+  font-weight: bold;
+  padding: 10px;
+  text-align: center;
+}
+
+.celda-valor {
+  background-color: #1E2A38;
+  color: white;
+  font-weight: bold;
+  padding: 10px;
+  text-align: center;
+}
+
+.tabla-pe {
+  border-collapse: collapse; /* Para que las líneas sean continuas */
+  margin-left: 20px; /* Margen a la izquierda */
+  width: auto; /* Ajusta el ancho si quieres */
+}
+
+.tabla-pe th,
+.tabla-pe td {
+  border: 1px solid #ccc; /* Línea de la celda */
+  padding: 8px 12px; /* Espaciado interno */
+  text-align: left;
+}
 
 
+/*--------------------Estilo Wacc------------------------------*/
 
+.robot-img-wacc{
+  width: 95%;
+}
+
+.robot-container-wacc {
+    flex: 1 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: -87px;
+}
+
+.subtitulo-tabla {
+  background-color: #1f2a44; /* azul oscuro */
+  color: #ffffff;
+  font-weight: bold;
+  text-align: center;
+  padding: 10px;
+  margin: 27px 0; /* espacio arriba y abajo */
+  border-radius: 4px;
+  width: 100%;        
+  display: block;      
+  box-sizing: border-box;
+}
+
+.estado-tabla-wacc {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Arial', sans-serif;
+    font-size: 14px;
+    margin-top: -10px;
+}
+
+.robot-tit-wacc {
+  width: 100%;
+  padding: 15px;
+}
+
+/* Fila gris para resaltar un total o título */
+.fila-gray td {
+  background-color: #d9d9d9;
+  font-weight: bold;
+  text-align: center;
+  padding: 8px;
+}
+
+/* Celda de valor en naranja */
+.celda-naranja {
+  background-color: #e07b39;
+  color: #ffffff;
+  font-weight: bold;
+  text-align: center;
+  padding: 8px;
+}
+
+.celda-titulo-naranja {
+  background-color: #f7941d; /* naranja CEIPA */
+  color: #fff;
+  font-weight: bold;
+}
+
+.fila-gris {
+  background-color: rgb(147, 144, 144);
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* Tabla de tasas */
+.tabla-tasas {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: none; /* sin sombra */
+  font-size: 14px;
+}
+
+.tabla-tasas td {
+  padding: 8px;
+  border: 0px solid #ddd;
+  vertical-align: middle;
+}
+
+/* Celda azul */
+.celda-azul {
+  background-color: #3b9ecf;
+  color: #fff;
+  font-weight: bold;
+  text-align: left;
+  font-size: 14px;
+}
+
+/* Bloque de costo promedio ponderado */
+.bloque-costo-promedio {
+  text-align: center;
+  min-width: 200px;
+  border-left: 2px solid #ddd;
+  font-size: 14px;
+}
+
+/* Celda naranja */
+.celda-naranja {
+  background-color: #e07b39;
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+  padding: 10px;
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+
+/*--------------------Estilo indicadores financieros------------------------------*/
+
+.robot-img-in{
+  width: 85%;
+}
+
+.robot-tit-in {
+  width:100%;
+  padding-top: 15px;
+  
+}
+
+.estado-tabla-in {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Arial', sans-serif;
+    font-size: 14px;
+    margin-top: 12px;
+    border-top: 2px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+
+.estado-tabla-in th,
+.estado-tabla-in td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.robot-img-ind{
+  width: 45%;
+  margin-top: -12px;
+}
 
 
 

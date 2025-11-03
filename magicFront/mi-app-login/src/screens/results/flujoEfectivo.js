@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../style/styles.css";
 import Footer from "../../components/Footer";
@@ -14,6 +14,7 @@ const FlujoEfectivo = () => {
 
   const estructura = [
     { tipo: "titulo", titulo: "Actividad de operación" },
+    { tipo: "separador" },
     { label: "Ventas de contado", key: "ventas_contado" },
     { label: "Recuperación de cartera", key: "recuperacion_cartera" },
     { label: "Costos operativos", key: "costos_operativos" },
@@ -22,8 +23,10 @@ const FlujoEfectivo = () => {
     { label: "Inversión en Inventario Inicial", key: "inversion_inventario" },
     { label: "Impuestos", key: "impuestos" },
     { label: "Depreciación y amortización ( - )", key: "depreciacion" },
+    { tipo: "separador" },
 
     { tipo: "titulo", titulo: "Actividad de financiación" },
+    { tipo: "separador" },
     { label: "Aportes Inicial de capital por Socios", key: "aportes_inicial" },
     { label: "Adquisición de préstamos", key: "prestamos" },
     { label: "Aporte ADICIONAL de capital por Socios", key: "aporte_adicional" },
@@ -31,26 +34,44 @@ const FlujoEfectivo = () => {
     { label: "Servicio de la deuda", key: "servicio_deuda" },
     { label: "Intereses", key: "intereses" },
     { label: "Dividendos según el ejercicio anterior", key: "dividendos" },
+    { tipo: "separador" },
 
     { tipo: "titulo", titulo: "Actividad de inversión" },
+    { tipo: "separador" },
     { label: "Venta de activos fijos", key: "venta_activos" },
-    { label: "Inversión Activos Fijos", key: "inversion_activos" },
+    { label: "Inversión activos fijos", key: "inversion_activos" },
+    { tipo: "separador" },
 
-    { label: "EXCEDENTE O DÉFICIT EFECTIVO", key: "excedente1", dark: true },
-    { label: "Decisión Junta Directiva (Aporte Socios)", key: "decision_junta", blue: true },
-    { label: "SALDO INICIAL", key: "saldo_inicial", dark: true },
-    { label: "SALDO FINAL DE EFECTIVO", key: "saldo_final", dark: true },
+    { label: "Excedente o déficit efectivo", key: "excedente1", dark: true },
+    { tipo: "separador" },
+
+    { label: "Decisión Junta Directiva (Aporte Socios)", key: "decision_junta", red: true },
+    { tipo: "separador" },
+
+    { label: "Saldo inicial", key: "saldo_inicial", dark: true },
+    { tipo: "separador" },
+    
+    { label: "Saldo final de efectivo", key: "saldo_final", dark: true },
   ];
 
-  const [valores, setValores] = useState(
-    estructura.reduce((acc, item) => {
-      if (!item.key) return acc;
-      acc[item.key] = anios.reduce((a, anio) => ({ ...a, [anio]: "" }), {});
-      return acc;
-    }, {})
-  );
-
+  // Estado inicial vacío
+  const [valores, setValores] = useState({});
   const [analisis, setAnalisis] = useState("");
+
+  // Cargar datos desde el backend
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/flujo-efectivo");
+        const data = await res.json();
+        setValores(data); // data vendrá en formato { ventas_contado: {2025: 1000, ...}, ... }
+      } catch (error) {
+        console.error("Error cargando flujo de efectivo:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleGuardar = (e) => {
     e.preventDefault();
@@ -82,50 +103,32 @@ const FlujoEfectivo = () => {
                 <tbody>
                   {estructura.map((item, i) => (
                     <React.Fragment key={item.key || i}>
+                      {/* TITULOS DE SECCIÓN CON AÑOS */}
                       {item.tipo === "titulo" && (
                         <tr className="fila-titulo-seccion">
-                          {item.titulo === "Actividad de operación" ? (
-                            <>
-                              <td className="estado-concepto fila-aporte-adicional">
-                                {item.titulo}
-                              </td>
-                              {anios.map((anio, index) => (
-                                <td key={index} className="estado-celda">{anio}</td>
-                              ))}
-                            </>
-                          ) : (
-                            <td
-                              colSpan={anios.length + 1}
-                              className="estado-concepto fila-aporte-adicional"
-                            >
-                              {item.titulo}
-                            </td>
-                          )}
+                          <td className="estado-concepto fila-aporte-adicional">
+                            {item.titulo}
+                          </td>
+                          {anios.map((anio, index) => (
+                            <td key={index} className="estado-celda fila-anios">{anio}</td>
+                          ))}
                         </tr>
                       )}
 
-                      {item.key === "saldo_inicial" && (
-                        <tr className="fila-espaciado">
-                          <td colSpan={anios.length + 1}></td>
-                        </tr>
-                      )}
-                      {item.key === "saldo_final" && (
-                        <tr className="fila-espaciado">
-                          <td colSpan={anios.length + 1}></td>
-                        </tr>
-                      )}
-
+                      {/* FILAS DE DATOS */}
                       {item.key && (
                         <tr
-                          className={`estado-fila ${
-                            item.dark ? "fila-black" : ""
-                          } ${item.red ? "fila-red" : ""} ${item.blue ? "fila-blue" : ""}`}
+                          className={`estado-fila 
+                           ${item.dark ? "fila-black" : ""}
+                           ${item.red ? "fila-red" : ""}
+                           ${item.key === "decision_junta" ? "fila-decision-roja" : ""}
+                          `}
                         >
                           <td className="estado-concepto">{item.label}</td>
                           {anios.map((anio) => (
                             <td key={anio} className="estado-celda">
                               <span className="estado-dato">
-                                {valores[item.key][anio]?.toLocaleString("es-CO", {
+                                {valores[item.key]?.[anio]?.toLocaleString("es-CO", {
                                   style: "currency",
                                   currency: "COP",
                                   minimumFractionDigits: 0,
@@ -136,12 +139,7 @@ const FlujoEfectivo = () => {
                         </tr>
                       )}
 
-                      {item.key === "excedente1" && (
-                        <tr className="fila-espaciado">
-                          <td colSpan={anios.length + 1}></td>
-                        </tr>
-                      )}
-
+                      {/* MENSAJE EXPLICATIVO */}
                       {item.key === "decision_junta" && (
                         <tr>
                           <td colSpan={anios.length + 1} className="mensaje-explicacion">
@@ -149,6 +147,13 @@ const FlujoEfectivo = () => {
                             Directiva", se deberá explicar las razones de esta cifra y
                             plantear una solución financiera.
                           </td>
+                        </tr>
+                      )}
+
+                      {/* FILA SEPARADOR */}
+                      {item.tipo === "separador" && (
+                        <tr>
+                          <td colSpan={anios.length + 1} className="empty-row"></td>
                         </tr>
                       )}
                     </React.Fragment>
@@ -164,7 +169,7 @@ const FlujoEfectivo = () => {
                 />
                 <textarea
                   id="ana-flujo-efec"
-                  rows={5}
+                  rows={10}
                   className="estado-textarea"
                   placeholder="Escribe aquí tu análisis..."
                   value={analisis}

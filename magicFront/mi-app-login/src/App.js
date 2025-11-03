@@ -15,6 +15,9 @@ import EstadoResultados from './screens/results/estadoResultados';
 import FlujoEfectivo from './screens/results/flujoEfectivo';
 import EstadoSituaFin from './screens/results/estadoSituaFin';
 import FlujoCaja from './screens/results/flujoCaja';
+import Wacc from './screens/results/wacc';
+import IndiFinancieros from './screens/results/indiFinancieros';
+import Indicadores from './screens/results/indicadores';
 
 function App() {
   return(
@@ -33,6 +36,9 @@ function App() {
         <Route path="/FlujoEfectivo/" element={<FlujoEfectivo />} />
         <Route path="/EstadoSituaFin/" element={<EstadoSituaFin />} />
         <Route path="/FlujoCaja/" element={<FlujoCaja />} />
+        <Route path="/Wacc/" element={<Wacc />} />
+        <Route path="/IndiFinancieros/" element={<IndiFinancieros />} />
+        <Route path="/Indicadores/" element={<Indicadores />} />
       </Routes>
     </BrowserRouter>
   );
