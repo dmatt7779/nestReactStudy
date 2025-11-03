@@ -18,7 +18,7 @@ const Navbar = () => {
     if (confirmLogout) {
       localStorage.removeItem("token");
       sessionStorage.clear();
-      navigate("/login");
+      navigate("/login/index.js");
     }
   };
 
@@ -51,9 +51,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Dropdown de Resultados */}
-          <div
-            className="dropdown"
+          <div className="dropdown"
             onMouseEnter={() => setOpenDropdown("resultados")}
             onMouseLeave={() => setOpenDropdown(null)}
           >
