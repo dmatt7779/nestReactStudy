@@ -61,9 +61,6 @@ const IndiFinancieros = () => {
 
         <form onSubmit={handleGuardar}>
           <div className="contenido-container">
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-            </p>
 
             {/* Tabla Liquidez y Actividad */}
             <div className="estado-tabla-container">
@@ -169,7 +166,7 @@ const IndiFinancieros = () => {
             {/* Navegación */}
             <div className="buttons-container">
               <button className="nav-btn anterior" type="button" onClick={() => navigate(-1)}></button>
-              <button className="nav-btn siguiente" type="button" onClick={() => navigate("/estadoResultados")}></button>
+              <button className="nav-btn siguiente" type="button" onClick={() => navigate("/indicadores")}></button>
             </div>
           </div>
         </form>

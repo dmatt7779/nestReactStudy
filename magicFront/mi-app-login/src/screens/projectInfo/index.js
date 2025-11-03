@@ -168,19 +168,15 @@ const ProjectInfo = () => {
         <div className="robot-container">
           <img src={nuevoProyectoImg1} alt="Robot" className="robot-img" />
         </div>
-        <div className="contenido-container">
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam
-            nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
-            volutpat.
+        <div className="contenido-container">        
+          <h4>¿Estas preparado para iniciar?</h4>
+          <p>A continuación, te invito a diligenciar los datos preliminares. Por favor, asegúrate de que la información ingresada cumpla con los criterios de selección y calidad establecidos, esta información será de suma importancia para que este inicio de proyecto tenga todo lo que necesitas para que tu aprendizaje sea exitoso.
           </p>
           <div className="section">
             <img src={tituloProyectoImg} alt="Creación de un nuevo proyecto" className="section-img1" />
           </div>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam
-            nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
-            volutpat.
+            Ingresar el nombre del proyecto o la empresa que desea valorar.
           </p>
 
           {/* Campo para el nombre del proyecto */}
@@ -199,9 +195,7 @@ const ProjectInfo = () => {
           <div className="section">
             <img src={integrantesImg} alt="Integrantes" className="section-img2" />
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam
-              nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
-              volutpat.
+              Ingrese número de cédula y nombre de la(s) persona(s) que integran el equipo de valoración.
             </p>
             <div className="integrantes-container">
               {integrantes.map((integrante, index) => (
@@ -245,9 +239,7 @@ const ProjectInfo = () => {
           <div className="profesor-lista">
             <img src={profesorImg} alt="Selecciona tu profesor" className="section-img3" />
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam
-                nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
-                volutpat.
+                Acá, debes seleccionar el profesor que te estará acompañando en tu valoración.
               </p>
               {profesoresLista.map((profesor) => (
                 <label key={profesor.id}
@@ -269,9 +261,7 @@ const ProjectInfo = () => {
           </div>
           <img src={momentoAnios} alt="Momento" className="section-img4" />
           <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam
-          nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
-          volutpat.
+          Digite el año base o año “cero”
           </p>
 
           <div className="año-container">

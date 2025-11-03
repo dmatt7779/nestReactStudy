@@ -93,9 +93,7 @@ const FlujoEfectivo = () => {
         <form onSubmit={handleGuardar}>
           <div className="contenido-container">
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed diam
-              nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
-              volutpat.
+              El flujo de efectivo es el movimiento neto de dinero, tanto entradas como salidas, que ingresa y sale de una empresa o negocio durante un período determinado. Sirve como un indicador de la salud financiera, mostrando la liquidez de la compañía y su capacidad para cubrir gastos y obligaciones.
             </p>
 
             <div className="estado-tabla-container">
@@ -194,7 +192,7 @@ const FlujoEfectivo = () => {
               <button
                 className="nav-btn siguiente"
                 type="button"
-                onClick={() => navigate("/estadoResultados")}
+                onClick={() => navigate("/estadoSituFin")}
               ></button>
             </div>
           </div>

@@ -57,7 +57,7 @@ const EstadoResultados = () => {
 
         <div className="contenido-container">
           <p className="estado-parrafo">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+            El estado de resultados, también llamado «cuenta de pérdidas y ganancias», es un informe financiero que detalla los ingresos y gastos de una empresa durante un período de tiempo específico para determinar si generó utilidad o pérdida neta. Su objetivo principal es medir el desempeño financiero de la empresa y proporcionar información útil a los inversores y a la dirección para la toma de decisiones.
           </p>
 
           <form onSubmit={handleSubmit}>
@@ -121,7 +121,7 @@ const EstadoResultados = () => {
 
             <div className="buttons-container">
               <button className="nav-btn anterior" onClick={() => navigate(-1)}></button>
-              <button className="nav-btn siguiente" onClick={() => navigate("/planFinanciero")}></button>
+              <button className="nav-btn siguiente" onClick={() => navigate("/flujoEfectivo")}></button>
             </div>
           </form>
         </div>
