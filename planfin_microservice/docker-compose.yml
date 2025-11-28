@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  planfin-api:
+    container_name: planfin-api
+    image: planfin_microservice-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    # Para desarrollo, puedes montar el código local dentro del contenedor
+    # y recargar más fácil. Si no lo quieres, comenta 'volumes'.
+    volumes:
+      - .:/app
+    # Si quieres logs más limpios, puedes quitar restart
+    restart: unless-stopped
