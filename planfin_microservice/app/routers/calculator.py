@@ -2,24 +2,11 @@
 from fastapi import APIRouter, Body
 from typing import Dict, Any, Optional
 
-from app.services.calculator_service import CalculatorService
 from app.services.estado_resultados import EstadoResultadosService
-from app.services.informacion_inicial import InformacionInicialService  # 👈 nuevo import
+from app.services.informacion_inicial import InformacionInicialService
+from app.services.excel_engine import ExcelEngineService
 
 router = APIRouter()
-
-
-@router.post("/calculate/core")
-def calculate_core(payload: Dict[str, Any] = Body(...)):
-    """
-    Orquesta todo:
-    - Calcula informacionInicial
-    - Adjunta planFinanciero
-    """
-    service = CalculatorService(payload)
-    result = service.calculate()
-    return {"ok": True, "result": result}
-
 
 @router.post("/calculate/info_inicial")
 def calculate_info_inicial(payload: Dict[str, Any] = Body(...)):
@@ -38,7 +25,7 @@ def calculate_estado_resultados(
     tasa_impuesto_pct: Optional[float] = Body(None),
 ):
     """
-    Recibe el result de /calculate/core (o estructura equivalente)
+    Recibe el result de /calculate/info_inicial (o estructura equivalente)
     y genera:
       - estadoResultados
       - planAmortizacion
@@ -51,3 +38,15 @@ def calculate_estado_resultados(
     )
     er = svc.calculate()
     return {"ok": True, "result": er}
+
+
+@router.post("/calculate/excel")
+def calculate_via_excel(payload: Dict[str, Any] = Body(...)):
+    """
+    - Escribe el payload en la hoja 'Instrucciones' de una copia de la plantilla.
+    - Llama a LibreOffice headless para recalcular las fórmulas.
+    - Lee algunas celdas de otras hojas y devuelve un JSON.
+    """
+    svc = ExcelEngineService(payload)
+    result = svc.run()
+    return {"ok": True, "result": result}
