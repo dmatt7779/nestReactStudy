@@ -305,11 +305,6 @@ class ExcelInputWriter:
                 if valores:
                     self._write_vector_row(ws, row=128 + idx, col_start=3, values=valores)
 
-        # ======== costoVarProdAnoBase ========
-        costo_var_Prod_ano_base = [p.get("costoVarProdAnoBase") for p in productos]
-        costo_var_Prod_ano_base_val = [self._to_number(v) for v in costo_var_Prod_ano_base]
-        self._write_vector_col(ws, row_start=143, col=5, values=costo_var_Prod_ano_base_val)
-
         # ======== costosGastos ========
 
         costos = self._pick(
@@ -360,12 +355,8 @@ class ExcelInputWriter:
             valor_items = [item.get("valor") for item in muebles_enseres]
             self._write_vector_col(ws, row_start=243, col=5, values=valor_items)
 
-            # TODO: Debe cambiar el payload a este nivel, ya que es solo un vidaUtilAnos
-            # y valorSalvamento, mas NO uno por cada item.
-            vida_util_items = [item.get("vidaUtilAnos") for item in muebles_enseres]
-            ws["G243"] = vida_util_items[0]
-            valor_salvamento_items = [item.get("valorSalvamento") for item in muebles_enseres]
-            ws["G246"] = valor_salvamento_items[0]
+            ws["G243"] = self._pick(payload, ["activosFijos", "activosFijos", "mueblesEnseres", "vidaUtilAnos"], default=5)
+            ws["G246"] = self._pick(payload, ["activosFijos", "activosFijos", "mueblesEnseres", "valorSalvamento"], default=0)
         else:
             ws["G243"] = 5
             ws["G246"] = 0
@@ -381,10 +372,8 @@ class ExcelInputWriter:
             valor_items = [item.get("valor") for item in maquinaria_equipos]
             self._write_vector_col(ws, row_start=257, col=5, values=valor_items)
 
-            vida_util_items = [item.get("vidaUtilAnos") for item in maquinaria_equipos]
-            ws["G257"] = vida_util_items[0]
-            valor_salvamento_items = [item.get("valorSalvamento") for item in maquinaria_equipos]
-            ws["G269"] = valor_salvamento_items[0]
+            ws["G257"] = self._pick(payload, ["activosFijos", "activosFijos", "maquinariaEquipos", "vidaUtilAnos"], default=5)
+            ws["G269"] = self._pick(payload, ["activosFijos", "activosFijos", "maquinariaEquipos", "valorSalvamento"], default=0)
         else:
             ws["G257"] = 5
             ws["G269"] = 0
@@ -400,10 +389,8 @@ class ExcelInputWriter:
             valor_items = [item.get("valor") for item in vehiculos]
             self._write_vector_col(ws, row_start=273, col=5, values=valor_items)
 
-            vida_util_items = [item.get("vidaUtilAnos") for item in vehiculos]
-            ws["G273"] = vida_util_items[0]
-            valor_salvamento_items = [item.get("valorSalvamento") for item in vehiculos]
-            ws["G276"] = valor_salvamento_items[0]
+            ws["G273"] = self._pick(payload, ["activosFijos", "activosFijos", "vehiculos", "vidaUtilAnos"], default=5)
+            ws["G276"] = self._pick(payload, ["activosFijos", "activosFijos", "vehiculos", "valorSalvamento"], default=0)
         else:
             ws["G273"] = 5
             ws["G276"] = 0
@@ -430,10 +417,8 @@ class ExcelInputWriter:
             valor_items = [item.get("valor") for item in edificaciones]
             self._write_vector_col(ws, row_start=284, col=5, values=valor_items)
 
-            vida_util_items = [item.get("vidaUtilAnos") for item in edificaciones]
-            ws["G284"] = vida_util_items[0]
-            valor_salvamento_items = [item.get("valorSalvamento") for item in edificaciones]
-            ws["G287"] = valor_salvamento_items[0]
+            ws["G284"] = self._pick(payload, ["activosFijos", "activosFijos", "edificaciones", "vidaUtilAnos"], default=20)
+            ws["G287"] = self._pick(payload, ["activosFijos", "activosFijos", "edificaciones", "valorSalvamento"], default=0)
         else:
             ws["G284"] = 20
             ws["G287"] = 0
@@ -449,10 +434,8 @@ class ExcelInputWriter:
             valor_items = [item.get("valor") for item in equipos_computo]
             self._write_vector_col(ws, row_start=290, col=5, values=valor_items)
 
-            vida_util_items = [item.get("vidaUtilAnos") for item in equipos_computo]
-            ws["G290"] = vida_util_items[0]
-            valor_salvamento_items = [item.get("valorSalvamento") for item in equipos_computo]
-            ws["G293"] = valor_salvamento_items[0]
+            ws["G290"] = self._pick(payload, ["activosFijos", "activosFijos", "equiposComputo", "vidaUtilAnos"], default=5)
+            ws["G293"] = self._pick(payload, ["activosFijos", "activosFijos", "equiposComputo", "valorSalvamento"], default=0)
         else:
             ws["G290"] = 5
             ws["G293"] = 0
@@ -468,8 +451,7 @@ class ExcelInputWriter:
             valor_items = [item.get("valor") for item in activos_diferidos]
             self._write_vector_col(ws, row_start=297, col=5, values=valor_items)
 
-            vida_util_items = [item.get("vidaUtilAnos") for item in activos_diferidos]
-            ws["G297"] = vida_util_items[0]
+            ws["G297"] = self._pick(payload, ["activosFijos", "activosFijos", "activosDiferidos", "vidaUtilAnos"], default=3)
         else:
             ws["G297"] = 3
 
@@ -506,8 +488,7 @@ class ExcelInputWriter:
         self._write_scalar(ws, "C339", payload, ["planFinanciero", "planFinanciero", "financiacionPropia"], processor=self._to_number)
         self._write_scalar(ws, "C342", payload, ["planFinanciero", "planFinanciero", "plazoCredito"])
         self._write_scalar(ws, "C344", payload, ["planFinanciero", "planFinanciero", "tasaCredito"], processor=self._to_percent_decimal)
-        # TODO: buscar Costo proveedores o agregarlo en su defecto
-        # self._write_scalar(ws, "C346", payload, ["planFinanciero", "planFinanciero", "costoProveedores"])
+        self._write_scalar(ws, "C346", payload, ["planFinanciero", "planFinanciero", "tasaProveedores"], processor=self._to_percent_decimal)
         self._write_scalar(ws, "C348", payload, ["planFinanciero", "planFinanciero", "tmrr"], processor=self._to_percent_decimal)
         self._write_scalar(ws, "C350", payload, ["planFinanciero", "planFinanciero", "tasaReinversion"], processor=self._to_percent_decimal)
         self._write_scalar(ws, "C352", payload, ["planFinanciero", "planFinanciero", "impuestosRenta"], processor=self._to_percent_decimal)
@@ -531,7 +512,7 @@ class ExcelInputWriter:
             ["planFinanciero", "planFinanciero", "propuestaFinanciera", "utilidadNetaDividendo"],
             default=[],
         ) or []
-        utilidad_dividendos = [self._to_percent_decimal(v) for v in utilidad_dividendos]
+        utilidad_dividendos = [self._to_percent_decimal(v) for v in utilidad_dividendos][1:]
         self._write_vector_row(ws, row=375, col_start=5, values=utilidad_dividendos)
         wb.save(workbook_path)
         return workbook_path
