@@ -14,16 +14,10 @@ export class Producto {
     nombre: string;
 
     @Column({ type: 'decimal', precision: 10, scale: 2 })
-    costoVarProdAnoBase: number;
-
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
     cantidadFacturar: number;
 
     @Column({ type: 'decimal', precision: 10, scale: 2 })
     precioSinIva: number;
-
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
-    precioVenta: number;
 
     @DeleteDateColumn()
     deletedAt: Date;

@@ -60,11 +60,14 @@ const ProjectInfo = () => {
             setProjectName(proyectoData.projectName || "")
             setIntegrantes(
               proyectoData.teamMembers
-                ? proyectoData.teamMembers.map((member) => ({ cedula: member.id || "", nombre: member.name || "" }))
+                ? proyectoData.teamMembers.map((member) => ({
+                    cedula: member.id ? String(member.id).split('.')[0] : "", 
+                    nombre: member.name || "" 
+                  }))
                 : [{ cedula: "", nombre: "" }]
             )
             setProfessors(proyectoData.professor || [])
-            setAno(proyectoData.openingYear ? proyectoData.openingYear.toString() : "2025")
+            setAno(proyectoData.openingYear ? proyectoData.openingYear.toString() : "2026")
           } else {
             setError("Proyecto no encontrado.")
           }
@@ -86,12 +89,19 @@ const ProjectInfo = () => {
     }
   
     const addIntegrante = () => {
-      setIntegrantes([...integrantes, { cedula: "", nombre: "" }])
+      if (integrantes.length < 5) {
+        setIntegrantes([...integrantes, { cedula: "", nombre: "" }])
+      }
     }
   
     const handleIntegranteChange = (index, field, value) => {
       const nuevosIntegrantes = [...integrantes]
-      nuevosIntegrantes[index][field] = value
+      if (field === "cedula") {
+        const soloEnteros = String(value).split(/[.,]/)[0].replace(/\D/g, ''); 
+        nuevosIntegrantes[index][field] = soloEnteros;
+      } else {
+        nuevosIntegrantes[index][field] = value;
+      }
       setIntegrantes(nuevosIntegrantes)
     }
   
@@ -221,7 +231,15 @@ const ProjectInfo = () => {
               ))}
             </div>
 
-            <button className="add-integrant-btn" onClick={addIntegrante}>
+            <button 
+                className="add-integrant-btn" 
+                onClick={addIntegrante}
+                disabled={integrantes.length >= 5}
+                style={{
+                   opacity: integrantes.length >= 5 ? 0.5 : 1,
+                   cursor: integrantes.length >= 5 ? 'not-allowed' : 'pointer' 
+                }}
+            >
               + Agregar integrantes
             </button>
           </div>

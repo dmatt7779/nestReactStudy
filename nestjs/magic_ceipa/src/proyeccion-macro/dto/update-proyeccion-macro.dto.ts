@@ -15,12 +15,6 @@ export class ProductoDto {
     @IsNumber()
     @IsPositive()
     @IsOptional()
-    costo_var_prod_ano_base: number;
-
-    @ApiProperty()
-    @IsNumber()
-    @IsPositive()
-    @IsOptional()
     cantidad_facturar: number;
 
     @ApiProperty()
@@ -28,11 +22,6 @@ export class ProductoDto {
     @IsPositive()
     @IsOptional()
     precio_sin_iva: number;
-
-    @ApiProperty()
-    @IsNumber()
-    @IsOptional()
-    precio_venta: number;
 }
 
 class CrecimientoDto {
@@ -88,7 +77,6 @@ class MarketingInvestAnoBaseDto {
 class AnalisisMercadoDto {
     @ApiProperty()
     @IsNumber()
-    @Min(1)
     @Max(100)
     @IsOptional()
     tasa_iva: number;

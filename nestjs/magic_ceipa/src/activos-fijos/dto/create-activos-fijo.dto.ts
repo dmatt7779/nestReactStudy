@@ -11,21 +11,20 @@ export class Items {
     @IsPositive()
     @Min(0)
     valor: number;
-    
-    @IsOptional()
-    @IsNumber()
-    @IsPositive()
-    vidaUtilAnos: number;
-
-    @IsOptional()
-    @IsNumber()
-    valorSalvamento: number;
 }
 
 export class ActivoFijoDataDto {
     @ValidateNested({ each: true })
     @Type(() => Items)
     items: Items;
+
+    @IsOptional()
+    @IsNumber()
+    vidaUtilAnos: number;
+
+    @IsOptional()
+    @IsNumber()
+    valorSalvamento: number;
 }
 
 

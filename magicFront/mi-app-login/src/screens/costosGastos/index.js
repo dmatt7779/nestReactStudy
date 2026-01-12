@@ -9,18 +9,30 @@ import cabezoteEgresos from "../../images/cabezote_egresos.png";
 import tituloEgresos from "../../images/titulo_egresos.png";
 import axiosClient from "../../utils/axios";
 
+const extraerValor = (input) => {
+    if (input && typeof input === 'object' && input.target && typeof input.target.value !== 'undefined') {
+        return input.target.value;
+    }
+    return input;
+};
+
+const limpiarNumero = (valor) => {
+    const dato = extraerValor(valor);
+    if (dato === null || dato === undefined || dato === "") return "";
+    return String(dato).split(/[.,]/)[0].replace(/\D/g, '');
+};
+
 const CostosGastos = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // --- 1. ESTRUCTURA DE ESTADO BASE (REUTILIZADA) ---
     const [projectId, setProjectId] = useState(() => {
             return location.state?.projectId || sessionStorage.getItem('currentProjectId');
         })
     const [openingYear, setOpeningYear] = useState(() => location.state?.openingYear || new Date().getFullYear().toString());
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [dataExists, setDataExists] = useState(false); // Para saber si hacer POST o PUT
+    const [dataExists, setDataExists] = useState(false); 
     const previousProjectId = useRef(null);
 
     const calculateYears = useCallback((year) => {
@@ -30,13 +42,13 @@ const CostosGastos = () => {
 
     const [years, setYears] = useState(() => calculateYears(openingYear));
 
-    // --- 2. ESTADOS ESPECÍFICOS PARA ESTA PANTALLA ---
+    // --- 2. ESTADOS: INICIALIZAR CON "" PARA EVITAR CEROS ---
     const [costos, setCostos] = useState([{ id: Date.now(), nombre: "", valor: "" }]);
     const [gastos, setGastos] = useState([{ id: Date.now(), nombre: "", valor: "" }]);
     const [opcionSeleccionadaEgresos, setOpcionSeleccionadaEgresos] = useState("");
     const [incrementoEgresos, setIncrementoEgresos] = useState(() => years.reduce((acc, year) => ({ ...acc, [year]: "" }), {}));
 
-    // --- 3. USEEFFECT PARA CARGAR DATOS ---
+    // --- 3. CARGA DE DATOS ---
     useEffect(() => {
         if (projectId) {
           sessionStorage.setItem('currentProjectId', projectId);
@@ -48,7 +60,6 @@ const CostosGastos = () => {
                 return;
             }
             
-            // Evita recargar si el projectId no ha cambiado
             if (projectId === previousProjectId.current) {
                 setIsLoading(false);
                 return;
@@ -56,24 +67,32 @@ const CostosGastos = () => {
 
             setIsLoading(true);
             setError(null);
-            // previousProjectId.current = projectId;
 
             try {
                 const response = await axiosClient.get(`/api/v1/costos-gastos/${projectId}`);
-                const data = response; // axiosClient ya devuelve el objeto de datos
+                const data = response; 
                 
-                setDataExists(true); // Marcamos que los datos existen para hacer PUT luego
+                setDataExists(true); 
 
-                // Cargar Costos Fijos
                 if (data.costos && data.costos.length > 0) {
-                    setCostos(data.costos.map((item, index) => ({ id: `costo-${index}`, nombre: item.nombre, valor: item.valor.toString() })));
+                    setCostos(data.costos.map((item, index) => ({ 
+                        id: `costo-${index}`, 
+                        nombre: item.nombre, 
+                        valor: limpiarNumero(item.valor)
+                    })));
+                } else {
+                    setCostos([{ id: Date.now(), nombre: "", valor: "" }]);
                 }
 
-                // Cargar Gastos Administrativos
                 if (data.gastos && data.gastos.length > 0) {
-                    setGastos(data.gastos.map((item, index) => ({ id: `gasto-${index}`, nombre: item.nombre, valor: item.valor.toString() })));
+                    setGastos(data.gastos.map((item, index) => ({ 
+                        id: `gasto-${index}`, 
+                        nombre: item.nombre, 
+                        valor: limpiarNumero(item.valor)
+                    })));
+                } else {
+                    setGastos([{ id: Date.now(), nombre: "", valor: "" }]);
                 }
-
 
                 // Cargar Incremento en Egresos
                 if (data.incrementoEgresos) {
@@ -93,8 +112,8 @@ const CostosGastos = () => {
 
             } catch (costosGastosError) {
                 if (costosGastosError.statusCode === 404) {
-                    console.warn("No se encontraron datos de Costos y Gastos. Mostrando formulario vacío.");
-                    setDataExists(false); // Marcamos que no existen para hacer POST
+                    console.warn("No se encontraron datos. Mostrando formulario vacío.");
+                    setDataExists(false);
                     setCostos([{ id: Date.now(), nombre: "", valor: "" }]);
                     setGastos([{ id: Date.now(), nombre: "", valor: "" }]);
                     setOpcionSeleccionadaEgresos("");
@@ -109,31 +128,62 @@ const CostosGastos = () => {
         fetchCostosGastos();
     }, [projectId, years]);
 
-    // --- 4. MANEJADORES DE ESTADO (SIN CAMBIOS) ---
+    // --- 4. MANEJADORES DE ESTADO (CON LIMPIEZA) ---
+    
     const agregarCosto = () => setCostos([...costos, { id: Date.now(), nombre: "", valor: "" }]);
-    const eliminarCosto = (id) => setCostos(costos.filter((c) => c.id !== id));
-    const manejarCambioCosto = (id, campo, valor) => {
-        setCostos(costos.map((c) => (c.id === id ? { ...c, [campo]: valor } : c)));
+    
+    const eliminarCosto = (id) => {
+        const confirmar = window.confirm("¿Eliminar este costo?");
+        if (confirmar) setCostos(costos.filter((c) => c.id !== id));
+    };
+
+    // Manejador Costos
+    const manejarCambioCosto = (id, campo, value) => {
+        setCostos(costos.map((c) => {
+            if (c.id === id) {
+                const valorFinal = campo === "valor" 
+                    ? limpiarNumero(value) 
+                    : extraerValor(value);
+                
+                return { ...c, [campo]: valorFinal };
+            }
+            return c;
+        }));
     };
 
     const agregarGasto = () => setGastos([...gastos, { id: Date.now(), nombre: "", valor: "" }]);
-    const eliminarGasto = (id) => setGastos(gastos.filter((g) => g.id !== id));
-    const manejarCambioGasto = (id, campo, valor) => {
-        setGastos(gastos.map((g) => (g.id === id ? { ...g, [campo]: valor } : g)));
+    
+    const eliminarGasto = (id) => {
+        const confirmar = window.confirm("¿Eliminar este gasto?");
+        if (confirmar) setGastos(gastos.filter((g) => g.id !== id));
+    };
+
+    // Manejador Gastos
+    const manejarCambioGasto = (id, campo, value) => {
+        setGastos(gastos.map((g) => {
+            if (g.id === id) {
+                const valorFinal = campo === "valor" 
+                    ? limpiarNumero(value) 
+                    : extraerValor(value);
+
+                return { ...g, [campo]: valorFinal };
+            }
+            return g;
+        }));
     };
 
     const manejarCambioEgresos = (e) => setOpcionSeleccionadaEgresos(e.target.value);
+    
     const manejarCambioCrecEgresos = (anio, valor) => {
         setIncrementoEgresos((prev) => ({ ...prev, [anio]: valor }));
     };
 
-    // --- 5. HANDLESUBMIT CON LÓGICA DE CREAR/ACTUALIZAR ---
+    // --- 5. HANDLESUBMIT ---
     const handleSubmit = async (event) => {
         event.preventDefault();
         setIsLoading(true);
         setError(null);
 
-        // Transformación de Estado de UI a Payload de API
         const dataToSend = {
             costos: costos.filter(c => c.nombre.trim() !== "").map(c => ({
                 nombre: c.nombre.trim(),
@@ -155,16 +205,15 @@ const CostosGastos = () => {
 
         try {
             if (dataExists) {
-                // Si los datos ya existían, actualizamos con PUT
                 // await axiosClient.put(`/api/v1/costos-gastos/${projectId}`, dataToSend);
                 console.log("Datos de Costos y Gastos actualizados.");
+                // Simulación de éxito para navegar
+                 navigate('/activosFijos', { state: { projectId, openingYear } });
             } else {
-                // Si no existían, creamos con POST
                 await axiosClient.postCostosGastos(`/api/v1/costos-gastos/${projectId}`, dataToSend);
                 console.log("Datos de Costos y Gastos creados.");
+                navigate('/activosFijos', { state: { projectId, openingYear } });
             }
-            // Navegamos a la siguiente página si todo fue exitoso
-            navigate('/activosFijos', { state: { projectId, openingYear } });
 
         } catch (err) {
             setError(err.message || "Ocurrió un error al guardar los datos.");
@@ -177,7 +226,6 @@ const CostosGastos = () => {
     if (isLoading) return <p>Cargando...</p>;
     if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
 
-    // --- 6. RENDERIZADO DEL JSX (CON PEQUEÑOS AJUSTES) ---
     return (
         <div className="project-info-container">
             <Navbar />
@@ -211,10 +259,19 @@ const CostosGastos = () => {
                                         <tr key={costo.id}>
                                             <td>{index + 1}</td>
                                             <td className="estrategia-celda-nombre">
-                                                <CustomInput value={costo.nombre} onChange={(value) => manejarCambioCosto(costo.id, "nombre", value)} />
+                                                <CustomInput 
+                                                    value={costo.nombre}
+                                                    placeholder={"nombre"}
+                                                    onChange={(value) => manejarCambioCosto(costo.id, "nombre", value)} 
+                                                />
                                             </td>
                                             <td>
-                                                <CustomInput type="number" value={costo.valor} onChange={(value) => manejarCambioCosto(costo.id, "valor", value)} />
+                                                <CustomInput 
+                                                    type="number"
+                                                    placeholder={"$0"}
+                                                    value={costo.valor} 
+                                                    onChange={(value) => manejarCambioCosto(costo.id, "valor", value)} 
+                                                />
                                             </td>
                                             <td>
                                                 <button type="button" className="estrategia-boton-eliminar" onClick={() => eliminarCosto(costo.id)}>🗑️</button>
@@ -246,10 +303,19 @@ const CostosGastos = () => {
                                         <tr key={gasto.id}>
                                             <td>{index + 1}</td>
                                             <td className="estrategia-celda-nombre">
-                                                <CustomInput value={gasto.nombre} onChange={(value) => manejarCambioGasto(gasto.id, "nombre", value)} />
+                                                <CustomInput 
+                                                    value={gasto.nombre}
+                                                    placeholder={"nombre"}
+                                                    onChange={(value) => manejarCambioGasto(gasto.id, "nombre", value)} 
+                                                />
                                             </td>
                                             <td>
-                                                <CustomInput type="number" value={gasto.valor} onChange={(value) => manejarCambioGasto(gasto.id, "valor", value)} />
+                                                <CustomInput 
+                                                    type="number"
+                                                    value={gasto.valor}
+                                                    placeholder={"$0"}
+                                                    onChange={(value) => manejarCambioGasto(gasto.id, "valor", value)} 
+                                                />
                                             </td>
                                             <td>
                                                 <button type="button" className="estrategia-boton-eliminar" onClick={() => eliminarGasto(gasto.id)}>🗑️</button>
@@ -260,11 +326,11 @@ const CostosGastos = () => {
                             </table>
                             <button type="button" className="estrategia-boton-agregar" onClick={agregarGasto}>+ Agregar Gasto Administrativo</button>
                         </div>
-
+                        {/* Crecimiento en Egresos */}
+                        <h3>Incremento en Egresos</h3>
                         <p>El crecimiento en COSTOS y GASTOS está representado en inflación
                            o en otro porcentaje establecido en el plan operativo.
                         </p>
-                        {/* Crecimiento en Egresos */}
                         <div id="crecimiento-egresos" className="contenedor-crecimiento">
                             <CustomInput type="radio" value={opcionSeleccionadaEgresos} onChange={manejarCambioEgresos} options={["PIB", "Estrategia", "IPC"]} name="metodoIncrementoEgresos" />
                         </div>
@@ -274,12 +340,11 @@ const CostosGastos = () => {
                                   En caso de que los gastos aumenten por otro porcentaje,
                                   ingrese manualmente el mismo por cada año.
                                 </p>
-                                <h3>Incremento en Egresos</h3>
                                 <div className="fila-crecimiento">
                                     {years.map((anio, index) => (
                                         <div key={anio} className="contenedor-input">
                                             <span className="anio">Año {anio}</span>
-                                            <CustomInput type="percentage" value={incrementoEgresos[anio]} onChange={(value) => manejarCambioCrecEgresos(anio, value)} disabled={index === 0} />
+                                            <CustomInput type="percentage" placeholder={"0%"} value={incrementoEgresos[anio]} onChange={(value) => manejarCambioCrecEgresos(anio, value)} disabled={index === 0} />
                                         </div>
                                     ))}
                                 </div>

@@ -7,11 +7,45 @@ import CustomInput from "../../components/CustomInput";
 import cabezotePlanFin from "../../images/cabezote_plan_financiero.png";
 import axiosClient from "../../utils/axios";
 
+// --- 1. FUNCIONES AUXILIARES ---
+
+const extraerValor = (input) => {
+    if (input && typeof input === 'object' && input.target && typeof input.target.value !== 'undefined') {
+        return input.target.value;
+    }
+    return input;
+};
+
+const limpiarNumero = (valor) => {
+    const dato = extraerValor(valor);
+    if (dato === null || dato === undefined || dato === "") return "";
+    return String(dato).split(/[.,]/)[0].replace(/\D/g, ''); 
+};
+
 const PlanFinanciero = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // --- 1. STATE BASE ---
+  // --- 2. CONFIGURACIÓN DE CAMPOS ---
+  const campos = [
+    { nombre: "Disponible inicial", id: "disponibleInicial", tipo: "number", descripcion: "..." },
+    { nombre: "Días de inventario inicial", id: "diasInventarioInicial", tipo: "number", descripcion: "..." },
+    { nombre: "Financiación propia", id: "financiacionPropia", tipo: "number", descripcion: "..." },
+    { nombre: "Plazo del crédito (meses)", id: "plazoCredito", tipo: "number", descripcion: "..." },
+    { nombre: "Tasa del crédito (% E.A.)", id: "tasaCredito", tipo: "percentage", descripcion: "..." },
+    { nombre: "Costo proveedores (% E.A.)", id: "tasaProveedores", tipo: "percentage", descripcion: "..." },
+    { nombre: "TMRR o COK (% E.A.)", id: "tmrr", tipo: "percentage", descripcion: "..." },
+    { nombre: "Tasa de Reinversión (% E.A.)", id: "tasaReinversion", tipo: "percentage", descripcion: "..." },
+    { nombre: "Tasa impuestos de Renta (%)", id: "impuestosRenta", tipo: "percentage", descripcion: "..." },
+    { nombre: "Días cartera", id: "diasCartera", tipo: "number", descripcion: "..." },
+    { nombre: "Días inventario", id: "diasInventario", tipo: "number", descripcion: "..." },
+    { nombre: "Días pago a proveedores", id: "diasPagoProveedores", tipo: "number", descripcion: "..." },
+    { nombre: "Tarifa Ind y Ccio (%)", id: "tarfiaIndCcio", tipo: "percentage", descripcion: "..." },
+    { nombre: "GMF (4 x mil)", id: "gmf4xmil", tipo: "percentage", descripcion: "..." },
+    { nombre: "Saldo mínimo caja", id: "saldoMinCaja", tipo: "number", descripcion: "..." },
+  ];
+
+  // --- 3. STATE ---
   const [projectId, setProjectId] = useState(() => location.state?.projectId || sessionStorage.getItem("currentProjectId"));
   const [openingYear, setOpeningYear] = useState(() => location.state?.openingYear || new Date().getFullYear().toString());
 
@@ -31,33 +65,14 @@ const PlanFinanciero = () => {
     setYears(calculateYears(openingYear));
   }, [openingYear, calculateYears]);
 
-  // --- 2. ESTADOS DE ESTA PANTALLA ---
-  const [datos, setDatos] = useState({
-    disponibleInicial: "",
-    diasInventarioInicial: "",
-    financiacionPropia: "",
-    plazoCredito: "",
-    tasaCredito: "",
-    tasaProveedores: "",
-    tmrr: "",
-    tasaReinversion: "",
-    impuestosRenta: "",
-    diasCartera: "",
-    diasInventario: "",
-    diasPagoProveedores: "",
-    tarfiaIndCcio: "",
-    gmf4xmil: "",
-    saldoMinCaja: "",
-  });
+  const [datos, setDatos] = useState(
+      Object.fromEntries(campos.map(c => [c.id, ""]))
+  );
 
-  // Nuevo estado: porcentaje del "Inicio {years[0]}"
-  const [inversionInicio, setInversionInicio] = useState(0);
+  const [inversionActivos, setInversionActivos] = useState(["", "", "", "", ""]);
+  const [repartoDividendos, setRepartoDividendos] = useState(["", "", "", "", ""]);
 
-  // Mantén los 5 años como antes
-  const [inversionActivos, setInversionActivos] = useState([0, 0, 0, 0, 0]);
-  const [repartoDividendos, setRepartoDividendos] = useState([0, 0, 0, 0, 0]);
-
-  // --- 3. CARGA DE DATOS ---
+  // --- 4. CARGA DE DATOS ---
   useEffect(() => {
     if (projectId) {
       sessionStorage.setItem("currentProjectId", projectId);
@@ -79,44 +94,39 @@ const PlanFinanciero = () => {
         setDataExists(true);
 
         const datosDesdeApi = {};
-        Object.keys(datos).forEach((key) => {
-          if (data[key] !== undefined) {
-            datosDesdeApi[key] = data[key].toString();
-          }
+        campos.forEach((campo) => {
+            if (data[campo.id] !== undefined) {
+                const valorRaw = data[campo.id];
+                if (campo.tipo === "number") {
+                    datosDesdeApi[campo.id] = limpiarNumero(valorRaw);
+                } else {
+                    datosDesdeApi[campo.id] = (valorRaw === 0 || valorRaw === null) ? "" : valorRaw.toString();
+                }
+            } else {
+                datosDesdeApi[campo.id] = "";
+            }
         });
         setDatos(datosDesdeApi);
 
         if (data.propuestaFinanciera) {
-            const af = data.propuestaFinanciera.activosFijos || [];
-            if (Array.isArray(af) && af.length === 6) {
-                setInversionInicio(Number(af[0]) || 0);
-                setInversionActivos([
-                Number(af[0]) || 0,
-                Number(af[1]) || 0,
-                Number(af[2]) || 0,
-                Number(af[3]) || 0,
-                Number(af[4]) || 0,
-                Number(af[5]) || 0,
-                ]);
-            }else {
-                setInversionInicio(Number(data.propuestaFinanciera.activosFijosInicio) || 0);
-                const five = (af || []).slice(0, 5);
-                while (five.length < 5) five.push(0);
-                setInversionActivos(five);
-            }
-            const inicioApi = Number(data.propuestaFinanciera.activosFijosInicio) || 0;
-            setInversionInicio(inicioApi);
-            const dividendosApi = data.propuestaFinanciera.utilidadNetaDividendo || [0, 0, 0, 0];
-            setRepartoDividendos([0, ...dividendosApi]);
+            const pf = data.propuestaFinanciera;
+            const arrActivos = Array.isArray(pf.activosFijos) ? pf.activosFijos : [];
+            const fullArray = [...arrActivos];
+            while(fullArray.length < 6) fullArray.push(0);
+            const inversionAnios = fullArray.slice(1, 6).map(v => (v === 0 || v === null) ? "" : v);
+            setInversionActivos(inversionAnios);
+            const divApi = pf.utilidadNetaDividendo || [0, 0, 0, 0, 0];
+            const mapArray = (arr) => arr.map(v => (v === 0 || v === null || v === undefined) ? "" : v);
+            setRepartoDividendos(mapArray(divApi));
         }
+
       } catch (planFinancieroError) {
         if (planFinancieroError.statusCode === 404) {
-          console.warn("No se encontraron datos de Plan Financiero. Mostrando formulario vacío.");
+          console.warn("No se encontraron datos. Mostrando formulario vacío.");
           setDataExists(false);
-          setDatos(Object.fromEntries(Object.keys(datos).map((key) => [key, ""])));
-          setInversionActivos([0, 0, 0, 0, 0]);
-          setInversionInicio(0);
-          setRepartoDividendos([0, 0, 0, 0, 0]);
+          setDatos(Object.fromEntries(campos.map(c => [c.id, ""])));
+          setInversionActivos(["", "", "", "", ""]);
+          setRepartoDividendos(["", "", "", "", ""]);
         } else {
           setError(planFinancieroError.message || "Error al cargar los datos.");
         }
@@ -128,25 +138,46 @@ const PlanFinanciero = () => {
     fetchPlanFinanciero();
   }, [projectId]);
 
-  // --- 4. MANEJADORES ---
-  const manejarCambio = (campo, valor) => {
-    setDatos((prev) => ({ ...prev, [campo]: valor }));
+  // --- 5. MANEJADORES ---
+
+  const manejarCambio = (id, valor) => {
+    const campoConfig = campos.find(c => c.id === id);
+    const tipo = campoConfig ? campoConfig.tipo : "text";
+
+    let valorFinal;
+    if (tipo === "number") {
+        valorFinal = limpiarNumero(valor);
+    } else {
+        valorFinal = extraerValor(valor);
+    }
+    setDatos((prev) => ({ ...prev, [id]: valorFinal }));
   };
 
   const actualizarArray = (index, valor, tipo) => {
-    const nuevoValor = parseFloat(valor) || 0;
+    const rawValue = extraerValor(valor);
+    
     if (tipo === "inversion") {
       const actualizado = [...inversionActivos];
-      actualizado[index] = nuevoValor;
+      actualizado[index] = rawValue;
       setInversionActivos(actualizado);
     } else if (tipo === "dividendos") {
       const actualizado = [...repartoDividendos];
-      actualizado[index] = nuevoValor;
+      actualizado[index] = rawValue;
       setRepartoDividendos(actualizado);
     }
   };
 
-  // --- 5. SUBMIT ---
+  // --- 6. CÁLCULO DINÁMICO DEL "INICIO" ---
+  const calcularRestanteInicio = () => {
+      const sumaAnios = inversionActivos.reduce((acc, val) => acc + (parseFloat(val) || 0), 0);
+      const restante = 100 - sumaAnios;
+      return parseFloat(restante.toFixed(2));
+  };
+
+  const restanteInicio = calcularRestanteInicio();
+  const esValido = restanteInicio >= 0;
+
+  // --- 7. SUBMIT ---
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
@@ -157,16 +188,17 @@ const PlanFinanciero = () => {
       dataToSend[key] = parseFloat(dataToSend[key]) || 0;
     }
 
-    // Mantén el payload original y agrega, sin romper, el nuevo campo opcional
+    const valAnios = inversionActivos.map(v => parseFloat(v) || 0);
+    const mergedActivosFijos = [restanteInicio, ...valAnios];
+    const cleanDividendos = repartoDividendos.map(v => parseFloat(v) || 0);
     dataToSend.propuestaFinanciera = {
-      activosFijosInicio: inversionInicio, // NUEVO (el backend lo puede ignorar por ahora)
-      activosFijos: inversionActivos,      // 5 años como antes
-      utilidadNetaDividendo: repartoDividendos.slice(1),
+      activosFijos: mergedActivosFijos, 
+      utilidadNetaDividendo: cleanDividendos, 
     };
 
     try {
       if (dataExists) {
-        // await axiosClient.put(`/api/v1/plan-financiero/${projectId}`, dataToSend);
+        // await axiosClient.put(...)
       } else {
         await axiosClient.postPlanFinanciero(`/api/v1/plan-financiero/${projectId}`, dataToSend);
       }
@@ -181,28 +213,6 @@ const PlanFinanciero = () => {
   if (isLoading) return <p>Cargando...</p>;
   if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
 
-  // --- 6. RENDER ---
-  const campos = [
-    { nombre: "Disponible inicial", id: "disponibleInicial", tipo: "number", descripcion: "..." },
-    { nombre: "Días de inventario inicial", id: "diasInventarioInicial", tipo: "number", descripcion: "..." },
-    { nombre: "Financiación propia", id: "financiacionPropia", tipo: "number", descripcion: "..." },
-    { nombre: "Plazo del crédito (meses)", id: "plazoCredito", tipo: "number", descripcion: "..." },
-    { nombre: "Tasa del crédito (% E.A.)", id: "tasaCredito", tipo: "percentage", descripcion: "..." },
-    { nombre: "Costo proveedores (% E.A.)", id: "tasaProveedores", tipo: "percentage", descripcion: "..." },
-    { nombre: "TMRR o COK (% E.A.)", id: "tmrr", tipo: "percentage", descripcion: "..." },
-    { nombre: "Tasa de Reinversión (% E.A.)", id: "tasaReinversion", tipo: "percentage", descripcion: "..." },
-    { nombre: "Tasa impuestos de Renta (%)", id: "impuestosRenta", tipo: "percentage", descripcion: "..." },
-    { nombre: "Días cartera", id: "diasCartera", tipo: "number", descripcion: "..." },
-    { nombre: "Días inventario", id: "diasInventario", tipo: "number", descripcion: "..." },
-    { nombre: "Días pago a proveedores", id: "diasPagoProveedores", tipo: "number", descripcion: "..." },
-    { nombre: "Tarifa Ind y Ccio (%)", id: "tarfiaIndCcio", tipo: "percentage", descripcion: "..." },
-    { nombre: "GMF (4 x mil)", id: "gmf4xmil", tipo: "percentage", descripcion: "..." },
-    { nombre: "Saldo mínimo caja", id: "saldoMinCaja", tipo: "number", descripcion: "..." },
-  ];
-
-  const totalActual = (Number(inversionInicio) || 0) + inversionActivos.reduce((a, b) => a + (Number(b) || 0), 0);
-  const totalOk = Math.abs(totalActual - 100) < 1e-6;
-
   return (
     <div className="project-info-container">
       <Navbar />
@@ -212,7 +222,9 @@ const PlanFinanciero = () => {
         </div>
         <div className="contenido-container-p">
           <p>Una vez cuantificados los ingresos...</p>
-          <form onSubmit={handleSubmit}>
+          
+          <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+            
             <div className="formulario-datos">
               {campos.map(({ nombre, id, tipo, descripcion }) => (
                 <div key={id} className="bloque-dato">
@@ -223,7 +235,12 @@ const PlanFinanciero = () => {
                     <p className="descripcion-dato">{descripcion}</p>
                   </div>
                   <div className="input-wrapper">
-                    <CustomInput id={id} type={tipo} value={datos[id]} onChange={(valor) => manejarCambio(id, valor)} />
+                    <CustomInput 
+                        id={id} 
+                        type={tipo} 
+                        value={datos[id]} 
+                        onChange={(valor) => manejarCambio(id, valor)} 
+                    />
                   </div>
                 </div>
               ))}
@@ -232,7 +249,6 @@ const PlanFinanciero = () => {
             <div className="tabla-plan-financiero">
               <h3>PROPUESTA</h3>
 
-              {/* --- Porcentaje de ejecución con "Inicio + AñoInicial" --- */}
               <div className="tabla-subseccion">
                 <p>
                   <strong>Porcentaje de Ejecución de la Inversión Inicial (Debe totalizar 100%)</strong>
@@ -241,7 +257,7 @@ const PlanFinanciero = () => {
                 <div className="fila-crecimiento">
                   {[
                     "Ejecución Inversión",
-                    `Inicio ${years[0]}`, // NUEVO
+                    `Inicio ${years[0]}`,
                     `Año ${years[0]}`,
                     `Año ${years[1]}`,
                     `Año ${years[2]}`,
@@ -250,17 +266,20 @@ const PlanFinanciero = () => {
                   ].map((label, i) => (
                     <div key={i} className="celda">
                       <label>{label}</label>
-
-                      {/* Columna 0 = sólo etiqueta */}
                       {i === 1 && (
                         <CustomInput
                           type="percentage"
-                          value={inversionInicio}
-                          onChange={(v) => setInversionInicio(parseFloat(v) || 0)}
+                          value={restanteInicio} 
+                          disabled={true}
+                          style={{ 
+                              backgroundColor: "#f0f0f0", 
+                              color: esValido ? "inherit" : "red",
+                              fontWeight: "bold"
+                          }}
                         />
                       )}
 
-                      {/* i > 1 => los 5 años como antes, desplazados en 1 */}
+                      {/* --- AÑOS 1-5 (i>1): Editables --- */}
                       {i > 1 && (
                         <CustomInput
                           type="percentage"
@@ -274,13 +293,11 @@ const PlanFinanciero = () => {
 
                 <p>
                   Total actual:{" "}
-                  <strong style={{ color: totalOk ? "inherit" : "crimson" }}>
-                    {Number(totalActual.toFixed(2))}%
-                  </strong>
+                  <strong>100%</strong> 
+                  {!esValido && <span style={{color: "red", marginLeft: "10px"}}>(Excede el 100%)</span>}
                 </p>
               </div>
 
-              {/* --- Dividendos --- */}
               <div className="tabla-subseccion">
                 <p>
                   <strong>Política de Reparto de Dividendos según el Porcentaje de la Utilidad Neta</strong>

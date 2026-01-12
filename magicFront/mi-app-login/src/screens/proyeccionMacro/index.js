@@ -10,6 +10,19 @@ import tituloMercadeoImg from "../../images/titulo_analisis_de_mercadeo_y_ventas
 import tituloMarketingImg from "../../images/titulo_marketing_publicidad.png";
 import axiosClient from "../../utils/axios";
 
+const extraerValor = (input) => {
+    if (input && typeof input === 'object' && input.target && typeof input.target.value !== 'undefined') {
+        return input.target.value;
+    }
+    return input;
+};
+
+const limpiarNumero = (valor) => {
+    const dato = extraerValor(valor);
+    if (dato === null || dato === undefined) return "0";
+    return String(dato).split(/[.,]/)[0].replace(/\D/g, '');
+};
+
 const ProyeccionMacro = () => {
     const location = useLocation()
     const navigate = useNavigate()
@@ -49,7 +62,7 @@ const ProyeccionMacro = () => {
     const [tasaIVA, setTasaIVA] = useState("")
 
     const [productos, setProductos] = useState(() => [
-        { id: Date.now(), nombre: "", cantidad: "0", precioSinIVA: "0", precioVenta: "0", costoVariable: "0" }
+        { id: Date.now(), nombre: "", cantidad: "", precioSinIVA: "", precioVenta: "", costoVariable: "" }
     ])
 
     const [opcionSeleccionadaUnidades, setOpcionSeleccionadaUnidades] = useState("")
@@ -140,13 +153,13 @@ const ProyeccionMacro = () => {
                             setProductos(response.producto.map((producto, index) => ({
                                 id: `producto-${Date.now()}-${index}`,
                                 nombre: producto.nombre || "",
-                                cantidad: producto.cantidadFacturar?.toString() || "0",
-                                precioSinIVA: producto.precioSinIva?.toString() || "0",
-                                precioVenta: producto.precioVenta?.toString() || "0",
-                                costoVariable: producto.costoVarProdAnoBase?.toString() || "0",
+                                cantidad: limpiarNumero(producto.cantidadFacturar),
+                                precioSinIVA: limpiarNumero(producto.precioSinIva),
+                                precioVenta: limpiarNumero(producto.precioVenta),
+                                costoVariable: limpiarNumero(producto.costoVarProdAnoBase),
                             })));
                         } else {
-                            setProductos([{ id: Date.now(), nombre: "", cantidad: "0", precioSinIVA: "0", precioVenta: "0", costoVariable: "0" }]);
+                            setProductos([{ id: Date.now(), nombre: "", cantidad: "", precioSinIVA: "", precioVenta: "", costoVariable: "" }]);
                         }
 
                         if (response.analisisMercado?.crecimientoUnidades) {
@@ -223,7 +236,7 @@ const ProyeccionMacro = () => {
                                 id: `estrategia-${Date.now()}-${index}`,
                                 nombre: estrategia.nombre,
                                 valores: newYears.reduce((acc, year, yearIndex) => {
-                                    acc[year] = estrategia.valores[yearIndex]?.toString() || "";
+                                    acc[year] = limpiarNumero(estrategia.valores[yearIndex]);
                                     return acc;
                                 }, {})
                             })));
@@ -272,7 +285,7 @@ const ProyeccionMacro = () => {
         if (productos.length < 10) {
             setProductos((productosAnteriores) => [
                 ...productosAnteriores,
-                { id: Date.now(), nombre: "", cantidad: "0", precioSinIVA: "0", precioVenta: "0", costoVariable: "0" }
+                { id: Date.now(), nombre: "", cantidad: "", precioSinIVA: "", precioVenta: "", costoVariable: "" }
             ])
         }
     }
@@ -284,11 +297,20 @@ const ProyeccionMacro = () => {
         }
     }
 
+    // --- MANEJO DE CAMBIOS PRODUCTO (CORREGIDO) ---
     const manejarCambioProducto = (id, campo, value) => {
         setProductos((productosAnteriores) => {
-            return productosAnteriores.map((producto) =>
-                producto.id === id ? { ...producto, [campo]: value } : producto
-            )
+            return productosAnteriores.map((producto) => {
+                if (producto.id === id) {
+                    const camposNumericos = ["cantidad", "precioSinIVA", "precioVenta", "costoVariable"];
+                    const valorFinal = camposNumericos.includes(campo) 
+                        ? limpiarNumero(value) 
+                        : extraerValor(value);
+                    
+                    return { ...producto, [campo]: valorFinal };
+                }
+                return producto;
+            })
         })
     }
 
@@ -341,20 +363,22 @@ const ProyeccionMacro = () => {
         }
     }
 
+    // --- MANEJO DE CAMBIOS ESTRATEGIA (CORREGIDO) ---
     const manejarCambioEstrategia = (id, campo, value) => {
         setEstrategias((estrategiasAnteriores) =>
             estrategiasAnteriores.map((estrategia) => {
                 if (estrategia.id !== id) {
                     return estrategia
                 }
+                
                 if (campo === "nombre") {
-                    return { ...estrategia, nombre: value }
+                    return { ...estrategia, nombre: extraerValor(value) }
                 } else {
                     return {
                         ...estrategia,
                         valores: {
                             ...estrategia.valores,
-                            [campo]: value,
+                            [campo]: limpiarNumero(value),
                         },
                     }
                 }
@@ -502,10 +526,7 @@ const ProyeccionMacro = () => {
                                         { key: "PIB", label: "PIB" },
                                     ].map(({ key, label }) => (
                                         <tr key={key}>
-                                            {/* Primera celda con el nombre de la categoría */}
                                             <td>{label}</td>
-
-                                            {/* Generamos los inputs dinámicamente para cada año */}
                                             {years.map((year) => (
                                                 <td key={year}>
                                                     <CustomInput
@@ -513,6 +534,7 @@ const ProyeccionMacro = () => {
                                                         type="percentage"
                                                         value={values[key]?.[year] || ""}
                                                         onChange={(value) => handleChange(key, year, value)}
+                                                        placeholder={"0%"}
                                                     />
                                                 </td>
                                             ))}
@@ -544,6 +566,7 @@ const ProyeccionMacro = () => {
                                     type="percentage"
                                     value={tasaIVA}
                                     onChange={setTasaIVA}
+                                    placeholder={"0%"}
                                 />
                             </div>
 
@@ -556,16 +579,6 @@ const ProyeccionMacro = () => {
                                             <th className="producto-celda-nombre">Nombre del Producto</th>
                                             <th>Cantidad año {years[0]}</th>
                                             <th>Precio sin IVA año {years[0]}</th>
-                                            <th>Precio de venta año {years[0]}</th>
-                                            <th>
-                                                <span
-                                                    title="En el plan operativo, además de los procesos y demás elementos que contempla el protocolo, se debe establecer y registrar los costos variables, costos fijos y las inversiones requeridas en el proyecto.
-              Determine el costo variable promedio para cada producto para el primer año (Debería ser menor al Precio de Venta)
-              La diferencia entre el Precio de Venta y el Costo Variable Promedio por unidad, nos dará el Margen de Contribución del producto y/o Servicio"
-                                                >
-                                                    Costo Variable por Unidad Año {years[0]} ℹ️
-                                                </span>
-                                            </th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -580,7 +593,7 @@ const ProyeccionMacro = () => {
                                                         id={`producto-nombre-${producto.id}`}
                                                         value={producto.nombre}
                                                         onChange={(value) => manejarCambioProducto(producto.id, "nombre", value)}
-                                                        placeholder=""
+                                                        placeholder="nombre"
                                                         type="text"
                                                     />
                                                 </td>
@@ -590,7 +603,7 @@ const ProyeccionMacro = () => {
                                                         id={`producto-cantidad-${producto.id}`}
                                                         value={producto.cantidad}
                                                         onChange={(value) => manejarCambioProducto(producto.id, "cantidad", value)}
-                                                        placeholder=""
+                                                        placeholder="$0"
                                                         type="number"
                                                     />
                                                 </td>
@@ -600,31 +613,10 @@ const ProyeccionMacro = () => {
                                                         id={`producto-precioSinIVA-${producto.id}`}
                                                         value={producto.precioSinIVA}
                                                         onChange={(value) => manejarCambioProducto(producto.id, "precioSinIVA", value)}
-                                                        placeholder=""
+                                                        placeholder="$0"
                                                         type="number"
                                                     />
                                                 </td>
-
-                                                <td>
-                                                    <CustomInput
-                                                        id={`producto-precioVenta-${producto.id}`}
-                                                        value={producto.precioVenta}
-                                                        onChange={(value) => manejarCambioProducto(producto.id, "precioVenta", value)}
-                                                        placeholder=""
-                                                        type="number"
-                                                    />
-                                                </td>
-
-                                                <td>
-                                                    <CustomInput
-                                                        id={`producto-costoVariable-${producto.id}`}
-                                                        value={producto.costoVariable}
-                                                        onChange={(value) => manejarCambioProducto(producto.id, "costoVariable", value)}
-                                                        placeholder=""
-                                                        type="number"
-                                                    />
-                                                </td>
-
                                                 <td>
                                                     <button className="producto-boton-eliminar" onClick={() => eliminarProducto(producto.id)}>
                                                         🗑️
@@ -644,6 +636,7 @@ const ProyeccionMacro = () => {
                         </div>
 
                         {/* Crecimiento en Unidades*/}
+                        <h3>Crecimiento en Unidades</h3>
                         <p>El crecimiento en UNIDADES depende de (marque en el recuadro con una X):</p>
                         <div id="crecimiento-unidades" className="contenedor-crecimiento">
                             <CustomInput
@@ -664,7 +657,6 @@ const ProyeccionMacro = () => {
                                     En caso de que su crecimiento sea mediante estrategias de mercadeo,
                                     indique los crecimientos porcentuales de las unidades para cada año.
                                 </p>
-                                <h3>Crecimiento en Unidades</h3>
                                 <div className="fila-crecimiento">
                                     {years.map((anio) => (
                                         <div key={anio} className="contenedor-input">
@@ -674,6 +666,7 @@ const ProyeccionMacro = () => {
                                                 type="percentage"
                                                 value={crecimientoUnidades[anio]}
                                                 onChange={(value) => manejarCambioCrecUnidades(anio, value)}
+                                                placeholder={"0%"}
                                                 disabled={anio === years[0]}
                                             />
                                         </div>
@@ -683,6 +676,7 @@ const ProyeccionMacro = () => {
                         )}
 
                         {/* Crecimiento en Precios*/}
+                        <h3>Crecimiento en Precios</h3>
                         <p>El crecimiento en PRECIOS depende de (marque en el recuadro con una X):</p>
                         <div id="crecimiento-precios" className="contenedor-crecimiento">
                             <CustomInput
@@ -691,6 +685,7 @@ const ProyeccionMacro = () => {
                                 type="radio"
                                 value={opcionSeleccionadaPrecios}
                                 onChange={manejarCambioPrecios}
+                                placeholder={"0%"}
                                 options={["PIB", "Estrategia", "IPC"]}
                                 name="metodoCrecimientoPrecios"
                             />
@@ -703,16 +698,16 @@ const ProyeccionMacro = () => {
                                     En caso de que su crecimiento sea mediante estrategias de mercadeo,
                                     indique los crecimientos porcentuales de precios de venta para cada año.
                                 </p>
-                                <h3>Crecimiento en Precios</h3>
                                 <div className="fila-crecimiento">
                                     {years.map((anio) => (
                                         <div key={anio} className="contenedor-input">
-                                            <span className="anio">Año {anio}</span> {/* Título del año */}
+                                            <span className="anio">Año {anio}</span>
                                             <CustomInput
                                                 id={`crecimiento-unidades-${anio}`}
                                                 type="percentage"
                                                 value={crecimientoPrecios[anio]}
                                                 onChange={(value) => manejarCambioCrecPrecios(anio, value)}
+                                                placeholder={"0%"}
                                                 disabled={anio === years[0]}
                                             />
                                         </div>
@@ -722,6 +717,7 @@ const ProyeccionMacro = () => {
                         )}
 
                         {/* Crecimiento en Costos*/}
+                        <h3>Crecimiento en Costos</h3>
                         <p>El crecimiento en COSTOS variables por unidad depende de (marque en el recuadro con una X):</p>
                         <div id="crecimiento-costos" className="contenedor-crecimiento">
                             <CustomInput
@@ -730,6 +726,7 @@ const ProyeccionMacro = () => {
                                 type="radio"
                                 value={opcionSeleccionadaCostos}
                                 onChange={manejarCambioCostos}
+                                placeholder={"0%"}
                                 options={["PIB", "Estrategia", "IPC"]}
                                 name="metodoCrecimientoCostos"
                             />
@@ -752,6 +749,7 @@ const ProyeccionMacro = () => {
                                                 type="percentage"
                                                 value={crecimientoCostos[anio]}
                                                 onChange={(value) => manejarCambioCrecCostos(anio, value)}
+                                                placeholder={"0%"}
                                                 disabled={anio === years[0]}
                                             />
                                         </div>
@@ -790,7 +788,7 @@ const ProyeccionMacro = () => {
                                                         id={`estrategia-nombre-${estrategia.id}`}
                                                         value={estrategia.nombre}
                                                         onChange={(value) => manejarCambioEstrategia(estrategia.id, "nombre", value)}
-                                                        placeholder=""
+                                                        placeholder="nombre"
                                                         type="text"
                                                     />
                                                 </td>
@@ -801,7 +799,7 @@ const ProyeccionMacro = () => {
                                                             id={`estrategia-anio${anio}-${estrategia.id}`}
                                                             value={estrategia.valores?.[anio] || ""}
                                                             onChange={(value) => manejarCambioEstrategia(estrategia.id, anio, value)}
-                                                            placeholder=""
+                                                            placeholder="$0"
                                                             type="number"
                                                         />
                                                     </td>

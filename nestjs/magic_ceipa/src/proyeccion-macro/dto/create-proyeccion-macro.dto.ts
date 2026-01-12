@@ -7,18 +7,11 @@ export class ProductoDto {
 
   @IsNumber()
   @IsPositive()
-  costoVarProdAnoBase: number;
-
-  @IsNumber()
-  @IsPositive()
   cantidadFacturar: number;
 
   @IsNumber()
   @IsPositive()
   precioSinIva: number;
-
-  @IsNumber()
-  precioVenta: number;
 }
 
 class CrecimientoDto {
@@ -51,7 +44,6 @@ export class EstrategiaMarketingDto {
 
 class AnalisisMercadoDto {
     @IsNumber()
-    @Min(1)
     @Max(100)
     tasaIva: number;
 

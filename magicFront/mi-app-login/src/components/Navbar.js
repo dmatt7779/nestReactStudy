@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../style/styles.css';
 import Titulo from "../images/titulo_simulador.png";
 import lineImg from "../images/linea_divisora.png";
