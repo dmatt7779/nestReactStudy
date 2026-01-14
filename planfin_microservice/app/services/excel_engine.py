@@ -792,8 +792,169 @@ class ExcelOutputReader:
         # ======== wacc ========
         if self.SHEET_WACC in wb.sheetnames:
             ws_wacc = wb[self.SHEET_WACC]
+            waccProveedores = [cell.value for cell in ws_wacc["C10":"G10"][0]]
+            waccImpPagar = [cell.value for cell in ws_wacc["C11":"G11"][0]]
+            waccOblFinanCorrientes = [cell.value for cell in ws_wacc["C12":"G12"][0]]
+            waccOblFinanNoCorrientes = [cell.value for cell in ws_wacc["C13":"G13"][0]]
+            waccPatrimonio = [cell.value for cell in ws_wacc["C14":"G14"][0]]
+            waccTotalPasivoPatrimonio = [cell.value for cell in ws_wacc["C16":"G16"][0]]
+            # participacion
+            waccPartProveedores = [cell.value for cell in ws_wacc["C20":"G20"][0]]
+            waccImpPorPagar = [cell.value for cell in ws_wacc["C21":"G21"][0]]
+            waccPartOblFinanCorrientes = [cell.value for cell in ws_wacc["C22":"G22"][0]]
+            waccPartOblFinanNoCorrientes = [cell.value for cell in ws_wacc["C23":"G23"][0]]
+            waccPartPatrimonio = [cell.value for cell in ws_wacc["C24":"G24"][0]]
+            waccCostoPromPonderado = [cell.value for cell in ws_wacc["C27":"I27"][0]]
 
-            
+            out["wacc"] = {
+                "waccProveedores": waccProveedores,
+                "waccImpPagar": waccImpPagar,
+                "waccOblFinanCorrientes": waccOblFinanCorrientes,
+                "waccOblFinanNoCorrientes": waccOblFinanNoCorrientes,
+                "waccPatrimonio": waccPatrimonio,
+                "waccTotalPasivoPatrimonio": waccTotalPasivoPatrimonio,
+                "participacion": {
+                    "waccPartProveedores": waccPartProveedores,
+                    "waccImpPorPagar": waccImpPorPagar,
+                    "waccPartOblFinanCorrientes": waccPartOblFinanCorrientes,
+                    "waccPartOblFinanNoCorrientes": waccPartOblFinanNoCorrientes,
+                    "waccPartPatrimonio": waccPartPatrimonio,
+                    "waccCostoPromPonderado": waccCostoPromPonderado,
+                }
+            }
+        
+        # ======== ind liquidez ========
+        if self.SHEET_IND_LIQUIDEZ in wb.sheetnames:
+            ws_il = wb[self.SHEET_IND_LIQUIDEZ]
+            # razon corriente
+            ilActPasCorriente = [cell.value for cell in ws_il["F8":'J8'][0]]
+            # solidez
+            ilActPasTotal = [cell.value for cell in ws_il["F16":'J16'][0]]
+            # capital de trabajo
+            ilActCtePasCte = [cell.value for cell in ws_il["F20":'J20'][0]]
+
+            out["indLiquidez"] = {
+                "razonCorriente": {
+                    "ilActPasCorriente": ilActPasCorriente,
+                },
+                "solidez": {
+                    "ilActPasTotal": ilActPasTotal,
+                },
+                "capitalTrabajo": {
+                    "ilActCtePasCte": ilActCtePasCte,
+                },
+            }
+
+        # ======== ind endeudamiento ========
+        if self.SHEET_IND_ENDEUDAMIENTO in wb.sheetnames:
+            ws_end = wb[self.SHEET_IND_ENDEUDAMIENTO]
+            # INDICE DE ENDEUDAMIENTO
+            endActPasTotal = [cell.value for cell in ws_end["F8":'J8'][0]]
+            # ENDEUDAMIENTO A CORTO PLAZO 
+            endPasCtePasTotal = [cell.value for cell in ws_end["F12":'J12'][0]]
+            # PATRIMONIO A PASIVOS
+            endPatriPasTotal = [cell.value for cell in ws_end["F17":'J17'][0]]
+
+            out["indEndeudamiento"] = {
+                "endeudamiento": {
+                    "endActPasTotal": endActPasTotal,
+                },
+                "endCortoPlazo": {
+                    "endPasCtePasTotal": endPasCtePasTotal,
+                },
+                "patrimonioAPasivos": {
+                    "endPatriPasTotal": endPatriPasTotal,
+                },
+            }
+
+        # ======== ind rentabilidad ========
+        if self.SHEET_IND_RENTABILIDAD in wb.sheetnames:
+            ws_ir = wb[self.SHEET_IND_RENTABILIDAD]
+            # margen bruto
+            resultBrutoVentas = [cell.value for cell in ws_ir["F8":"J8"][0]]
+            # margen operacional
+            resultOperacionalVentas = [cell.value for cell in ws_ir["F12":"J12"][0]]
+            # margen neto de utilidad
+            resultEjercicioVentas = [cell.value for cell in ws_ir["F16":"J16"][0]]
+            # rendimiento del patrimonio
+            resultEjercicioPatri = [cell.value for cell in ws_ir["F20":"J20"][0]]
+            # rendimiento del activo
+            resultEjercicioActivoTotal = [cell.value for cell in ws_ir["F24":"J24"][0]]
+
+            out["indRentabilidad"] = {
+                "margenBruto": {
+                    "resultBrutoVentas": resultBrutoVentas,
+                },
+                "margenOperacional": {
+                    "resultOperacionalVentas": resultOperacionalVentas,
+                },
+                "margenNetoUtilidad": {
+                    "resultEjercicioVentas": resultEjercicioVentas,
+                },
+                "rendPatrimonio": {
+                    "resultEjercicioPatri": resultEjercicioPatri,
+                },
+                "rendDelActivo": {
+                    "resultEjercicioActivoTotal": resultEjercicioActivoTotal,
+                },
+            }
+
+        # ======== ind rentabilidad ========
+        if self.SHEET_IND_GENERACION_VALOR in wb.sheetnames:
+            ws_igv = wb[self.SHEET_IND_GENERACION_VALOR]
+            # KTNO
+            ccInventariosCp = [cell.value for cell in ws_igv["F8":"J8"][0]]
+            # PKT
+            ktnoIngresos = [cell.value for cell in ws_igv["F12":"J12"][0]]
+            # ROA
+            uaiiActNetosOper = [cell.value for cell in ws_igv["F16":"J16"][0]]
+            # ROI
+            uaiPatrimonio = [cell.value for cell in ws_igv["F20":"J20"][0]]
+            # margen EBITDA
+            ebitdaIngresos = [cell.value for cell in ws_igv["F24":"J24"][0]]
+            # costo promedio ponderado
+            costPromedioPonderado = [cell.value for cell in ws_igv["F32":"J32"][0]]
+            # RAN
+            uodiActOper = [cell.value for cell in ws_igv["F35":"J35"][0]]
+            # EVA
+            uodiActivosCk = [cell.value for cell in ws_igv["F39":"J39"][0]]
+            # EVA2
+            activosRanCk = [cell.value for cell in ws_igv["F43":"J43"][0]]
+            # % EVA
+            evaVentas = [cell.value for cell in ws_igv["F47":"J47"][0]]
+
+            out["indRentabilidad"] = {
+                "ktno": {
+                    "ccInventariosCp": ccInventariosCp,
+                },
+                "pkt": {
+                    "ktnoIngresos": ktnoIngresos,
+                },
+                "roa": {
+                    "uaiiActNetosOper": uaiiActNetosOper,
+                },
+                "roi": {
+                    "uaiPatrimonio": uaiPatrimonio,
+                },
+                "margenEbitda": {
+                    "ebitdaIngresos": ebitdaIngresos,
+                },
+                "costoPromPonderado": {
+                    "costPromedioPonderado": costPromedioPonderado,
+                },
+                "ran": {
+                    "uodiActOper": uodiActOper,
+                },
+                "eva": {
+                    "uodiActivosCk": uodiActivosCk,
+                },
+                "eva2": {
+                    "activosRanCk": activosRanCk,
+                },
+                "porcentEva": {
+                    "evaVentas": evaVentas,
+                },
+            }
             
         return out
 
