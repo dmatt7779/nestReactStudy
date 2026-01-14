@@ -527,6 +527,16 @@ class ExcelOutputReader:
     SHEET_ER = "Estado de resultados"
     SHEET_FLUJO = "Flujo de Efectivo"
     SHEET_ESF = "Estado Situación Financ (ESF)"
+    SHEET_FUJ = "Flujo de Caja"
+
+    SHEET_WACC = "wacc"
+
+    SHEET_IND_LIQUIDEZ = "Ind Liquidez"
+    SHEET_IND_ENDEUDAMIENTO = "Ind Endeudamiento"
+
+    SHEET_IND_RENTABILIDAD = "Ind Rentabilidad"
+    SHEET_IND_GENERACION_VALOR = "Ind. Generacion Valor"
+
 
     def read_outputs(self, workbook_path: Union[str, Path]) -> Dict[str, Any]:
         workbook_path = Path(workbook_path)
@@ -535,24 +545,22 @@ class ExcelOutputReader:
         wb_raw = load_workbook(workbook_path, data_only=False)
         print("[ExcelOutputReader] Sheets:", wb_raw.sheetnames)
         if self.SHEET_ER in wb_raw.sheetnames:
+            # celda que tiene fórmula
             ws_dbg = wb_raw[self.SHEET_ER]
-            # Cambia C16 por alguna celda que sepas que tiene fórmula
             print("[ExcelOutputReader][DEBUG] C16 raw:", ws_dbg["C16"].value)
 
         # --- Lectura de valores calculados ---
-        wb = load_workbook(workbook_path, data_only=True)  # data_only=True = valores calculados
+        wb = load_workbook(workbook_path, data_only=True)
         out: Dict[str, Any] = {}
 
         # ======== Estado Resultados ========
         if self.SHEET_ER in wb.sheetnames:
-            print("Estado Resultados encontrado")
             ws_er = wb[self.SHEET_ER]
 
-            years = [cell.value for cell in ws_er["C6":"G6"][0]]
-            ingresos = [cell.value for cell in ws_er["C9":"G9"][0]]
+            ventas = [cell.value for cell in ws_er["C9":"G9"][0]]
             costo_ventas = [cell.value for cell in ws_er["C10":"G10"][0]]
             utilidad_bruta = [cell.value for cell in ws_er["C12":"G12"][0]]
-            gastos_operativos_totales = [cell.value for cell in ws_er["C14":"G14"][0]]
+            gastos_operativos = [cell.value for cell in ws_er["C14":"G14"][0]]
             utilidad_antes_imp_int = [cell.value for cell in ws_er["C16":"G16"][0]]
             gastos_financieros = [cell.value for cell in ws_er["C18":"G18"][0]]
             ingresos_financieros = [cell.value for cell in ws_er["C19":"G19"][0]]
@@ -560,14 +568,11 @@ class ExcelOutputReader:
             impuestos = [cell.value for cell in ws_er["C23":"G23"][0]]
             utilidad_neta = [cell.value for cell in ws_er["C25":"G25"][0]]
 
-            print("[ExcelOutputReader][DEBUG] utilidad_antes_imp_int (data_only):", utilidad_antes_imp_int)
-
             out["estadoResultados"] = {
-                "years": years,
-                "ingresos": ingresos,
-                "costoVentas": costo_ventas,
+                "ventas": ventas,
+                "costosVentas": costo_ventas,
                 "utilidadBruta": utilidad_bruta,
-                "gastosOperativosTotales": gastos_operativos_totales,
+                "gastosOperativos": gastos_operativos,
                 "utilidadAntesImpInt": utilidad_antes_imp_int,
                 "gastosFinancieros": gastos_financieros,
                 "ingresosFinancieros": ingresos_financieros,
@@ -576,6 +581,220 @@ class ExcelOutputReader:
                 "utilidadNeta": utilidad_neta,
             }
 
+        # ======== Flujo Efectivo ========
+        if self.SHEET_FLUJO in wb.sheetnames:
+            ws_flujo = wb[self.SHEET_FLUJO]
+            # Actividad de operacion
+            ventasContado = [cell.value for cell in ws_flujo["E11":"I11"][0]]
+            recuperacionCartera = [cell.value for cell in ws_flujo["F12":"I12"][0]]
+            costosOperativos = [cell.value for cell in ws_flujo["E13":"I13"][0]]
+            gastosOperativos = [cell.value for cell in ws_flujo["E14":"I14"][0]]
+            pagoProveedores = [cell.value for cell in ws_flujo["F15":"I15"][0]]
+            inversionInventarioInicial = ws_flujo["D16"].value
+            flujoEfectivoImpuestos = [cell.value for cell in ws_flujo["F17":"I17"][0]]
+            depreciacionAmortizacion = [cell.value for cell in ws_flujo["E18":"I18"][0]]
+            # Actividad de financiacion
+            capitalInicialSocios = ws_flujo["D23"].value
+            adquiPrestamos = ws_flujo["D24"].value
+            feCapitalAdicionalSocios = [cell.value for cell in ws_flujo["E25":"I25"][0]]
+            rendimientosFinancieros = [cell.value for cell in ws_flujo["F26":"I26"][0]]
+            servicioDeuda = [cell.value for cell in ws_flujo["E27":"I27"][0]]
+            flujoEfectivoIntereses = [cell.value for cell in ws_flujo["E28":"I28"][0]]
+            flujoEfectivoDividendos = [cell.value for cell in ws_flujo["F29":"I29"][0]]
+            # Actividad Inversion
+            ventaActivosFijos = ws_flujo["I34"].value
+            inversionActivosFijos = [cell.value for cell in ws_flujo["D35":"I35"][0]]
+            excedenteDeficitEfectivo = [cell.value for cell in ws_flujo["D38":"I38"][0]]
+            aporteSocios = [cell.value for cell in ws_flujo["D40":"I40"][0]]
+            flujoEfectivoSaldoInicial = [cell.value for cell in ws_flujo["D42":"I42"][0]]
+            flujoEfectivoSaldoFinal = [cell.value for cell in ws_flujo["D44":"I44"][0]]
+
+            out["flujoEfectivo"] = {
+                "actividadOperacion": {
+                    "ventasContado": ventasContado,
+                    "recuperacionCartera": recuperacionCartera,
+                    "costosOperativos": costosOperativos,
+                    "gastosOperativos": gastosOperativos,
+                    "pagoProveedores": pagoProveedores,
+                    "inversionInventarioInicial": inversionInventarioInicial,
+                    "flujoEfectivoImpuestos": flujoEfectivoImpuestos,
+                },
+                "actividadFinanciacion": {
+                    "depreciacionAmortizacion": depreciacionAmortizacion,
+                    "capitalInicialSocios": capitalInicialSocios,
+                    "adquiPrestamos": adquiPrestamos,
+                    "feCapitalAdicionalSocios": feCapitalAdicionalSocios,
+                    "rendimientosFinancieros": rendimientosFinancieros,
+                    "servicioDeuda": servicioDeuda,
+                    "flujoEfectivoIntereses": flujoEfectivoIntereses,
+                    "flujoEfectivoDividendos": flujoEfectivoDividendos,
+                },
+                "actividadInversion": {
+                    "ventaActivosFijos": ventaActivosFijos,
+                    "inversionActivosFijos": inversionActivosFijos,
+                },
+                "excedenteDeficitEfectivo": excedenteDeficitEfectivo,
+                "aporteSocios": aporteSocios,
+                "flujoEfectivoSaldoInicial": flujoEfectivoSaldoInicial,
+                "flujoEfectivoSaldoFinal": flujoEfectivoSaldoFinal,
+            }
+
+        # ======== Estado Situación Financ (ESF) ========
+        if self.SHEET_ESF in wb.sheetnames:
+            ws_esf = wb[self.SHEET_ESF]
+            # Activos Corrientes
+            esfDisponible = [cell.value for cell in ws_esf["C10":"H10"][0]]
+            esfInversionesTemporales = [cell.value for cell in ws_esf["D11":"H11"][0]]
+            esfPorCobrar = [cell.value for cell in ws_esf["D12":"H12"][0]]
+            esfInventarios = [cell.value for cell in ws_esf["C13":"H13"][0]]
+            esfOtrosActivos = ws_esf["H14"].value
+            esfTotalActivosCorrientes = [cell.value for cell in ws_esf["C16":"H16"][0]]
+            # Activos Largo Plazo
+            mueblesEnseres = [cell.value for cell in ws_esf["C20":"H20"][0]]
+            equipoMaquinaria = [cell.value for cell in ws_esf["C21":"H21"][0]]
+            vehiculos = [cell.value for cell in ws_esf["C22":"H22"][0]]
+            terrenos = [cell.value for cell in ws_esf["C23":"H23"][0]]
+            edificaciones = [cell.value for cell in ws_esf["C24":"H24"][0]]
+            equiposComputo = [cell.value for cell in ws_esf["C25":"H25"][0]]
+            depreciacionAcumulada = [cell.value for cell in ws_esf["C26":"H26"][0]]
+            activosDiferidos = [cell.value for cell in ws_esf["C27":"H27"][0]]
+            amortizacionAcumulada = [cell.value for cell in ws_esf["C28":"H28"][0]]
+            totalActivosNoCorrientes = [cell.value for cell in ws_esf["C30":"H30"][0]]
+            # Pasivos corrientes
+            proveedores = [cell.value for cell in ws_esf["C36":"H36"][0]]
+            impuestosPorPagar = [cell.value for cell in ws_esf["D37":"H37"][0]]
+            pagarSociosAno1 = ws_esf["D38"].value
+            pagarSocios = [cell.value for cell in ws_esf["D39":"H39"][0]]
+            obligacionesFinancierasCor = [cell.value for cell in ws_esf["C40":"H40"][0]]
+            totalPasivosCorrientes = [cell.value for cell in ws_esf["C42":"H42"][0]]
+            # Pasivos no corrientes
+            obligacionesFinancierasNoCor = [cell.value for cell in ws_esf["C46":"H46"][0]]
+            totalPasivosNoCorrientes = [cell.value for cell in ws_esf["C48":"H48"][0]]
+            # Patrimonio
+            capital = [cell.value for cell in ws_esf["C54":"H54"][0]]
+            esfCapitalAdicionalSocios = [cell.value for cell in ws_esf["C55":"H55"][0]]
+            reservaLegal = [cell.value for cell in ws_esf["C56":"H56"][0]]
+            utilidadRetenidas = [cell.value for cell in ws_esf["C57":"H57"][0]]
+            utilidadPeriodo = [cell.value for cell in ws_esf["C58":"H58"][0]]
+            
+            #Totales
+            totalActivos = [cell.value for cell in ws_esf["C32":"H32"][0]]
+            totalPasivos = [cell.value for cell in ws_esf["C50":"H50"][0]]
+            totalPatrimonio = [cell.value for cell in ws_esf["C60":"H60"][0]]
+            totalPasivosPatrimonio = [cell.value for cell in ws_esf["C62":"H62"][0]]
+            decisionJuntaDirectiva = [cell.value for cell in ws_esf["C64":"H64"][0]]
+            
+            out["EstadoSituacionFinanc"] = {
+                "activosCorrientes": {
+                    "esfDisponible": esfDisponible,
+                    "esfInversionesTemporales": esfInversionesTemporales,
+                    "esfPorCobrar": esfPorCobrar,
+                    "esfInventarios": esfInventarios,
+                    "esfOtrosActivos": esfOtrosActivos,
+                    "esfTotalActivosCorrientes": esfTotalActivosCorrientes,
+                },
+                "activosLargoPlazo": {
+                    "mueblesEnseres": mueblesEnseres,
+                    "equipoMaquinaria": equipoMaquinaria,
+                    "vehiculos": vehiculos,
+                    "terrenos": terrenos,
+                    "edificaciones": edificaciones,
+                    "equiposComputo": equiposComputo,
+                    "depreciacionAcumulada": depreciacionAcumulada,
+                    "activosDiferidos": activosDiferidos,
+                    "amortizacionAcumulada": amortizacionAcumulada,
+                    "totalActivosNoCorrientes": totalActivosNoCorrientes,
+                },
+                "pasivosCorrientes": {
+                    "proveedores": proveedores,
+                    "impuestosPorPagar": impuestosPorPagar,
+                    "pagarSociosAno1": pagarSociosAno1,
+                    "pagarSocios": pagarSocios,
+                    "obligacionesFinancierasCor": obligacionesFinancierasCor,
+                    "totalPasivosCorrientes": totalPasivosCorrientes,
+                },
+                "pasivosNoCorrientes": {
+                    "obligacionesFinancierasNoCor": obligacionesFinancierasNoCor,
+                    "totalPasivosNoCorrientes": totalPasivosNoCorrientes,
+                },
+                "patrimonio": {
+                    "capital": capital,
+                    "esfCapitalAdicionalSocios": esfCapitalAdicionalSocios,
+                    "reservaLegal": reservaLegal,
+                    "utilidadRetenidas": utilidadRetenidas,
+                    "utilidadPeriodo": utilidadPeriodo,
+                },
+                "totalActivos": totalActivos,
+                "totalPasivos": totalPasivos,
+                "totalPatrimonio": totalPatrimonio,
+                "totalPasivosPatrimonio": totalPasivosPatrimonio,
+                "decisionJuntaDirectiva": decisionJuntaDirectiva,
+            }
+
+        # ======== Flujo de Caja ========
+        if self.SHEET_FUJ in wb.sheetnames:
+            ws_fuj = wb[self.SHEET_FUJ]
+            
+            fujVentas = [cell.value for cell in ws_fuj["D9":"H9"][0]]
+            fujCostos = [cell.value for cell in ws_fuj["D10":"H10"][0]]
+            fujGastosOperativos = [cell.value for cell in ws_fuj["D11":"H11"][0]]
+            fujUtilidadOperativa = [cell.value for cell in ws_fuj["D13":"H13"][0]]
+            fujImpRentaOperativo = [cell.value for cell in ws_fuj["E15":"H15"][0]]
+            fujBeneficioFiscal = [cell.value for cell in ws_fuj["E16":"H16"][0]]
+            fujUtilOperDespuesImpuesto = [cell.value for cell in ws_fuj["D18":"H18"][0]]
+            fujDepresiacionAmort = [cell.value for cell in ws_fuj["D20":"H20"][0]]
+            fujCajaBrutoOperativo = [cell.value for cell in ws_fuj["C22":"H22"][0]]
+            tirProyecto = ws_fuj["C24"].value
+            tmrrCok = ws_fuj["C25"].value
+            tirModificado = ws_fuj["C26"].value
+            vpnProyectoTmrr = ws_fuj["C27"].value
+            capitalNetoKtno = [cell.value for cell in ws_fuj["E31":"H31"][0]]
+            escudoFiscal = [cell.value for cell in ws_fuj["D32":"H32"][0]]
+            fujServicioDeuda = [cell.value for cell in ws_fuj["D36":"H36"][0]]
+            fujGastosFinancieros = [cell.value for cell in ws_fuj["D37":"H37"][0]]
+            fujAportInicialSocios = ws_fuj["C38"].value
+            fujAporteAdicionalSocios = [cell.value for cell in ws_fuj["D39":"H39"][0]]
+            fujCuentaPagarSocios = [cell.value for cell in ws_fuj["D40":"H40"][0]]
+            flujoCajaLibreInver = [cell.value for cell in ws_fuj["C42":"H42"][0]]
+            tirInversionista = ws_fuj["C44"].value
+            fujTmrr = ws_fuj["C45"].value
+            fujTirModificadaInver = ws_fuj["C46"].value
+            fujVpn = ws_fuj["C47"].value
+
+            out["flujoCaja"] = {
+                "fujVentas": fujVentas,
+                "fujCostos": fujCostos,
+                "fujGastosOperativos": fujGastosOperativos,
+                "fujUtilidadOperativa": fujUtilidadOperativa,
+                "fujImpRentaOperativo": fujImpRentaOperativo,
+                "fujBeneficioFiscal": fujBeneficioFiscal,
+                "fujUtilOperDespuesImpuesto": fujUtilOperDespuesImpuesto,
+                "fujDepresiacionAmort": fujDepresiacionAmort,
+                "fujCajaBrutoOperativo": fujCajaBrutoOperativo,
+                "tirProyecto": tirProyecto,
+                "tmrrCok": tmrrCok,
+                "tirModificado": tirModificado,
+                "vpnProyectoTmrr": vpnProyectoTmrr,
+                "capitalNetoKtno": capitalNetoKtno,
+                "escudoFiscal": escudoFiscal,
+                "fujServicioDeuda": fujServicioDeuda,
+                "fujGastosFinancieros": fujGastosFinancieros,
+                "fujAportInicialSocios": fujAportInicialSocios,
+                "fujAporteAdicionalSocios": fujAporteAdicionalSocios,
+                "fujCuentaPagarSocios": fujCuentaPagarSocios,
+                "flujoCajaLibreInver": flujoCajaLibreInver,
+                "tirInversionista": tirInversionista,
+                "fujTmrr": fujTmrr,
+                "fujTirModificadaInver": fujTirModificadaInver,
+                "fujVpn": fujVpn,
+            }
+
+        # ======== wacc ========
+        if self.SHEET_WACC in wb.sheetnames:
+            ws_wacc = wb[self.SHEET_WACC]
+
+            
+            
         return out
 
 class ExcelEngineService:
@@ -650,17 +869,9 @@ class ExcelEngineService:
         2) Recalcular con LibreOffice (nuevo archivo en calc_out).
         3) Leer resultados desde el archivo recalculado.
         """
-        # 1) Escribir input en la copia de la plantilla
         original_path = Path(self.input_writer.write_input(self.payload))
-
-        # 2) Recalcular y obtener el path recalculado
         recalculated_path = self._run_libreoffice_calc(original_path)
-
-        # 3) Leer resultados
         output_reader = ExcelOutputReader()
         data = output_reader.read_outputs(recalculated_path)
-
-        # Para debug: ver cuál archivo fue leído
         data["excelPath"] = str(recalculated_path)
-
         return data

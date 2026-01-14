@@ -49,4 +49,4 @@ def calculate_via_excel(payload: Dict[str, Any] = Body(...)):
     """
     svc = ExcelEngineService(payload)
     result = svc.run()
-    return {"ok": True, "result": result}
+    return {"result": result}
