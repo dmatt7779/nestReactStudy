@@ -16,13 +16,19 @@ const ProjectInfo = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const projectId = location.state?.projectId
+  
+  // CAMBIO 1: Calcular el año actual dinámicamente
+  const currentYear = new Date().getFullYear().toString();
+
   const [_, setProyecto] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [projectName, setProjectName] = useState("")
   const [integrantes, setIntegrantes] = useState([{ cedula: "", nombre: "" }])
   const [professors, setProfessors] = useState([])
-  const [ano, setAno] = useState("2025")
+  
+  // CAMBIO 2: Usar el año actual como estado inicial por defecto
+  const [ano, setAno] = useState(currentYear)
 
   const profesoresLista = [
     { id: 1, nombre: "Profesor Mauricio" },
@@ -33,6 +39,7 @@ const ProjectInfo = () => {
 
   const [formularioCompleto, setFormularioCompleto] = useState(false)
 
+  // Lógica de validación (Aprendida)
   useEffect(() => {
     const nombreValido = projectName.trim() !== ""
     const integrantesValidos = integrantes.every(
@@ -67,7 +74,9 @@ const ProjectInfo = () => {
                 : [{ cedula: "", nombre: "" }]
             )
             setProfessors(proyectoData.professor || [])
-            setAno(proyectoData.openingYear ? proyectoData.openingYear.toString() : "2026")
+            
+            // CAMBIO 3: Si viene de la BD úsalo, si no, usa el año actual dinámico
+            setAno(proyectoData.openingYear ? proyectoData.openingYear.toString() : currentYear)
           } else {
             setError("Proyecto no encontrado.")
           }
@@ -82,7 +91,7 @@ const ProjectInfo = () => {
       }
     }
     fetchProyecto()
-  }, [projectId])
+  }, [projectId, currentYear]) // Agregamos currentYear a las dependencias
 
     const handleProjectNameChange = (e) => {
       setProjectName(e.target.value)
@@ -133,7 +142,6 @@ const ProjectInfo = () => {
 
           if (projectId) {
               console.log("ProjectInfo - Actualizando proyecto existente con ID:", projectId)
-              // await axiosClient.put(`/api/v1/project-info/${projectId}`, dataToSend) // Asumiendo un endpoint PUT/PATCH
               navigate('/proyeccionMacro', { state: { projectId: projectId, openingYear: ano } })
           }else {
             console.log("ProjectInfo - Creando nuevo proyecto...")
@@ -171,8 +179,7 @@ const ProjectInfo = () => {
         </div>
         <div className="contenido-container">        
           <h4>¿Estas preparado para iniciar?</h4>
-          <p>A continuación, te invito a diligenciar los datos preliminares. Por favor, asegúrate de que la información ingresada cumpla con los criterios de selección y calidad establecidos, esta información será de suma importancia para que este inicio de proyecto tenga todo lo que necesitas para que tu aprendizaje sea exitoso.
-          </p>
+          <p>A continuación, te invito a diligenciar los datos preliminares...</p>
           <div className="section">
             <img src={tituloProyectoImg} alt="Creación de un nuevo proyecto" className="section-img1" />
           </div>
@@ -180,7 +187,6 @@ const ProjectInfo = () => {
             Ingresar el nombre del proyecto o la empresa que desea valorar.
           </p>
 
-          {/* Campo para el nombre del proyecto */}
           <div className="section">
             <label htmlFor="projectName">Nombre del Proyecto:</label>
             <input
@@ -192,7 +198,6 @@ const ProjectInfo = () => {
             />
           </div>
 
-          {/* Sección de Integrantes */}
           <div className="section">
             <img src={integrantesImg} alt="Integrantes" className="section-img2" />
             <p>
@@ -201,8 +206,6 @@ const ProjectInfo = () => {
             <div className="integrantes-container">
               {integrantes.map((integrante, index) => (
                 <div key={index} className="integrante-fields">
-                  
-                  {/* Campo Cédula */}
                   <div className="integrante-field">
                     <label htmlFor={`cedula-${index}`}>Cédula:</label>
                     <CustomInput
@@ -215,7 +218,6 @@ const ProjectInfo = () => {
                     />
                   </div>
 
-                  {/* Campo Nombre */}
                   <div className="integrante-field">
                     <label htmlFor={`nombre-${index}`}>Nombre:</label>
                     <CustomInput
@@ -244,15 +246,13 @@ const ProjectInfo = () => {
             </button>
           </div>
 
-          {/* Sección de Seleccionar Profesor */}
           <div className="profesor-lista">
             <img src={profesorImg} alt="Selecciona tu profesor" className="section-img3" />
               <p>
                 Acá, debes seleccionar el profesor que te estará acompañando en tu valoración.
               </p>
               {profesoresLista.map((profesor) => (
-                <label key={profesor.id}
-                className="profesor-item">
+                <label key={profesor.id} className="profesor-item">
                   <input
                     type="checkbox"
                     value={profesor.id}
@@ -285,7 +285,6 @@ const ProjectInfo = () => {
             />
           </div>
 
-          {/* Botones de navegación */}
           <div className="buttons-container">
             <button className="nav-btn anterior" onClick={() => navigate(-1)}></button>
             <button

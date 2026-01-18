@@ -9,6 +9,8 @@ import cabezoteEgresos from "../../images/cabezote_egresos.png";
 import tituloEgresos from "../../images/titulo_egresos.png";
 import axiosClient from "../../utils/axios";
 
+// --- 1. FUNCIONES AUXILIARES ---
+
 const extraerValor = (input) => {
     if (input && typeof input === 'object' && input.target && typeof input.target.value !== 'undefined') {
         return input.target.value;
@@ -35,6 +37,9 @@ const CostosGastos = () => {
     const [dataExists, setDataExists] = useState(false); 
     const previousProjectId = useRef(null);
 
+    // Nuevo estado para controlar la validación del formulario
+    const [formularioCompleto, setFormularioCompleto] = useState(false);
+
     const calculateYears = useCallback((year) => {
         const startYear = parseInt(year, 10);
         return Array.from({ length: 5 }, (_, i) => startYear + i);
@@ -42,11 +47,43 @@ const CostosGastos = () => {
 
     const [years, setYears] = useState(() => calculateYears(openingYear));
 
-    // --- 2. ESTADOS: INICIALIZAR CON "" PARA EVITAR CEROS ---
+    // --- 2. ESTADOS ---
     const [costos, setCostos] = useState([{ id: Date.now(), nombre: "", valor: "" }]);
     const [gastos, setGastos] = useState([{ id: Date.now(), nombre: "", valor: "" }]);
     const [opcionSeleccionadaEgresos, setOpcionSeleccionadaEgresos] = useState("");
     const [incrementoEgresos, setIncrementoEgresos] = useState(() => years.reduce((acc, year) => ({ ...acc, [year]: "" }), {}));
+
+    // --- NUEVO: EFECTO DE VALIDACIÓN ---
+    useEffect(() => {
+        // 1. Validar Costos: Que no estén vacíos
+        // Filtramos para asegurar que al menos haya un costo válido si se requiere, 
+        // o que todos los que estén visibles tengan datos.
+        const costosValidos = costos.length > 0 && costos.every(c => 
+            c.nombre.trim() !== "" && String(c.valor) !== ""
+        );
+
+        // 2. Validar Gastos
+        const gastosValidos = gastos.length > 0 && gastos.every(g => 
+            g.nombre.trim() !== "" && String(g.valor) !== ""
+        );
+
+        // 3. Validar Incremento Egresos
+        let incrementoValido = false;
+        if (opcionSeleccionadaEgresos === "PIB" || opcionSeleccionadaEgresos === "IPC") {
+            incrementoValido = true;
+        } else if (opcionSeleccionadaEgresos === "Estrategia") {
+            // Si es estrategia, validamos que los años (del 2 al 5) tengan valor
+            // slice(1) omite el año base (index 0) que suele estar deshabilitado
+            incrementoValido = years.slice(1).every(year => 
+                incrementoEgresos[year] !== "" && incrementoEgresos[year] !== undefined
+            );
+        }
+
+        // Actualizar estado del formulario
+        setFormularioCompleto(costosValidos && gastosValidos && incrementoValido);
+
+    }, [costos, gastos, opcionSeleccionadaEgresos, incrementoEgresos, years]);
+
 
     // --- 3. CARGA DE DATOS ---
     useEffect(() => {
@@ -128,7 +165,7 @@ const CostosGastos = () => {
         fetchCostosGastos();
     }, [projectId, years]);
 
-    // --- 4. MANEJADORES DE ESTADO (CON LIMPIEZA) ---
+    // --- 4. MANEJADORES DE ESTADO ---
     
     const agregarCosto = () => setCostos([...costos, { id: Date.now(), nombre: "", valor: "" }]);
     
@@ -137,14 +174,12 @@ const CostosGastos = () => {
         if (confirmar) setCostos(costos.filter((c) => c.id !== id));
     };
 
-    // Manejador Costos
     const manejarCambioCosto = (id, campo, value) => {
         setCostos(costos.map((c) => {
             if (c.id === id) {
                 const valorFinal = campo === "valor" 
                     ? limpiarNumero(value) 
                     : extraerValor(value);
-                
                 return { ...c, [campo]: valorFinal };
             }
             return c;
@@ -158,14 +193,12 @@ const CostosGastos = () => {
         if (confirmar) setGastos(gastos.filter((g) => g.id !== id));
     };
 
-    // Manejador Gastos
     const manejarCambioGasto = (id, campo, value) => {
         setGastos(gastos.map((g) => {
             if (g.id === id) {
                 const valorFinal = campo === "valor" 
                     ? limpiarNumero(value) 
                     : extraerValor(value);
-
                 return { ...g, [campo]: valorFinal };
             }
             return g;
@@ -205,10 +238,9 @@ const CostosGastos = () => {
 
         try {
             if (dataExists) {
-                // await axiosClient.put(`/api/v1/costos-gastos/${projectId}`, dataToSend);
+                // await axiosClient.put(...)
                 console.log("Datos de Costos y Gastos actualizados.");
-                // Simulación de éxito para navegar
-                 navigate('/activosFijos', { state: { projectId, openingYear } });
+                navigate('/activosFijos', { state: { projectId, openingYear } });
             } else {
                 await axiosClient.postCostosGastos(`/api/v1/costos-gastos/${projectId}`, dataToSend);
                 console.log("Datos de Costos y Gastos creados.");
@@ -354,7 +386,16 @@ const CostosGastos = () => {
 
                     <div className="buttons-container">
                         <button type="button" className="nav-btn anterior" onClick={() => navigate(-1)}></button>
-                        <button type="button" className="nav-btn siguiente" onClick={handleSubmit}></button>
+                        <button 
+                            type="button" 
+                            className="nav-btn siguiente" 
+                            onClick={handleSubmit}
+                            disabled={!formularioCompleto} // DESHABILITADO SI NO CUMPLE REGLAS
+                            style={{
+                                opacity: formularioCompleto ? 1 : 0.5,
+                                cursor: formularioCompleto ? 'pointer' : 'not-allowed'
+                            }}
+                        ></button>
                     </div>
                 </div>
             </div>

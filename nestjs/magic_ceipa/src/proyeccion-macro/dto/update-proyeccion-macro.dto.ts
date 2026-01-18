@@ -22,6 +22,12 @@ export class ProductoDto {
     @IsPositive()
     @IsOptional()
     precio_sin_iva: number;
+
+    @ApiProperty()
+    @IsNumber()
+    @IsPositive()
+    @IsOptional()
+    costo_var_prod_ano_base: number;
 }
 
 class CrecimientoDto {

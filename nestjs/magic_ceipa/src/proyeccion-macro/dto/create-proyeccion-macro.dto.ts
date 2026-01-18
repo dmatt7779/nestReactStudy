@@ -12,6 +12,10 @@ export class ProductoDto {
   @IsNumber()
   @IsPositive()
   precioSinIva: number;
+
+  @IsNumber()
+  @IsPositive()
+  costoVarProdAnoBase: number;
 }
 
 class CrecimientoDto {

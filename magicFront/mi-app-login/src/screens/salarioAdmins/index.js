@@ -7,6 +7,8 @@ import CustomInput from "../../components/CustomInput";
 import cabezoteSalarios from "../../images/cabezote_salario_admins.png";
 import axiosClient from "../../utils/axios";
 
+// --- 1. FUNCIONES AUXILIARES ---
+
 const extraerValor = (input) => {
     if (input && typeof input === 'object' && input.target && typeof input.target.value !== 'undefined') {
         return input.target.value;
@@ -32,6 +34,9 @@ const SalarioAdmins = () => {
     const [dataExists, setDataExists] = useState(false);
     const previousProjectId = useRef(null);
 
+    // Nuevo estado para la validación
+    const [formularioCompleto, setFormularioCompleto] = useState(false);
+
     const calculateYears = useCallback((year) => {
         const startYear = parseInt(year, 10);
         return Array.from({ length: 5 }, (_, i) => startYear + i);
@@ -39,10 +44,32 @@ const SalarioAdmins = () => {
 
     const [years, setYears] = useState(() => calculateYears(openingYear));
 
-    // --- 2. ESTADOS: Inicializados con cadenas vacías "" ---
+    // --- 2. ESTADOS ---
     const [cargos, setCargos] = useState([{ id: Date.now(), cargo: "", valorMensual: "" }]);
     const [opcionSeleccionadaSalarios, setOpcionSeleccionadaSalarios] = useState("");
     const [incrementoSalarios, setIncrementoSalarios] = useState(() => years.reduce((acc, year) => ({ ...acc, [year]: "" }), {}));
+
+    // --- NUEVO: EFECTO DE VALIDACIÓN ---
+    useEffect(() => {
+        // 1. Validar Cargos: Al menos uno, y todos completos
+        const cargosValidos = cargos.length > 0 && cargos.every(c => 
+            c.cargo.trim() !== "" && String(c.valorMensual).trim() !== ""
+        );
+
+        // 2. Validar Incremento Salarial
+        let incrementoValido = false;
+        if (opcionSeleccionadaSalarios === "IPC") {
+            incrementoValido = true;
+        } else if (opcionSeleccionadaSalarios === "Otro Porcentaje") {
+            // Validar años del 2 al 5 (el primero suele estar deshabilitado o vacío por defecto)
+            incrementoValido = years.slice(1).every(year => 
+                incrementoSalarios[year] !== "" && incrementoSalarios[year] !== undefined
+            );
+        }
+
+        setFormularioCompleto(cargosValidos && incrementoValido);
+
+    }, [cargos, opcionSeleccionadaSalarios, incrementoSalarios, years]);
 
     // --- 3. CARGA DE DATOS ---
     useEffect(() => {
@@ -196,6 +223,8 @@ const SalarioAdmins = () => {
                 </div>
                 <div className="contenido-container">
                     <p>Una vez determinadas las necesidades de personal...</p>
+                    
+                    {/* Formulario con validación en onSubmit (opcional, ya que el botón se deshabilita) */}
                     <form onSubmit={handleSubmit} style={{ width: "100%" }}>
                         
                         <div className="proyeccion-container">
@@ -266,9 +295,19 @@ const SalarioAdmins = () => {
                         )}
                     </form>
                     
+                    {/* Botón con Validación */}
                     <div className="buttons-container">
                         <button type="button" className="nav-btn anterior" onClick={() => navigate(-1)}></button>
-                        <button type="button" className="nav-btn siguiente" onClick={handleSubmit}></button>
+                        <button 
+                            type="button" 
+                            className="nav-btn siguiente" 
+                            onClick={handleSubmit}
+                            disabled={!formularioCompleto}
+                            style={{
+                                opacity: formularioCompleto ? 1 : 0.5,
+                                cursor: formularioCompleto ? 'pointer' : 'not-allowed'
+                            }}
+                        ></button>
                     </div>
                 </div>
             </div>

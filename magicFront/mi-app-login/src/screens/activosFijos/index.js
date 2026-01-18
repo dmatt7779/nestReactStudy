@@ -51,8 +51,53 @@ const ActivosFijos = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [dataExists, setDataExists] = useState(false);
-    // const previousProjectId = useRef(null); // (Opcional según tu preferencia de recarga)
     const [secciones, setSecciones] = useState(getInitialState);
+
+    // Estado para controlar la validación del formulario
+    const [formularioCompleto, setFormularioCompleto] = useState(false);
+
+    // --- LÓGICA DE VALIDACIÓN INTELIGENTE ---
+    useEffect(() => {
+        let totalItemsValidos = 0;
+        let hayErrores = false;
+
+        SECCIONES.forEach((config) => {
+            const data = secciones[config.id];
+            
+            // Revisamos si esta sección tiene items "activos" (con algún dato escrito)
+            let itemsActivosEnSeccion = 0;
+
+            data.items.forEach(item => {
+                const tieneNombre = item.nombre.trim() !== "";
+                const tieneValor = String(item.valor).trim() !== "";
+
+                if (tieneNombre || tieneValor) {
+                    // Si el usuario escribió algo, DEBE completar ambos campos
+                    if (tieneNombre && tieneValor) {
+                        totalItemsValidos++; // Cuenta como item válido global
+                        itemsActivosEnSeccion++;
+                    } else {
+                        hayErrores = true; // Item a medias = Error
+                    }
+                }
+                // Si ambos están vacíos, ignoramos la fila (no es error, pero no suma)
+            });
+
+            // Si hay al menos un item activo en esta sección, validamos los campos globales
+            if (itemsActivosEnSeccion > 0) {
+                const vidaUtilOk = !config.campos.includes("vidaUtil") || (data.vidaUtil && String(data.vidaUtil).trim() !== "");
+                const salvamentoOk = !config.campos.includes("valorSalvamento") || (data.valorSalvamento && String(data.valorSalvamento).trim() !== "");
+
+                if (!vidaUtilOk || !salvamentoOk) {
+                    hayErrores = true; // Faltan datos globales de la sección
+                }
+            }
+        });
+
+        // El formulario es válido si no hay errores parciales Y hay al menos 1 item completo en total
+        setFormularioCompleto(!hayErrores && totalItemsValidos > 0);
+
+    }, [secciones]);
 
     useEffect(() => {
         if (projectId) {
@@ -75,11 +120,9 @@ const ActivosFijos = () => {
                 const newState = getInitialState();
                 
                 SECCIONES.forEach(({ id, apiKey }) => {
-                    // Verificamos si existe la sección en la respuesta
                     if (data[apiKey]) {
                         const sectionDataApi = data[apiKey];
                         
-                        // 1. Cargar Items
                         const itemsCargados = (sectionDataApi.items || []).map((item, index) => ({
                             id: `api-item-${id}-${index}`,
                             nombre: item.nombre || "",
@@ -91,7 +134,6 @@ const ActivosFijos = () => {
                             itemsCargados.push({ id: Date.now(), nombre: "", valor: "" });
                         }
 
-                        // 2. Cargar Valores Globales (Vida Útil y Salvamento) desde la raíz de la sección
                         const vidaUtilGlobal = sectionDataApi.vidaUtilAnos 
                             ? limpiarNumero(sectionDataApi.vidaUtilAnos) 
                             : "";
@@ -176,7 +218,6 @@ const ActivosFijos = () => {
         }));
     };
 
-    // --- CORRECCIÓN PRINCIPAL AQUÍ (ENVÍO) ---
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -187,7 +228,7 @@ const ActivosFijos = () => {
         SECCIONES.forEach(({ id, apiKey, campos }) => {
             const sectionData = secciones[id];
             
-            // 1. Preparamos el array de items (Solo nombre y valor)
+            // Filtramos items validos (que tengan nombre)
             const itemsLimpios = sectionData.items
                 .filter(item => item.nombre.trim() !== "")
                 .map(item => ({
@@ -195,14 +236,11 @@ const ActivosFijos = () => {
                     valor: parseFloat(item.valor) || 0,
                 }));
             
-            // Solo enviamos la sección si tiene items válidos
             if (itemsLimpios.length > 0) {
-                // Estructura base: { items: [...] }
                 const sectionPayload = {
                     items: itemsLimpios
                 };
 
-                // 2. Agregamos las propiedades al nivel de la sección (HERMANAS de items)
                 if (campos.includes("vidaUtil")) {
                     sectionPayload.vidaUtilAnos = parseInt(sectionData.vidaUtil, 10) || 0;
                 }
@@ -211,7 +249,6 @@ const ActivosFijos = () => {
                     sectionPayload.valorSalvamento = parseFloat(sectionData.valorSalvamento) || 0;
                 }
 
-                // Asignamos al objeto final
                 activosFijosPayload[apiKey] = sectionPayload;
             }
         });
@@ -328,9 +365,20 @@ const ActivosFijos = () => {
                             </div>
                         ))}
                     </form>
+                    
+                    {/* BOTÓN CON VALIDACIÓN */}
                     <div className="buttons-container">
                         <button type="button" className="nav-btn anterior" onClick={() => navigate(-1)}></button>
-                        <button type="button" className="nav-btn siguiente" onClick={handleSubmit}></button>
+                        <button 
+                            type="button" 
+                            className="nav-btn siguiente" 
+                            onClick={handleSubmit}
+                            disabled={!formularioCompleto}
+                            style={{
+                                opacity: formularioCompleto ? 1 : 0.5,
+                                cursor: formularioCompleto ? 'pointer' : 'not-allowed'
+                            }}
+                        ></button>
                     </div>
                 </div>
             </div>

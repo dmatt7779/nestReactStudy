@@ -35,9 +35,11 @@ const ProyeccionMacro = () => {
     const [proyeccionMacroData, setProyeccionMacroData] = useState(null)
     const previousProjectId = useRef(null)
 
+    // Estado para controlar si el formulario es válido
+    const [formularioCompleto, setFormularioCompleto] = useState(false);
+
     const calculateYears = useCallback((year) => {
         const startYear = parseInt(year, 10)
-        // eslint-disable-next-line no-unused-vars
         return Array.from({ length: 5 }, (_, i) => startYear + i)
     }, [])
 
@@ -62,7 +64,7 @@ const ProyeccionMacro = () => {
     const [tasaIVA, setTasaIVA] = useState("")
 
     const [productos, setProductos] = useState(() => [
-        { id: Date.now(), nombre: "", cantidad: "", precioSinIVA: "", precioVenta: "", costoVariable: "" }
+        { id: Date.now(), nombre: "", cantidad: "", precioSinIVA: "", costoVariable: "" }
     ])
 
     const [opcionSeleccionadaUnidades, setOpcionSeleccionadaUnidades] = useState("")
@@ -107,6 +109,57 @@ const ProyeccionMacro = () => {
             },
         ]
     })
+
+    // --- NUEVO: EFECTO DE VALIDACIÓN DEL FORMULARIO ---
+    useEffect(() => {
+        // 1. Validar Macro Variables (IPC, PIB, etc.)
+        const macroValido = ["IPC", "Devaluation", "InterestRate", "PIB"].every(cat =>
+            years.every(year => values[cat] && values[cat][year] !== "")
+        );
+
+        // 2. Validar Tasa IVA
+        const ivaValido = tasaIVA !== "";
+
+        // 3. Validar Productos (Al menos uno, y todos completos)
+        const productosValidos = productos.length > 0 && productos.every(p => 
+            p.nombre.trim() !== "" &&
+            String(p.cantidad) !== "" &&
+            String(p.precioSinIVA) !== "" &&
+            String(p.costoVariable) !== ""
+        );
+
+        // 4. Validar Crecimientos (Helper function)
+        const validarCrecimiento = (opcion, valores) => {
+            if (!opcion) return false; // Debe seleccionar radio
+            if (opcion !== "Estrategia") return true; // Si es PIB o IPC, es válido
+            // Si es Estrategia, validamos años (saltando el primero si así lo requiere la lógica visual)
+            // En tu UI el primer año está disabled, así que validamos slice(1)
+            return years.slice(1).every(year => valores[year] !== "");
+        };
+
+        const unidadesValido = validarCrecimiento(opcionSeleccionadaUnidades, crecimientoUnidades);
+        const preciosValido = validarCrecimiento(opcionSeleccionadaPrecios, crecimientoPrecios);
+        const costosValido = validarCrecimiento(opcionSeleccionadaCostos, crecimientoCostos);
+
+        // 5. Validar Estrategias de Marketing
+        const estrategiasValidas = estrategias.every(e => 
+            e.nombre.trim() !== "" &&
+            years.every(year => e.valores[year] !== "")
+        );
+
+        setFormularioCompleto(
+            macroValido && ivaValido && productosValidos &&
+            unidadesValido && preciosValido && costosValido &&
+            estrategiasValidas
+        );
+
+    }, [
+        values, tasaIVA, productos, 
+        opcionSeleccionadaUnidades, crecimientoUnidades,
+        opcionSeleccionadaPrecios, crecimientoPrecios,
+        opcionSeleccionadaCostos, crecimientoCostos,
+        estrategias, years
+    ]);
 
     useEffect(() => {
         const fetchProyeccionMacro = async () => {
@@ -155,11 +208,10 @@ const ProyeccionMacro = () => {
                                 nombre: producto.nombre || "",
                                 cantidad: limpiarNumero(producto.cantidadFacturar),
                                 precioSinIVA: limpiarNumero(producto.precioSinIva),
-                                precioVenta: limpiarNumero(producto.precioVenta),
                                 costoVariable: limpiarNumero(producto.costoVarProdAnoBase),
                             })));
                         } else {
-                            setProductos([{ id: Date.now(), nombre: "", cantidad: "", precioSinIVA: "", precioVenta: "", costoVariable: "" }]);
+                            setProductos([{ id: Date.now(), nombre: "", cantidad: "", precioSinIVA: "", costoVariable: "" }]);
                         }
 
                         if (response.analisisMercado?.crecimientoUnidades) {
@@ -285,7 +337,7 @@ const ProyeccionMacro = () => {
         if (productos.length < 10) {
             setProductos((productosAnteriores) => [
                 ...productosAnteriores,
-                { id: Date.now(), nombre: "", cantidad: "", precioSinIVA: "", precioVenta: "", costoVariable: "" }
+                { id: Date.now(), nombre: "", cantidad: "", precioSinIVA: "", costoVariable: "" }
             ])
         }
     }
@@ -297,12 +349,11 @@ const ProyeccionMacro = () => {
         }
     }
 
-    // --- MANEJO DE CAMBIOS PRODUCTO (CORREGIDO) ---
     const manejarCambioProducto = (id, campo, value) => {
         setProductos((productosAnteriores) => {
             return productosAnteriores.map((producto) => {
                 if (producto.id === id) {
-                    const camposNumericos = ["cantidad", "precioSinIVA", "precioVenta", "costoVariable"];
+                    const camposNumericos = ["cantidad", "precioSinIVA", "costoVariable"];
                     const valorFinal = camposNumericos.includes(campo) 
                         ? limpiarNumero(value) 
                         : extraerValor(value);
@@ -363,7 +414,6 @@ const ProyeccionMacro = () => {
         }
     }
 
-    // --- MANEJO DE CAMBIOS ESTRATEGIA (CORREGIDO) ---
     const manejarCambioEstrategia = (id, campo, value) => {
         setEstrategias((estrategiasAnteriores) =>
             estrategiasAnteriores.map((estrategia) => {
@@ -422,7 +472,6 @@ const ProyeccionMacro = () => {
                         nombre: producto.nombre,
                         cantidadFacturar: parseInt(producto.cantidad) || 0,
                         precioSinIva: parseFloat(producto.precioSinIVA) || 0,
-                        precioVenta: parseFloat(producto.precioVenta) || 0,
                         costoVarProdAnoBase: parseFloat(producto.costoVariable) || 0,
                     })),
                     crecimientoUnidades: {
@@ -494,31 +543,26 @@ const ProyeccionMacro = () => {
                     <img src={analisisImg} alt="Robot" className="robot-img-an" />
                 </div>
                 <div className="contenido-container">
-                    {/* Sección de Análisis del Entorno */}
                     <div className="section">
                         <img src={tituloAnalisiImg} alt="Análisis del entorno" className="section-img1" />
                     </div>
                     <p>
                         En el análisis del entorno, es necesario investigar y contemplar las proyecciones de
-                        ciertas variables macroeconómicas. En este aspecto, existen entidades que se encargan
-                        de realizar estos estudios y los publican en sus portales digitales.
+                        ciertas variables macroeconómicas...
                     </p>
 
                     <form>
-                        {/* Tabla con inputs Análisis del entorno - proyecciones_macroeconomicas*/}
                         <div className="table-container">
                             <table className="macro-table">
                                 <thead>
                                     <tr>
                                         <th></th>
-                                        {/* Renderizamos dinámicamente los años como encabezados */}
                                         {years.map((year) => (
                                             <th key={year}>Año {year}</th>
                                         ))}
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {/* Iteramos sobre las categorías de análisis - proyecciones_macroeconomicas*/}
                                     {[
                                         { key: "IPC", label: "IPC" },
                                         { key: "Devaluation", label: "Re / Devaluación" },
@@ -547,17 +591,13 @@ const ProyeccionMacro = () => {
                             </div>
                         </div>
 
-                        {/* Sección de Análisis de mercadeo y ventas - analisisMercado */}
                         <div className="section">
                             <img src={tituloMercadeoImg} alt="Análisis del entorno" className="section-img5" />
                         </div>
                         <p>
-                            En el plan de mercadeo y ventas, se debe realizar una estimación de las cantidades a facturar y los precios promedio de ventas para el primer año
-                            por cada producto y/o servicio, así como también los factores de crecimiento (con base en indicador o estrategia) y el costo de cada
-                            una de las estrategias de Marketing para atraer clientes.
+                            En el plan de mercadeo y ventas, se debe realizar una estimación...
                         </p>
                         <div className="analisis-info-container">
-                            {/* Input Tasa IVA */}
                             <div className="tasa-iva">
                                 <p>Para cada producto o linea de negocios establecida, determine las cantidades y precios del año uno (1er año).</p>
                                 <label htmlFor="input-tasa-iva">Tasa IVA:</label>
@@ -570,7 +610,6 @@ const ProyeccionMacro = () => {
                                 />
                             </div>
 
-                            {/* Tabla de productos - analisisMercado */}
                             <div className="proyeccion-container">
                                 <table className="tabla-productos">
                                     <thead>
@@ -579,6 +618,11 @@ const ProyeccionMacro = () => {
                                             <th className="producto-celda-nombre">Nombre del Producto</th>
                                             <th>Cantidad año {years[0]}</th>
                                             <th>Precio sin IVA año {years[0]}</th>
+                                            <th>
+                                                <span title="Determine el costo variable promedio...">
+                                                    Costo Variable por Unidad Año {years[0]} ℹ️
+                                                </span>
+                                            </th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -617,6 +661,17 @@ const ProyeccionMacro = () => {
                                                         type="number"
                                                     />
                                                 </td>
+
+                                                <td>
+                                                    <CustomInput
+                                                        id={`producto-costoVariable-${producto.id}`}
+                                                        value={producto.costoVariable}
+                                                        onChange={(value) => manejarCambioProducto(producto.id, "costoVariable", value)}
+                                                        placeholder="$0"
+                                                        type="number"
+                                                    />
+                                                </td>
+
                                                 <td>
                                                     <button className="producto-boton-eliminar" onClick={() => eliminarProducto(producto.id)}>
                                                         🗑️
@@ -635,7 +690,6 @@ const ProyeccionMacro = () => {
                             </div>
                         </div>
 
-                        {/* Crecimiento en Unidades*/}
                         <h3>Crecimiento en Unidades</h3>
                         <p>El crecimiento en UNIDADES depende de (marque en el recuadro con una X):</p>
                         <div id="crecimiento-unidades" className="contenedor-crecimiento">
@@ -650,12 +704,10 @@ const ProyeccionMacro = () => {
                             />
                         </div>
 
-                        {/* Campos de Crecimiento en Unidades (Solo se activan si se elige Estrategia) */}
                         {opcionSeleccionadaUnidades === "Estrategia" && (
                             <div id="crecimiento-unidades-estrategia">
                                 <p className="texto-estrategia">
-                                    En caso de que su crecimiento sea mediante estrategias de mercadeo,
-                                    indique los crecimientos porcentuales de las unidades para cada año.
+                                    En caso de que su crecimiento sea mediante estrategias de mercadeo...
                                 </p>
                                 <div className="fila-crecimiento">
                                     {years.map((anio) => (
@@ -675,7 +727,6 @@ const ProyeccionMacro = () => {
                             </div>
                         )}
 
-                        {/* Crecimiento en Precios*/}
                         <h3>Crecimiento en Precios</h3>
                         <p>El crecimiento en PRECIOS depende de (marque en el recuadro con una X):</p>
                         <div id="crecimiento-precios" className="contenedor-crecimiento">
@@ -691,12 +742,10 @@ const ProyeccionMacro = () => {
                             />
                         </div>
 
-                        {/* Campos de Crecimiento en Precios (Solo se activan si se elige Estrategia) */}
                         {opcionSeleccionadaPrecios === "Estrategia" && (
                             <div id="crecimiento-precios-estrategia">
                                 <p className="texto-estrategia">
-                                    En caso de que su crecimiento sea mediante estrategias de mercadeo,
-                                    indique los crecimientos porcentuales de precios de venta para cada año.
+                                    En caso de que su crecimiento sea mediante estrategias de mercadeo...
                                 </p>
                                 <div className="fila-crecimiento">
                                     {years.map((anio) => (
@@ -716,7 +765,6 @@ const ProyeccionMacro = () => {
                             </div>
                         )}
 
-                        {/* Crecimiento en Costos*/}
                         <h3>Crecimiento en Costos</h3>
                         <p>El crecimiento en COSTOS variables por unidad depende de (marque en el recuadro con una X):</p>
                         <div id="crecimiento-costos" className="contenedor-crecimiento">
@@ -732,18 +780,15 @@ const ProyeccionMacro = () => {
                             />
                         </div>
 
-                        {/* Campos de Crecimiento en Costos (Solo se activan si se elige Estrategia) */}
                         {opcionSeleccionadaCostos === "Estrategia" && (
                             <div id="crecimiento-costos-estrategia">
                                 <p className="texto-estrategia">
-                                    En caso de que su crecimiento sea mediante estrategias de mercadeo,
-                                    indique los crecimientos porcentuales de precios de venta para cada año.
+                                    En caso de que su crecimiento sea mediante estrategias de mercadeo...
                                 </p>
-                                <h3>Crecimiento en Costos</h3>
                                 <div className="fila-crecimiento">
                                     {years.map((anio) => (
                                         <div key={anio} className="contenedor-input">
-                                            <span className="anio">Año {anio}</span> {/* Título del año */}
+                                            <span className="anio">Año {anio}</span>
                                             <CustomInput
                                                 id={`crecimiento-costos-${anio}`}
                                                 type="percentage"
@@ -758,13 +803,11 @@ const ProyeccionMacro = () => {
                             </div>
                         )}
 
-                        {/* Tabla estrategias marketingInvestAnoBase */}
                         <div className="section">
                             <img src={tituloMarketingImg} alt="Marteting" className="section-img6" />
                         </div>
                         <div className="marketing-invest-container">
-                            <p>Nombre las estrategias de mercadeo a realizar en su proyecto y el gasto estimado para cada año, a fin de darse a conocer y atraer clientes en el mercado competitivo.
-                            </p>
+                            <p>Nombre las estrategias de mercadeo a realizar en su proyecto...</p>
                             <div className="proyeccion-container">
                                 <table className="tabla-estrategias">
                                     <thead>
@@ -828,10 +871,18 @@ const ProyeccionMacro = () => {
 
                     </form>
 
-                    {/* Botones de Navegación */}
+                    {/* Botones de Navegación ACTUALIZADOS */}
                     <div className="buttons-container">
                         <button className="nav-btn anterior" onClick={() => navigate(-1)}></button>
-                        <button className="nav-btn siguiente" onClick={handleSubmit}></button>
+                        <button 
+                            className="nav-btn siguiente" 
+                            onClick={handleSubmit}
+                            disabled={!formularioCompleto}
+                            style={{
+                                opacity: formularioCompleto ? 1 : 0.5,
+                                cursor: formularioCompleto ? 'pointer' : 'not-allowed'
+                            }}
+                        ></button>
                     </div>
                 </div>
             </div>
