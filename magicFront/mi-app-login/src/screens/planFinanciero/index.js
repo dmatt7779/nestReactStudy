@@ -54,6 +54,8 @@ const PlanFinanciero = () => {
   const [dataExists, setDataExists] = useState(false);
   const previousProjectId = useRef(null);
 
+  const [formularioCompleto, setFormularioCompleto] = useState(false);
+
   const calculateYears = useCallback((year) => {
     const startYear = parseInt(year, 10);
     return Array.from({ length: 5 }, (_, i) => startYear + i);
@@ -72,7 +74,26 @@ const PlanFinanciero = () => {
   const [inversionActivos, setInversionActivos] = useState(["", "", "", "", ""]);
   const [repartoDividendos, setRepartoDividendos] = useState(["", "", "", "", ""]);
 
-  // --- 4. CARGA DE DATOS ---
+  // --- 4. CÁLCULO DINÁMICO DEL "INICIO" ---
+  const calcularRestanteInicio = () => {
+      const sumaAnios = inversionActivos.reduce((acc, val) => acc + (parseFloat(val) || 0), 0);
+      const restante = 100 - sumaAnios;
+      return parseFloat(restante.toFixed(2));
+  };
+
+  const restanteInicio = calcularRestanteInicio();
+  const esPorcentajeValido = restanteInicio >= 0;
+
+  // --- 5. VALIDACIÓN DEL FORMULARIO ---
+  useEffect(() => {
+      const datosCompletos = Object.values(datos).every(val => String(val).trim() !== "");
+      const logicaInversionOk = restanteInicio >= 0;
+      const dividendosCompletos = repartoDividendos.slice(1).every(val => String(val).trim() !== "");
+      setFormularioCompleto(datosCompletos && logicaInversionOk && dividendosCompletos);
+  }, [datos, inversionActivos, repartoDividendos, restanteInicio]);
+
+
+  // --- 6. CARGA DE DATOS ---
   useEffect(() => {
     if (projectId) {
       sessionStorage.setItem("currentProjectId", projectId);
@@ -110,11 +131,14 @@ const PlanFinanciero = () => {
 
         if (data.propuestaFinanciera) {
             const pf = data.propuestaFinanciera;
+            
             const arrActivos = Array.isArray(pf.activosFijos) ? pf.activosFijos : [];
             const fullArray = [...arrActivos];
             while(fullArray.length < 6) fullArray.push(0);
+
             const inversionAnios = fullArray.slice(1, 6).map(v => (v === 0 || v === null) ? "" : v);
             setInversionActivos(inversionAnios);
+
             const divApi = pf.utilidadNetaDividendo || [0, 0, 0, 0, 0];
             const mapArray = (arr) => arr.map(v => (v === 0 || v === null || v === undefined) ? "" : v);
             setRepartoDividendos(mapArray(divApi));
@@ -138,7 +162,7 @@ const PlanFinanciero = () => {
     fetchPlanFinanciero();
   }, [projectId]);
 
-  // --- 5. MANEJADORES ---
+  // --- 7. MANEJADORES ---
 
   const manejarCambio = (id, valor) => {
     const campoConfig = campos.find(c => c.id === id);
@@ -167,17 +191,7 @@ const PlanFinanciero = () => {
     }
   };
 
-  // --- 6. CÁLCULO DINÁMICO DEL "INICIO" ---
-  const calcularRestanteInicio = () => {
-      const sumaAnios = inversionActivos.reduce((acc, val) => acc + (parseFloat(val) || 0), 0);
-      const restante = 100 - sumaAnios;
-      return parseFloat(restante.toFixed(2));
-  };
-
-  const restanteInicio = calcularRestanteInicio();
-  const esValido = restanteInicio >= 0;
-
-  // --- 7. SUBMIT ---
+  // --- 8. SUBMIT & PROCESAMIENTO ---
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
@@ -191,20 +205,52 @@ const PlanFinanciero = () => {
     const valAnios = inversionActivos.map(v => parseFloat(v) || 0);
     const mergedActivosFijos = [restanteInicio, ...valAnios];
     const cleanDividendos = repartoDividendos.map(v => parseFloat(v) || 0);
+    
     dataToSend.propuestaFinanciera = {
       activosFijos: mergedActivosFijos, 
       utilidadNetaDividendo: cleanDividendos, 
     };
 
     try {
+      // 1. PRIMERO: Guardar/Actualizar los datos del Plan Financiero
       if (dataExists) {
-        // await axiosClient.put(...)
+        console.log("Actualizando Plan Financiero...");
+        // await axiosClient.put(...) 
       } else {
         await axiosClient.postPlanFinanciero(`/api/v1/plan-financiero/${projectId}`, dataToSend);
+        console.log("Guardando Plan Financiero...");
       }
-      navigate("/newProject", { state: { projectId, openingYear } });
+
+      // 2. SEGUNDO: Obtener el Resumen del Proyecto (Data para Python)
+      console.log("Obteniendo resumen del proyecto...");
+      const timestamp = new Date().getTime();
+      const summaryData = await axiosClient.getProjectSummary(`/api/v1/project-summary/${projectId}?t=${timestamp}`);
+      
+      console.log("Data recibida para cálculo:", summaryData);
+
+      // 3. TERCERO: Enviar a FastAPI (Python) para cálculo
+      console.log("Enviando a motor de cálculo (Python)...");
+      const excelResult = await axiosClient.calculateExcel(summaryData);
+      
+      console.log("Resultado del cálculo recibido:", excelResult);
+
+      // --- OPCIONAL: AQUÍ GUARDARÍAS EL RESULTADO DE PYTHON EN TU BD SI HACE FALTA ---
+      // await axiosClient.post('/api/v1/save-results', excelResult);
+      
+      // 4. CUARTO: Navegar a Resultados
+      console.log("Proceso terminado. Navegando a resultados...");
+      
+      // Puedes pasar el resultado de Python en el state si lo necesitas mostrar inmediatamente
+      navigate("/estadoResultados", { 
+          state: { 
+              projectId, 
+              openingYear,
+              resultadosCalculados: excelResult // Pasamos la data calculada a la siguiente pantalla
+          } 
+      });
     } catch (err) {
-      setError(err.message || "Ocurrió un error al guardar los datos.");
+      console.error("Error en el proceso:", err);
+      setError(err.message || "Ocurrió un error al procesar los datos.");
     } finally {
       setIsLoading(false);
     }
@@ -273,13 +319,11 @@ const PlanFinanciero = () => {
                           disabled={true}
                           style={{ 
                               backgroundColor: "#f0f0f0", 
-                              color: esValido ? "inherit" : "red",
+                              color: esPorcentajeValido ? "inherit" : "red",
                               fontWeight: "bold"
                           }}
                         />
                       )}
-
-                      {/* --- AÑOS 1-5 (i>1): Editables --- */}
                       {i > 1 && (
                         <CustomInput
                           type="percentage"
@@ -293,8 +337,10 @@ const PlanFinanciero = () => {
 
                 <p>
                   Total actual:{" "}
-                  <strong>100%</strong> 
-                  {!esValido && <span style={{color: "red", marginLeft: "10px"}}>(Excede el 100%)</span>}
+                  <strong style={{ color: esPorcentajeValido ? "inherit" : "crimson" }}>
+                    100%
+                  </strong>
+                  {!esPorcentajeValido && <span style={{color: "red", marginLeft: "10px"}}>(Excede el 100%)</span>}
                 </p>
               </div>
 
@@ -330,7 +376,18 @@ const PlanFinanciero = () => {
 
           <div className="buttons-container">
             <button type="button" className="nav-btn anterior" onClick={() => navigate(-1)}></button>
-            <button type="button" className="nav-btn siguiente" onClick={handleSubmit}></button>
+            <button 
+                type="button" 
+                className="nav-btn procesar" 
+                onClick={handleSubmit}
+                disabled={!formularioCompleto}
+                style={{
+                    opacity: formularioCompleto ? 1 : 0.5,
+                    cursor: formularioCompleto ? 'pointer' : 'not-allowed'
+                }}
+            >
+                Procesar
+            </button>
           </div>
         </div>
       </div>
