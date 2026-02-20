@@ -59,7 +59,25 @@ class AxiosClient {
 
   async calculateExcel(body) {
     try {
-      const response = await this.pythonInstance.post('/calculate/excel', body);
+      const response = await this.pythonInstance.post('api/v1/calculate/excel', body);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+    async saveResults(projectInfoId, body) {
+    try {
+      const response = await this.axiosInstance.post(`api/v1/save-results/${projectInfoId}`, body);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getResults(projectId) {
+    try {
+      const response = await this.axiosInstance.get(`api/v1/save-results/project/${projectId}`);
       return response;
     } catch (error) {
       throw error;

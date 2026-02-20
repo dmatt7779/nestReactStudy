@@ -1,50 +1,95 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../../style/styles.css";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
 import tituloEstadoResultados from "../../images/titulo_estado_resultado.png";
 import tituloComentarios from "../../images/titulo_comentarios.png";
 import { DownloadCloud } from "lucide-react";
+import axiosClient from "../../utils/axios";
 
 const EstadoResultados = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const anios = [2025, 2026, 2027, 2028, 2029];
+  const projectId = location.state?.projectId || sessionStorage.getItem("currentProjectId");
+  const openingYear = location.state?.openingYear || new Date().getFullYear();
+  const resultadosCalculados = location.state?.resultadosCalculados || null;
+
+  const anios = Array.from({ length: 5 }, (_, i) => openingYear + i);
 
   const conceptos = [
     { label: "Ventas", key: "ventas" },
-    { label: "Costos", key: "costos" },
-    { label: "Utilidad bruta", key: "utilidad_bruta", bold: true },
-    { label: "Gastos operativos", key: "gastos_operativos" },
-    { label: "Utilidad antes impuestos e intereses", key: "utilidad_antes_intereses", bold: true },
-    { label: "Gastos financieros", key: "gastos_financieros" },
-    { label: "Ingresos financieros", key: "ingresos_financieros" },
-    { label: "Utilidad antes de impuestos", key: "utilidad_antes_impuestos", bold: true },
+    { label: "Costos de ventas", key: "costosVentas" },
+    { label: "Utilidad bruta", key: "utilidadBruta", bold: true },
+    { label: "Gastos operativos", key: "gastosOperativos" },
+    { label: "Utilidad antes impuestos e intereses", key: "utilidadAntesImpInt", bold: true },
+    { label: "Gastos financieros", key: "gastosFinancieros" },
+    { label: "Ingresos financieros", key: "ingresosFinancieros" },
+    { label: "Utilidad antes de impuestos", key: "utilidadAntesImp", bold: true },
     { label: "Impuestos", key: "impuestos" },
-    { label: "Utilidad neta", key: "utilidad_neta", bold: true, black: true },
+    { label: "Utilidad neta", key: "utilidadNeta", bold: true, black: true },
   ];
 
-  // 🔹 Estado para guardar los valores que vienen del backend
   const [valores, setValores] = useState({});
   const [analisis, setAnalisis] = useState("");
-
-  // 🔹 Llamada al backend cuando carga el componente
+  const [isLoading, setIsLoading] = useState(true);
+  
   useEffect(() => {
-    const fetchData = async () => {
+    const loadData = async () => {
+      setIsLoading(true);
       try {
-        const res = await fetch("http://localhost:4000/api/estado-resultados");
-        const data = await res.json();
-        setValores(data);
+        if (resultadosCalculados && Object.keys(resultadosCalculados).length > 0) {          
+          const result = resultadosCalculados.result;
+          console.log("📊 Datos recibidos por navegación (resultadosCalculados):", resultadosCalculados);
+          console.log("📌 estadoResultados:", result.estadoResultados);
+          console.log("📌 flujoEfectivo:", result.flujoEfectivo);
+          console.log("📌 EstadoSituacionFinanc:", result.EstadoSituacionFinanc);
+          console.log("📌 flujoCaja:", result.flujoCaja);
+          console.log("📌 wacc:", result.wacc);
+          console.log("📌 indLiquidez:", result.indLiquidez);
+          console.log("📌 indEndeudamiento:", result.indEndeudamiento);
+          console.log("📌 indRentabilidad:", result.indRentabilidad);
+          console.log("📌 excelPath:", result.excelPath);
+          setValores(result);
+        } else {
+          console.log("🔄 No hay datos en state. Obteniendo resultados de la BD para projectId:", projectId);
+          const data = await axiosClient.getResults(projectId);
+          const result = data.result;
+          console.log("📊 Datos obtenidos de la BD:", data);
+          console.log("📌 estadoResultados:", result.estadoResultados);
+          console.log("📌 flujoEfectivo:", result.flujoEfectivo);
+          console.log("📌 EstadoSituacionFinanc:", result.EstadoSituacionFinanc);
+          console.log("📌 flujoCaja:", result.flujoCaja);
+          console.log("📌 wacc:", result.wacc);
+          console.log("📌 indLiquidez:", result.indLiquidez);
+          console.log("📌 indEndeudamiento:", result.indEndeudamiento);
+          console.log("📌 indRentabilidad:", result.indRentabilidad);
+          console.log("📌 excelPath:", result.excelPath);
+          setValores(result);
+        }
       } catch (error) {
-        console.error("Error cargando datos:", error);
+        console.error("❌ Error cargando datos:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
-    fetchData();
-  }, []);
+    loadData();
+  }, [projectId, resultadosCalculados]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
+  };
+
+  // Formatea un número como moneda COP
+  const formatCurrency = (value) => {
+    if (value == null || isNaN(value)) return "$0";
+    return value.toLocaleString("es-CO", {
+      style: "currency",
+      currency: "COP",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
   };
 
   return (
@@ -78,14 +123,10 @@ const EstadoResultados = () => {
                         <td className={`estado-concepto ${bold ? "texto-negrita" : ""}`}>
                           {label}
                         </td>
-                        {anios.map((anio) => (
+                        {anios.map((anio, i) => (
                           <td key={anio} className="estado-celda">
                             <span className="estado-dato">
-                              {valores[key]?.[anio]?.toLocaleString("es-CO", {
-                                style: "currency",
-                                currency: "COP",
-                                minimumFractionDigits: 0,
-                              }) || "$0"}
+                              {formatCurrency(valores.estadoResultados?.[key]?.[i])}
                             </span>
                           </td>
                         ))}
@@ -121,7 +162,9 @@ const EstadoResultados = () => {
 
             <div className="buttons-container">
               <button className="nav-btn anterior" onClick={() => navigate(-1)}></button>
-              <button className="nav-btn siguiente" onClick={() => navigate("/flujoEfectivo")}></button>
+              <button className="nav-btn siguiente" onClick={() => navigate("/flujoEfectivo", {
+                state: { projectId, openingYear, resultadosCalculados: valores ? { result: valores } : null }
+              })}></button>
             </div>
           </form>
         </div>

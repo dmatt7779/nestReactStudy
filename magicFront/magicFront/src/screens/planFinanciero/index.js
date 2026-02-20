@@ -233,9 +233,7 @@ const PlanFinanciero = () => {
       const excelResult = await axiosClient.calculateExcel(summaryData);
       
       console.log("Resultado del cálculo recibido:", excelResult);
-
-      // --- OPCIONAL: AQUÍ GUARDARÍAS EL RESULTADO DE PYTHON EN TU BD SI HACE FALTA ---
-      // await axiosClient.post('/api/v1/save-results', excelResult);
+      await axiosClient.saveResults(projectId, excelResult);
       
       // 4. CUARTO: Navegar a Resultados
       console.log("Proceso terminado. Navegando a resultados...");
@@ -243,7 +241,7 @@ const PlanFinanciero = () => {
       // Puedes pasar el resultado de Python en el state si lo necesitas mostrar inmediatamente
       navigate("/estadoResultados", { 
           state: { 
-              projectId, 
+              projectId,
               openingYear,
               resultadosCalculados: excelResult // Pasamos la data calculada a la siguiente pantalla
           } 
