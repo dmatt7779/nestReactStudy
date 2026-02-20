@@ -1,40 +1,44 @@
-
+# app/main.py
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import calculator
 
-app = FastAPI(title="Magic Excel Calculator")
+from app.routers import calculator  # importa tu router existente
 
+app = FastAPI(title="Plan Financiero Microservice")
+
+# ---------- CORS: aceptar cualquier origen (*) ----------
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],        # acepta peticiones desde cualquier dominio
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],        # permite todos los métodos: GET, POST, PUT, DELETE, etc.
+    allow_headers=["*"],        # permite todos los headers
 )
 
+# ---------- Rutas principales ----------
 @app.get("/")
 async def root():
     return {
         "ok": True,
-        "message": "Magic Excel Calculator running",
+        "message": "Plan Financiero Microservice running",
     }
 
-app.include_router(calculator.router, prefix="")
+# Incluimos tu router de cálculos (core + estado_resultados)
+app.include_router(calculator.router, prefix="/api/v1")
 
-@app.api_route("/{full_path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
-async def catch_all(full_path: str, request: Request):
-    try:
-        body = await request.json()
-    except Exception:
-        body = None
+# ---------- Manejo de rutas no encontradas ----------
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
-    try:
-        return body
-    except Exception as e:
-        return JSONResponse(
-            status_code=500,
-            content={"error": str(e)},
-        )
+@app.exception_handler(StarletteHTTPException)
+async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "ok": False,
+            "message": exc.detail,
+            "path": str(request.url.path),
+            "method": request.method,
+        },
+    )
 

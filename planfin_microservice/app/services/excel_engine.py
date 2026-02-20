@@ -899,7 +899,7 @@ class ExcelOutputReader:
                 },
             }
 
-        # ======== ind rentabilidad ========
+        # ======== ind generacion valor ========
         if self.SHEET_IND_GENERACION_VALOR in wb.sheetnames:
             ws_igv = wb[self.SHEET_IND_GENERACION_VALOR]
             # KTNO
@@ -923,7 +923,7 @@ class ExcelOutputReader:
             # % EVA
             evaVentas = [cell.value for cell in ws_igv["F47":"J47"][0]]
 
-            out["indRentabilidad"] = {
+            out["indGeneracionValor"] = {
                 "ktno": {
                     "ccInventariosCp": ccInventariosCp,
                 },
