@@ -4,6 +4,8 @@ import "../../style/styles.css";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
 import CustomInput from "../../components/CustomInput";
+import CeipaLoader from "../../components/CeipaLoader";
+import useProcessing from "../../hooks/useProcessing";
 
 import cabezoteEgresos from "../../images/cabezote_egresos.png";
 import tituloEgresos from "../../images/titulo_egresos.png";
@@ -33,6 +35,7 @@ const CostosGastos = () => {
         })
     const [openingYear, setOpeningYear] = useState(() => location.state?.openingYear || new Date().getFullYear().toString());
     const [isLoading, setIsLoading] = useState(true);
+    const { isProcessing, runWithLoader } = useProcessing();
     const [error, setError] = useState(null);
     const [dataExists, setDataExists] = useState(false); 
     const previousProjectId = useRef(null);
@@ -211,48 +214,50 @@ const CostosGastos = () => {
         setIncrementoEgresos((prev) => ({ ...prev, [anio]: valor }));
     };
 
-    // --- 5. HANDLESUBMIT ---
+    const handleGoBack = async () => {
+        await runWithLoader(async () => {});
+        navigate(-1);
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
-        setIsLoading(true);
         setError(null);
+        let navTarget = null;
 
-        const dataToSend = {
-            costos: costos.filter(c => c.nombre.trim() !== "").map(c => ({
-                nombre: c.nombre.trim(),
-                valor: parseFloat(c.valor) || 0,
-            })),
-            gastos: gastos.filter(g => g.nombre.trim() !== "").map(g => ({
-                nombre: g.nombre.trim(),
-                valor: parseFloat(g.valor) || 0,
-            })),
-            incrementoEgresos: {
-                pib: opcionSeleccionadaEgresos === "PIB",
-                ipc: opcionSeleccionadaEgresos === "IPC",
-                estrategia: opcionSeleccionadaEgresos === "Estrategia",
-                incrementoEgresosCantidades: years.map(year => parseFloat(incrementoEgresos[year]) || 0),
+        await runWithLoader(async () => {
+            const dataToSend = {
+                costos: costos.filter(c => c.nombre.trim() !== "").map(c => ({
+                    nombre: c.nombre.trim(),
+                    valor: parseFloat(c.valor) || 0,
+                })),
+                gastos: gastos.filter(g => g.nombre.trim() !== "").map(g => ({
+                    nombre: g.nombre.trim(),
+                    valor: parseFloat(g.valor) || 0,
+                })),
+                incrementoEgresos: {
+                    pib: opcionSeleccionadaEgresos === "PIB",
+                    ipc: opcionSeleccionadaEgresos === "IPC",
+                    estrategia: opcionSeleccionadaEgresos === "Estrategia",
+                    incrementoEgresosCantidades: years.map(year => parseFloat(incrementoEgresos[year]) || 0),
+                }
+            };
+
+            console.log("Data to send:", JSON.stringify(dataToSend, null, 2));
+
+            try {
+                if (dataExists) {
+                    console.log("Datos de Costos y Gastos actualizados.");
+                } else {
+                    await axiosClient.postCostosGastos(`/api/v1/costos-gastos/${projectId}`, dataToSend);
+                    console.log("Datos de Costos y Gastos creados.");
+                }
+                navTarget = { path: '/activosFijos', state: { projectId, openingYear } };
+            } catch (err) {
+                setError(err.message || "Ocurrió un error al guardar los datos.");
+                console.error("Error en handleSubmit:", err);
             }
-        };
-
-        console.log("Data to send:", JSON.stringify(dataToSend, null, 2));
-
-        try {
-            if (dataExists) {
-                // await axiosClient.put(...)
-                console.log("Datos de Costos y Gastos actualizados.");
-                navigate('/activosFijos', { state: { projectId, openingYear } });
-            } else {
-                await axiosClient.postCostosGastos(`/api/v1/costos-gastos/${projectId}`, dataToSend);
-                console.log("Datos de Costos y Gastos creados.");
-                navigate('/activosFijos', { state: { projectId, openingYear } });
-            }
-
-        } catch (err) {
-            setError(err.message || "Ocurrió un error al guardar los datos.");
-            console.error("Error en handleSubmit:", err);
-        } finally {
-            setIsLoading(false);
-        }
+        });
+        if (navTarget) navigate(navTarget.path, { state: navTarget.state });
     };
 
     if (isLoading) return <p>Cargando...</p>;
@@ -260,6 +265,7 @@ const CostosGastos = () => {
 
     return (
         <div className="project-info-container">
+            {isProcessing && <CeipaLoader />}
             <Navbar />
             <div className="white-container-n">
                 <div className="robot-container-an">
@@ -385,7 +391,7 @@ const CostosGastos = () => {
                     </form>
 
                     <div className="buttons-container">
-                        <button type="button" className="nav-btn anterior" onClick={() => navigate(-1)}></button>
+                        <button type="button" className="nav-btn anterior" onClick={handleGoBack}></button>
                         <button 
                             type="button" 
                             className="nav-btn siguiente" 

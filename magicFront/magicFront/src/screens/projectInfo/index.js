@@ -4,6 +4,8 @@ import '../../style/styles.css'
 import Footer from "../../components/Footer"
 import Navbar from "../../components/Navbar"
 import CustomInput from "../../components/CustomInput" 
+import CeipaLoader from "../../components/CeipaLoader"
+import useProcessing from "../../hooks/useProcessing"
 import nuevoProyectoImg1 from "../../images/titulo_nuevo_proyecto_1.png"       
 import tituloProyectoImg from "../../images/titulo_nombre.png"     
 import integrantesImg from "../../images/titulo_integrantes.png"         
@@ -22,6 +24,7 @@ const ProjectInfo = () => {
 
   const [_, setProyecto] = useState(null)
   const [loading, setLoading] = useState(true)
+  const { isProcessing, runWithLoader } = useProcessing()
   const [error, setError] = useState(null)
   const [projectName, setProjectName] = useState("")
   const [integrantes, setIntegrantes] = useState([{ cedula: "", nombre: "" }])
@@ -129,38 +132,44 @@ const ProjectInfo = () => {
       }
     }
 
-  const handleSubmit = async () => {
-      setLoading(true)
-      setError(null)
-      try {
-          const dataToSend = {
-              projectName: projectName,
-              teamMembers: integrantes.map(integrante => ({ id: integrante.cedula, name: integrante.nombre })),
-              openingYear: parseInt(ano),
-              professor: professors,
-          }
+  const handleGoBack = async () => {
+      await runWithLoader(async () => {})
+      navigate(-1)
+  }
 
-          if (projectId) {
-              console.log("ProjectInfo - Actualizando proyecto existente con ID:", projectId)
-              navigate('/proyeccionMacro', { state: { projectId: projectId, openingYear: ano } })
-          }else {
-            console.log("ProjectInfo - Creando nuevo proyecto...")
-            const response = await axiosClient.postProjectInfo('/api/v1/project-info', dataToSend)
-            if (response && response.id) {
-                console.log("ProjectInfo - Proyecto creado con éxito. Nuevo ID:", response.id)
-                navigate('/proyeccionMacro', { state: { projectId: response.id, openingYear: ano } })
-            } else {
-                console.error("Error: El backend no devolvió un ID para el nuevo proyecto.")
-                setError("No se pudo obtener un ID para el nuevo proyecto. Intente de nuevo.")
+  const handleSubmit = async () => {
+      setError(null)
+      let navTarget = null
+      await runWithLoader(async () => {
+        try {
+            const dataToSend = {
+                projectName: projectName,
+                teamMembers: integrantes.map(integrante => ({ id: integrante.cedula, name: integrante.nombre })),
+                openingYear: parseInt(ano),
+                professor: professors,
             }
+
+            if (projectId) {
+                console.log("ProjectInfo - Actualizando proyecto existente con ID:", projectId)
+                navTarget = { path: '/proyeccionMacro', state: { projectId: projectId, openingYear: ano } }
+            } else {
+              console.log("ProjectInfo - Creando nuevo proyecto...")
+              const response = await axiosClient.postProjectInfo('/api/v1/project-info', dataToSend)
+              if (response && response.id) {
+                  console.log("ProjectInfo - Proyecto creado con éxito. Nuevo ID:", response.id)
+                  navTarget = { path: '/proyeccionMacro', state: { projectId: response.id, openingYear: ano } }
+              } else {
+                  console.error("Error: El backend no devolvió un ID para el nuevo proyecto.")
+                  setError("No se pudo obtener un ID para el nuevo proyecto. Intente de nuevo.")
+              }
+            }
+          } catch (err) {
+              console.error("Error al guardar el proyecto:", err)
+              setError(err.message || "Error al guardar el proyecto.")
           }
-        } catch (err) {
-            console.error("Error al guardar el proyecto:", err)
-            setError(err.message || "Error al guardar el proyecto.")
-        } finally {
-            setLoading(false)
-        }
-    }
+      })
+      if (navTarget) navigate(navTarget.path, { state: navTarget.state })
+  }
   
     if (loading) {
       return <p>Cargando información del proyecto...</p>
@@ -172,6 +181,7 @@ const ProjectInfo = () => {
 
   return (
     <div className="project-info-container">
+      {isProcessing && <CeipaLoader />}
       <Navbar />
       <div className="white-container">
         <div className="robot-container">
@@ -286,7 +296,7 @@ const ProjectInfo = () => {
           </div>
 
           <div className="buttons-container">
-            <button className="nav-btn anterior" onClick={() => navigate(-1)}></button>
+            <button className="nav-btn anterior" onClick={handleGoBack}></button>
             <button
               className="nav-btn siguiente"
               onClick={handleSubmit}

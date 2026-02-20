@@ -4,6 +4,8 @@ import "../../style/styles.css";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
 import CustomInput from "../../components/CustomInput";
+import CeipaLoader from "../../components/CeipaLoader";
+import useProcessing from "../../hooks/useProcessing";
 import cabezoteActivos from "../../images/cabezote_activos_fijos.png";
 import axiosClient from "../../utils/axios";
 
@@ -19,7 +21,8 @@ const extraerValor = (input) => {
 const limpiarNumero = (valor) => {
     const dato = extraerValor(valor);
     if (dato === null || dato === undefined || dato === "") return "";
-    return String(dato).split(/[.,]/)[0].replace(/\D/g, '');
+    const cleaned = String(dato).replace(/[^0-9.\-]/g, '') || "0";
+    return cleaned;
 };
 
 const SECCIONES = [
@@ -49,6 +52,7 @@ const ActivosFijos = () => {
     const [projectId, setProjectId] = useState(() => {return location.state?.projectId || sessionStorage.getItem('currentProjectId')});
     const [openingYear, setOpeningYear] = useState(() => location.state?.openingYear || new Date().getFullYear().toString());
     const [isLoading, setIsLoading] = useState(true);
+    const { isProcessing, runWithLoader } = useProcessing();
     const [error, setError] = useState(null);
     const [dataExists, setDataExists] = useState(false);
     const [secciones, setSecciones] = useState(getInitialState);
@@ -85,8 +89,8 @@ const ActivosFijos = () => {
 
             // Si hay al menos un item activo en esta sección, validamos los campos globales
             if (itemsActivosEnSeccion > 0) {
-                const vidaUtilOk = !config.campos.includes("vidaUtil") || (data.vidaUtil && String(data.vidaUtil).trim() !== "");
-                const salvamentoOk = !config.campos.includes("valorSalvamento") || (data.valorSalvamento && String(data.valorSalvamento).trim() !== "");
+                const vidaUtilOk = !config.campos.includes("vidaUtil") || (data.vidaUtil != null && String(data.vidaUtil).trim() !== "");
+                const salvamentoOk = !config.campos.includes("valorSalvamento") || (data.valorSalvamento != null && String(data.valorSalvamento).trim() !== "");
 
                 if (!vidaUtilOk || !salvamentoOk) {
                     hayErrores = true; // Faltan datos globales de la sección
@@ -134,11 +138,11 @@ const ActivosFijos = () => {
                             itemsCargados.push({ id: Date.now(), nombre: "", valor: "" });
                         }
 
-                        const vidaUtilGlobal = sectionDataApi.vidaUtilAnos 
+                        const vidaUtilGlobal = sectionDataApi.vidaUtilAnos != null 
                             ? limpiarNumero(sectionDataApi.vidaUtilAnos) 
                             : "";
                             
-                        const salvamentoGlobal = sectionDataApi.valorSalvamento 
+                        const salvamentoGlobal = sectionDataApi.valorSalvamento != null 
                             ? limpiarNumero(sectionDataApi.valorSalvamento) 
                             : "";
 
@@ -218,57 +222,55 @@ const ActivosFijos = () => {
         }));
     };
 
+    const handleGoBack = async () => {
+        await runWithLoader(async () => {});
+        navigate(-1);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsLoading(true);
         setError(null);
+        let navTarget = null;
 
-        const activosFijosPayload = {};
-        
-        SECCIONES.forEach(({ id, apiKey, campos }) => {
-            const sectionData = secciones[id];
+        await runWithLoader(async () => {
+            const activosFijosPayload = {};
             
-            // Filtramos items validos (que tengan nombre)
-            const itemsLimpios = sectionData.items
-                .filter(item => item.nombre.trim() !== "")
-                .map(item => ({
-                    nombre: item.nombre.trim(),
-                    valor: parseFloat(item.valor) || 0,
-                }));
-            
-            if (itemsLimpios.length > 0) {
-                const sectionPayload = {
-                    items: itemsLimpios
-                };
-
-                if (campos.includes("vidaUtil")) {
-                    sectionPayload.vidaUtilAnos = parseInt(sectionData.vidaUtil, 10) || 0;
-                }
+            SECCIONES.forEach(({ id, apiKey, campos }) => {
+                const sectionData = secciones[id];
+                const itemsLimpios = sectionData.items
+                    .filter(item => item.nombre.trim() !== "")
+                    .map(item => ({
+                        nombre: item.nombre.trim(),
+                        valor: parseFloat(item.valor) || 0,
+                    }));
                 
-                if (campos.includes("valorSalvamento")) {
-                    sectionPayload.valorSalvamento = parseFloat(sectionData.valorSalvamento) || 0;
+                if (itemsLimpios.length > 0) {
+                    const sectionPayload = { items: itemsLimpios };
+                    if (campos.includes("vidaUtil")) {
+                        sectionPayload.vidaUtilAnos = parseInt(sectionData.vidaUtil, 10) || 0;
+                    }
+                    if (campos.includes("valorSalvamento")) {
+                        sectionPayload.valorSalvamento = parseFloat(sectionData.valorSalvamento) || 0;
+                    }
+                    activosFijosPayload[apiKey] = sectionPayload;
                 }
+            });
 
-                activosFijosPayload[apiKey] = sectionPayload;
+            console.log("Data to send:", JSON.stringify(activosFijosPayload, null, 2));
+
+            try {
+                if (dataExists) {
+                     console.log("Datos actualizados (Simulación)");
+                } else {
+                    await axiosClient.postActivosFijos(`/api/v1/activos-fijos/${projectId}`, activosFijosPayload);
+                    console.log("Datos creados (POST)");
+                }
+                navTarget = { path: '/salarioAdmins', state: { projectId, openingYear } };
+            } catch (err) {
+                setError(err.message || "Ocurrió un error al guardar los datos.");
             }
         });
-
-        console.log("Data to send:", JSON.stringify(activosFijosPayload, null, 2));
-
-        try {
-            if (dataExists) {
-                 // await axiosClient.put(...) 
-                 console.log("Datos actualizados (Simulación)");
-            } else {
-                await axiosClient.postActivosFijos(`/api/v1/activos-fijos/${projectId}`, activosFijosPayload);
-                console.log("Datos creados (POST)");
-            }
-            navigate('/salarioAdmins', { state: { projectId, openingYear } });
-        } catch (err) {
-            setError(err.message || "Ocurrió un error al guardar los datos.");
-        } finally {
-            setIsLoading(false);
-        }
+        if (navTarget) navigate(navTarget.path, { state: navTarget.state });
     };
 
     if (isLoading) return <p>Cargando...</p>;
@@ -276,6 +278,7 @@ const ActivosFijos = () => {
 
     return (
         <div className="project-info-container">
+            {isProcessing && <CeipaLoader />}
             <Navbar />
             <div className="white-container-n">
                 <div className="robot-container-an">
@@ -368,7 +371,7 @@ const ActivosFijos = () => {
                     
                     {/* BOTÓN CON VALIDACIÓN */}
                     <div className="buttons-container">
-                        <button type="button" className="nav-btn anterior" onClick={() => navigate(-1)}></button>
+                        <button type="button" className="nav-btn anterior" onClick={handleGoBack}></button>
                         <button 
                             type="button" 
                             className="nav-btn siguiente" 

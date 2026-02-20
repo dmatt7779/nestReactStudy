@@ -5,6 +5,7 @@ import '../../style/styles.css';
 import emailIcon from "../../images/icon-email.png";
 import passIcon from "../../images/passIcon.png";
 import Footer from "../../components/Footer";
+import ParticleBackground from "../../components/ParticleBackground";
 import axiosClient from '../../utils/axios';
 
 function Login() {
@@ -45,6 +46,7 @@ function Login() {
 
   return (
     <div className="container">
+      <ParticleBackground particleCount={15000} />
       <div className="left-panel"></div>
       <div className="divider_"></div>
       <div className="right-panel">

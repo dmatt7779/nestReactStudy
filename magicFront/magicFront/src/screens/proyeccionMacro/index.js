@@ -4,6 +4,8 @@ import "../../style/styles.css";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
 import CustomInput from "../../components/CustomInput";
+import CeipaLoader from "../../components/CeipaLoader";
+import useProcessing from "../../hooks/useProcessing";
 import analisisImg from "../../images/cabezote_analisis.png";
 import tituloAnalisiImg from "../../images/titulo_analisis_de_entorno.png";
 import tituloMercadeoImg from "../../images/titulo_analisis_de_mercadeo_y_ventas.png";
@@ -20,7 +22,8 @@ const extraerValor = (input) => {
 const limpiarNumero = (valor) => {
     const dato = extraerValor(valor);
     if (dato === null || dato === undefined) return "0";
-    return String(dato).split(/[.,]/)[0].replace(/\D/g, '');
+    // Preserve decimals: remove everything except digits, dots, and minus
+    return String(dato).replace(/[^0-9.\-]/g, '') || "0";
 };
 
 const ProyeccionMacro = () => {
@@ -31,6 +34,7 @@ const ProyeccionMacro = () => {
     })
     const [openingYear, setOpeningYear] = useState(new Date().getFullYear().toString())
     const [isLoading, setIsLoading] = useState(true)
+    const { isProcessing, runWithLoader } = useProcessing()
     const [error, setError] = useState(null)
     const [proyeccionMacroData, setProyeccionMacroData] = useState(null)
     const previousProjectId = useRef(null)
@@ -353,11 +357,7 @@ const ProyeccionMacro = () => {
         setProductos((productosAnteriores) => {
             return productosAnteriores.map((producto) => {
                 if (producto.id === id) {
-                    const camposNumericos = ["cantidad", "precioSinIVA", "costoVariable"];
-                    const valorFinal = camposNumericos.includes(campo) 
-                        ? limpiarNumero(value) 
-                        : extraerValor(value);
-                    
+                    const valorFinal = extraerValor(value);
                     return { ...producto, [campo]: valorFinal };
                 }
                 return producto;
@@ -436,99 +436,102 @@ const ProyeccionMacro = () => {
         )
     }
 
+    const handleGoBack = async () => {
+        await runWithLoader(async () => {})
+        navigate(-1)
+    }
+
     const handleSubmit = async (event) => {
         event.preventDefault()
-        setIsLoading(true)
         setError(null)
+        let navTarget = null
 
-        try {
-            if (!projectId) {
-                setError("projectId es requerido para guardar los datos.")
-                return
-            }
-
-            const isPibUnidades = opcionSeleccionadaUnidades === "PIB"
-            const isEstrategiaUnidades = opcionSeleccionadaUnidades === "Estrategia"
-            const isIpcUnidades = opcionSeleccionadaUnidades === "IPC"
-
-            const isPibPrecios = opcionSeleccionadaPrecios === "PIB"
-            const isEstrategiaPrecios = opcionSeleccionadaPrecios === "Estrategia"
-            const isIpcPrecios = opcionSeleccionadaPrecios === "IPC"
-
-            const isPibCostos = opcionSeleccionadaCostos === "PIB"
-            const isEstrategiaCostos = opcionSeleccionadaCostos === "Estrategia"
-            const isIpcCostos = opcionSeleccionadaCostos === "IPC"
-
-            const dataToSend = {
-                proyeccionesMacroeconomicas: {
-                    ipc: years.map(year => parseFloat(values.IPC[year]) || 0),
-                    devaluacion: years.map(year => parseFloat(values.Devaluation[year]) || 0),
-                    tasaInteres: years.map(year => parseFloat(values.InterestRate[year]) || 0),
-                    pib: years.map(year => parseFloat(values.PIB[year]) || 0),
-                },
-                analisisMercado: {
-                    tasaIva: parseFloat(tasaIVA) || 0,
-                    productos: productos.map(producto => ({
-                        nombre: producto.nombre,
-                        cantidadFacturar: parseInt(producto.cantidad) || 0,
-                        precioSinIva: parseFloat(producto.precioSinIVA) || 0,
-                        costoVarProdAnoBase: parseFloat(producto.costoVariable) || 0,
-                    })),
-                    crecimientoUnidades: {
-                        pib: isPibUnidades,
-                        estrategia: isEstrategiaUnidades,
-                        ipc: isIpcUnidades,
-                        crecimientoCantidades: isEstrategiaUnidades
-                            ? years.map(year => parseFloat(crecimientoUnidades[year]) || 0)
-                            : []
-                    },
-                    crecimientoPrecios: {
-                        pib: isPibPrecios,
-                        estrategia: isEstrategiaPrecios,
-                        ipc: isIpcPrecios,
-                        crecimientoCantidades: isEstrategiaPrecios
-                            ? years.map(year => parseFloat(crecimientoPrecios[year]) || 0)
-                            : []
-                    },
-                    crecimientoCostos: {
-                        ipc: isIpcCostos,
-                        estrategia: isEstrategiaCostos,
-                        pib: isPibCostos,
-                        crecimientoCantidades: isEstrategiaCostos
-                            ? years.map(year => parseFloat(crecimientoCostos[year]) || 0)
-                            : []
-                    },
-                    estrategiaMarketing: estrategias.map(estrategia => ({
-                        nombre: estrategia.nombre,
-                        valores: years.map(year => parseFloat(estrategia.valores[year]) || 0)
-                    })),
-                }
-            }
-            console.log("proyeccionMacro - Data to send: ", JSON.stringify(dataToSend, null, 2))
+        await runWithLoader(async () => {
             try {
-                await axiosClient.get(`/api/v1/proyeccion-macro/${projectId}`)
-                const response = true
-                console.log(`proyeccionMacro - Actualizando proyecto existente ProyeccionMacro: ${projectId}`)
-                if (response) {
-                    navigate('/costosGastos', { state: { projectId: projectId, openingYear: openingYear } })
+                if (!projectId) {
+                    setError("projectId es requerido para guardar los datos.")
+                    return
+                }
+
+                const isPibUnidades = opcionSeleccionadaUnidades === "PIB"
+                const isEstrategiaUnidades = opcionSeleccionadaUnidades === "Estrategia"
+                const isIpcUnidades = opcionSeleccionadaUnidades === "IPC"
+
+                const isPibPrecios = opcionSeleccionadaPrecios === "PIB"
+                const isEstrategiaPrecios = opcionSeleccionadaPrecios === "Estrategia"
+                const isIpcPrecios = opcionSeleccionadaPrecios === "IPC"
+
+                const isPibCostos = opcionSeleccionadaCostos === "PIB"
+                const isEstrategiaCostos = opcionSeleccionadaCostos === "Estrategia"
+                const isIpcCostos = opcionSeleccionadaCostos === "IPC"
+
+                const dataToSend = {
+                    proyeccionesMacroeconomicas: {
+                        ipc: years.map(year => parseFloat(values.IPC[year]) || 0),
+                        devaluacion: years.map(year => parseFloat(values.Devaluation[year]) || 0),
+                        tasaInteres: years.map(year => parseFloat(values.InterestRate[year]) || 0),
+                        pib: years.map(year => parseFloat(values.PIB[year]) || 0),
+                    },
+                    analisisMercado: {
+                        tasaIva: parseFloat(tasaIVA) || 0,
+                        productos: productos.map(producto => ({
+                            nombre: producto.nombre,
+                            cantidadFacturar: parseInt(producto.cantidad) || 0,
+                            precioSinIva: parseFloat(producto.precioSinIVA) || 0,
+                            costoVarProdAnoBase: parseFloat(producto.costoVariable) || 0,
+                        })),
+                        crecimientoUnidades: {
+                            pib: isPibUnidades,
+                            estrategia: isEstrategiaUnidades,
+                            ipc: isIpcUnidades,
+                            crecimientoCantidades: isEstrategiaUnidades
+                                ? years.map(year => parseFloat(crecimientoUnidades[year]) || 0)
+                                : []
+                        },
+                        crecimientoPrecios: {
+                            pib: isPibPrecios,
+                            estrategia: isEstrategiaPrecios,
+                            ipc: isIpcPrecios,
+                            crecimientoCantidades: isEstrategiaPrecios
+                                ? years.map(year => parseFloat(crecimientoPrecios[year]) || 0)
+                                : []
+                        },
+                        crecimientoCostos: {
+                            ipc: isIpcCostos,
+                            estrategia: isEstrategiaCostos,
+                            pib: isPibCostos,
+                            crecimientoCantidades: isEstrategiaCostos
+                                ? years.map(year => parseFloat(crecimientoCostos[year]) || 0)
+                                : []
+                        },
+                        estrategiaMarketing: estrategias.map(estrategia => ({
+                            nombre: estrategia.nombre,
+                            valores: years.map(year => parseFloat(estrategia.valores[year]) || 0)
+                        })),
+                    }
+                }
+                console.log("proyeccionMacro - Data to send: ", JSON.stringify(dataToSend, null, 2))
+                try {
+                    await axiosClient.get(`/api/v1/proyeccion-macro/${projectId}`)
+                    console.log(`proyeccionMacro - Actualizando proyecto existente ProyeccionMacro: ${projectId}`)
+                    navTarget = { path: '/costosGastos', state: { projectId, openingYear } }
+                } catch (error) {
+                    if (error && error.statusCode === 404) {
+                        console.log(`proyeccionMacro - Guardando proyecto nuevo ProyeccionMacro: ${projectId}`)
+                        const response = await axiosClient.postProyeccionMacro(`/api/v1/proyeccion-macro/${projectId}`, dataToSend)
+                        if (response) {
+                            navTarget = { path: '/costosGastos', state: { projectId, openingYear } }
+                        }
+                    } else {
+                        throw error
+                    }
                 }
             } catch (error) {
-                if (error && error.statusCode === 404) {
-                    console.log(`proyeccionMacro - Guardando proyecto nuevo ProyeccionMacro: ${projectId}`)
-                    const response = await axiosClient.postProyeccionMacro(`/api/v1/proyeccion-macro/${projectId}`, dataToSend)
-                    if (response) {
-                        navigate('/costosGastos', { state: { projectId: projectId, openingYear: openingYear } })
-                    }
-                } else {
-                    throw error
-                }
+                console.error("Error al guardar la proyeccion macro:", error)
+                setError(error.message || "Error al guardar la proyeccion macro.")
             }
-        } catch (error) {
-            console.error("Error al guardar la proyeccion macro:", error)
-            setError(error.message || "Error al guardar la proyeccion macro.")
-        } finally {
-            setIsLoading(false)
-        }
+        })
+        if (navTarget) navigate(navTarget.path, { state: navTarget.state })
     }
 
     if (error) {
@@ -537,6 +540,7 @@ const ProyeccionMacro = () => {
 
     return (
         <div className="project-info-container">
+            {isProcessing && <CeipaLoader />}
             <Navbar />
             <div className="white-container-n">
                 <div className="robot-container-an">
@@ -873,7 +877,7 @@ const ProyeccionMacro = () => {
 
                     {/* Botones de Navegación ACTUALIZADOS */}
                     <div className="buttons-container">
-                        <button className="nav-btn anterior" onClick={() => navigate(-1)}></button>
+                        <button className="nav-btn anterior" onClick={handleGoBack}></button>
                         <button 
                             className="nav-btn siguiente" 
                             onClick={handleSubmit}

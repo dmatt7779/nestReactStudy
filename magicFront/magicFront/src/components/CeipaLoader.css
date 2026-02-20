@@ -1,0 +1,163 @@
+/* === OVERLAY === */
+.ceipa-loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(240, 244, 248, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+.ceipa-loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+/* === SVG CANVAS === */
+.ceipa-loader-svg {
+  width: 500px;
+  max-width: 90vw;
+  height: auto;
+}
+
+/* ===========================
+   LINE DRAWING ANIMATION
+   Cycle: ~8s total
+   - Draw in (0% → 50%)
+   - Hold visible (50% → 70%)
+   - Fade/undraw (70% → 90%)
+   - Reset invisible (90% → 100%)
+   =========================== */
+.draw-line {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawStroke 8s ease infinite;
+}
+
+@keyframes drawStroke {
+  0% {
+    stroke-dashoffset: 1000;
+    opacity: 1;
+  }
+  50% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  70% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  90% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+  91% {
+    stroke-dashoffset: 1000;
+    opacity: 0;
+  }
+  100% {
+    stroke-dashoffset: 1000;
+    opacity: 0;
+  }
+}
+
+/* Fill-in animation for diamond shapes */
+.draw-fill {
+  animation: fadeInOut 8s ease infinite;
+}
+
+@keyframes fadeInOut {
+  0%   { opacity: 0; }
+  10%  { opacity: 1; }
+  50%  { opacity: 1; }
+  70%  { opacity: 1; }
+  90%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* === STAGGERED DELAYS — SHIELD FIRST, THEN TEXT === */
+/* Each element starts drawing at a different time within the 8s cycle */
+
+/* Shield structure draws first */
+.shield-outline   { animation-delay: 0s; }
+.shield-circle    { animation-delay: 0.4s; }
+.shield-cross1    { animation-delay: 0.8s; }
+.shield-cross2    { animation-delay: 1.0s; }
+.shield-arrow1    { animation-delay: 1.2s; }
+.shield-arrow2    { animation-delay: 1.2s; }
+.shield-arrow3    { animation-delay: 1.3s; }
+.shield-arrow4    { animation-delay: 1.3s; }
+
+/* All 4 symbols appear together after lines finish */
+.shield-star-top    { animation-delay: 1.5s; }
+.shield-star-right  { animation-delay: 1.5s; }
+.shield-moon-left   { animation-delay: 1.5s; }
+.shield-moon-bottom { animation-delay: 1.5s; }
+
+/* Letters draw LAST — staggered left to right */
+.letter-C { animation-delay: 2.5s; }
+.letter-E { animation-delay: 2.8s; }
+.letter-I { animation-delay: 3.1s; }
+.letter-P { animation-delay: 3.4s; }
+.letter-A { animation-delay: 3.7s; }
+
+/* === LOADING TEXT === */
+.ceipa-loader-text {
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
+  color: #4a4f54;
+  letter-spacing: 1px;
+  animation: textPulse 3s ease-in-out infinite;
+}
+
+@keyframes textPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* === ANIMATED DOTS === */
+.ceipa-loader-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #4a4f54;
+  animation: bounce 1.4s ease-in-out infinite both;
+}
+
+.dot:nth-child(1) { animation-delay: 0s; }
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0.4);
+    opacity: 0.3;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* === FADE OUT WHEN CLOSING === */
+.ceipa-loader-overlay.fade-out {
+  animation: overlayFadeOut 0.6s ease forwards;
+}
+
+@keyframes overlayFadeOut {
+  to {
+    opacity: 0;
+  }
+}

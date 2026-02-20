@@ -1,27 +1,36 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
+
+// Helper: format a raw numeric string with thousand separators (dots)
+// Input: "1234567.89" → Output: "1.234.567,89"
+const formatWithThousands = (rawValue) => {
+  if (!rawValue && rawValue !== "0") return "";
+  const [intPart, decPart] = rawValue.split(".");
+  const formatted = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return decPart !== undefined ? `${formatted},${decPart}` : formatted;
+};
+
+// Helper: strip thousand dots and convert display comma to raw dot
+// Input: "1.234.567,89" → Output: "1234567.89"
+const stripThousands = (displayValue) => {
+  // Remove all dots (thousand separators), then convert comma to dot (decimal)
+  return displayValue.replace(/\./g, "").replace(/,/g, ".");
+};
 
 const CustomInput = ({ label, value, onChange, placeholder, type, options, name, disabled }) => {
-  //Función de cambia la coma por el punto
-  const handleBlur = (e) => {
-    if (type === "number") {
-      let rawValue = e.target.value.replace(/\./g, "").replace(/,/g, ".");
-      if (!rawValue) return;
+  // Internal display state for number inputs (shows thousand separators)
+  const [displayValue, setDisplayValue] = useState("");
+  const isInternalChange = useRef(false);
 
-      const num = parseFloat(rawValue);
-      if (!isNaN(num)) {
-        const formatted = num.toLocaleString("es-ES", {
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 2,
-        });
-
-        onChange(num.toFixed(2)); // Valor limpio
-        e.target.value = formatted; // Valor visual
-      }
+  // Sync display value when the prop value changes externally
+  useEffect(() => {
+    if (type === "number" && !isInternalChange.current) {
+      setDisplayValue(formatWithThousands(value || ""));
     }
-  };
+    isInternalChange.current = false;
+  }, [value, type]);
 
   const handleChange = (e) => {
-    let newValue = e.target.value;  
+    let newValue = e.target.value;
 
     if (type === "percentage") {
       // Reemplaza comas por puntos
@@ -35,42 +44,54 @@ const CustomInput = ({ label, value, onChange, placeholder, type, options, name,
       if (parts.length > 2) {
         newValue = parts[0] + "." + parts.slice(1).join("");
       }
-      // Limitar a 2 decimales, si existe el punto
-      if (newValue.indexOf(".") !== -1) {
-        const [intPart, decPart] = newValue.split(".");
-        newValue = intPart + "." + decPart.slice(0, 2);
-      }
-      }else if (type === "number") {
-      // Reemplaza comas por puntos y elimina todo lo no válido
-      let rawValue = newValue.replace(/,/g, ".").replace(/[^0-9.]/g, "");
+      // Allow unlimited decimals after the point
+      onChange(newValue);
 
-      // Asegura solo un punto decimal
-      const parts = rawValue.split(".");
+    } else if (type === "number") {
+      // Strip existing thousand separators, keep comma as decimal
+      let raw = stripThousands(newValue);
+
+      // Remove invalid chars (only digits, dot, allowed)
+      raw = raw.replace(/[^0-9.]/g, "");
+
+      // Ensure only one decimal point
+      const parts = raw.split(".");
       if (parts.length > 2) {
-        rawValue = parts[0] + "." + parts.slice(1).join("");
+        raw = parts[0] + "." + parts.slice(1).join("");
       }
 
-      // Limita a dos decimales
-      if (rawValue.includes(".")) {
-        const [entero, decimal] = rawValue.split(".");
-        rawValue = entero + "." + decimal.slice(0, 2);
+      // Format for display with thousand separators
+      const formatted = formatWithThousands(raw);
+
+      isInternalChange.current = true;
+      setDisplayValue(formatted);
+      onChange(raw); // Send raw numeric value to parent
+
+    } else if (type === "text") {
+      newValue = newValue.replace(/[^a-zA-ZÁÉÍÓÚáéíóúñÑ\s]/g, "");
+      onChange(newValue);
+    } else {
+      onChange(newValue);
+    }
+  };
+
+  const handleBlur = (e) => {
+    if (type === "number") {
+      const raw = stripThousands(e.target.value);
+      if (!raw) return;
+
+      const num = parseFloat(raw);
+      if (!isNaN(num)) {
+        const formatted = formatWithThousands(raw);
+        isInternalChange.current = true;
+        setDisplayValue(formatted);
+        onChange(raw);
       }
+    }
+  };
 
-      // Formatea con puntos de miles para mostrar
-      const [intPart, decPart] = rawValue.split(".");
-      const formatted = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-      newValue = decPart !== undefined ? `${formatted}.${decPart}` : formatted;
-
-      // Envía el valor real (sin puntos) a onChange
-      onChange(rawValue);
-      return;
-    }else if (type === "text") {  
-          newValue = newValue.replace(/[^a-zA-ZÁÉÍÓÚáéíóúñÑ\s]/g, "");
-        }
-
-        onChange(newValue);
-      };
+  // Determine what to show in the input
+  const inputValue = type === "number" ? displayValue : value;
 
   return (
     <div className="custom-input-container">
@@ -96,9 +117,9 @@ const CustomInput = ({ label, value, onChange, placeholder, type, options, name,
           <div className="input-wrapper">
           <input
               type="text"
-              value={value}
+              value={inputValue}
               onChange={handleChange}
-              onBlur={handleBlur} // 👈 nuevo evento agregado
+              onBlur={handleBlur}
               placeholder={placeholder}
               className="custom-input"
               disabled={disabled}

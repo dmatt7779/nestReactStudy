@@ -4,6 +4,8 @@ import "../../style/styles.css";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
 import CustomInput from "../../components/CustomInput";
+import CeipaLoader from "../../components/CeipaLoader";
+import useProcessing from "../../hooks/useProcessing";
 import cabezotePlanFin from "../../images/cabezote_plan_financiero.png";
 import axiosClient from "../../utils/axios";
 
@@ -19,7 +21,7 @@ const extraerValor = (input) => {
 const limpiarNumero = (valor) => {
     const dato = extraerValor(valor);
     if (dato === null || dato === undefined || dato === "") return "";
-    return String(dato).split(/[.,]/)[0].replace(/\D/g, ''); 
+    return String(dato).replace(/[^0-9.\-]/g, '') || "0";
 };
 
 const PlanFinanciero = () => {
@@ -50,6 +52,7 @@ const PlanFinanciero = () => {
   const [openingYear, setOpeningYear] = useState(() => location.state?.openingYear || new Date().getFullYear().toString());
 
   const [isLoading, setIsLoading] = useState(true);
+  const { isProcessing, runWithLoader } = useProcessing();
   const [error, setError] = useState(null);
   const [dataExists, setDataExists] = useState(false);
   const previousProjectId = useRef(null);
@@ -121,7 +124,7 @@ const PlanFinanciero = () => {
                 if (campo.tipo === "number") {
                     datosDesdeApi[campo.id] = limpiarNumero(valorRaw);
                 } else {
-                    datosDesdeApi[campo.id] = (valorRaw === 0 || valorRaw === null) ? "" : valorRaw.toString();
+                    datosDesdeApi[campo.id] = (valorRaw == null) ? "" : valorRaw.toString();
                 }
             } else {
                 datosDesdeApi[campo.id] = "";
@@ -136,11 +139,11 @@ const PlanFinanciero = () => {
             const fullArray = [...arrActivos];
             while(fullArray.length < 6) fullArray.push(0);
 
-            const inversionAnios = fullArray.slice(1, 6).map(v => (v === 0 || v === null) ? "" : v);
+            const inversionAnios = fullArray.slice(1, 6).map(v => (v == null) ? "" : v.toString());
             setInversionActivos(inversionAnios);
 
             const divApi = pf.utilidadNetaDividendo || [0, 0, 0, 0, 0];
-            const mapArray = (arr) => arr.map(v => (v === 0 || v === null || v === undefined) ? "" : v);
+            const mapArray = (arr) => arr.map(v => (v == null) ? "" : v.toString());
             setRepartoDividendos(mapArray(divApi));
         }
 
@@ -191,74 +194,67 @@ const PlanFinanciero = () => {
     }
   };
 
-  // --- 8. SUBMIT & PROCESAMIENTO ---
+  // --- 8. NAVIGATION & SUBMIT ---
+  const handleGoBack = async () => {
+    await runWithLoader(async () => {});
+    navigate(-1);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setIsLoading(true);
     setError(null);
+    let navTarget = null;
 
-    const dataToSend = { ...datos };
-    for (const key in dataToSend) {
-      dataToSend[key] = parseFloat(dataToSend[key]) || 0;
-    }
-
-    const valAnios = inversionActivos.map(v => parseFloat(v) || 0);
-    const mergedActivosFijos = [restanteInicio, ...valAnios];
-    const cleanDividendos = repartoDividendos.map(v => parseFloat(v) || 0);
-    
-    dataToSend.propuestaFinanciera = {
-      activosFijos: mergedActivosFijos, 
-      utilidadNetaDividendo: cleanDividendos, 
-    };
-
-    try {
-      // 1. PRIMERO: Guardar/Actualizar los datos del Plan Financiero
-      if (dataExists) {
-        console.log("Actualizando Plan Financiero...");
-        // await axiosClient.put(...) 
-      } else {
-        await axiosClient.postPlanFinanciero(`/api/v1/plan-financiero/${projectId}`, dataToSend);
-        console.log("Guardando Plan Financiero...");
+    await runWithLoader(async () => {
+      const dataToSend = { ...datos };
+      for (const key in dataToSend) {
+        dataToSend[key] = parseFloat(dataToSend[key]) || 0;
       }
 
-      // 2. SEGUNDO: Obtener el Resumen del Proyecto (Data para Python)
-      console.log("Obteniendo resumen del proyecto...");
-      const timestamp = new Date().getTime();
-      const summaryData = await axiosClient.getProjectSummary(`/api/v1/project-summary/${projectId}?t=${timestamp}`);
+      const valAnios = inversionActivos.map(v => parseFloat(v) || 0);
+      const mergedActivosFijos = [restanteInicio, ...valAnios];
+      const cleanDividendos = repartoDividendos.map(v => parseFloat(v) || 0);
       
-      console.log("Data recibida para cálculo:", summaryData);
+      dataToSend.propuestaFinanciera = {
+        activosFijos: mergedActivosFijos, 
+        utilidadNetaDividendo: cleanDividendos, 
+      };
 
-      // 3. TERCERO: Enviar a FastAPI (Python) para cálculo
-      console.log("Enviando a motor de cálculo (Python)...");
-      const excelResult = await axiosClient.calculateExcel(summaryData);
-      
-      console.log("Resultado del cálculo recibido:", excelResult);
-      await axiosClient.saveResults(projectId, excelResult);
-      
-      // 4. CUARTO: Navegar a Resultados
-      console.log("Proceso terminado. Navegando a resultados...");
-      
-      // Puedes pasar el resultado de Python en el state si lo necesitas mostrar inmediatamente
-      navigate("/estadoResultados", { 
-          state: { 
-              projectId,
-              openingYear,
-              resultadosCalculados: excelResult // Pasamos la data calculada a la siguiente pantalla
-          } 
-      });
-    } catch (err) {
-      console.error("Error en el proceso:", err);
-      setError(err.message || "Ocurrió un error al procesar los datos.");
-    } finally {
-      setIsLoading(false);
-    }
+      try {
+        if (dataExists) {
+          console.log("Actualizando Plan Financiero...");
+        } else {
+          await axiosClient.postPlanFinanciero(`/api/v1/plan-financiero/${projectId}`, dataToSend);
+          console.log("Guardando Plan Financiero...");
+        }
+
+        console.log("Obteniendo resumen del proyecto...");
+        const timestamp = new Date().getTime();
+        const summaryData = await axiosClient.getProjectSummary(`/api/v1/project-summary/${projectId}?t=${timestamp}`);
+        
+        console.log("Enviando a motor de cálculo (Python)...");
+        const excelResult = await axiosClient.calculateExcel(summaryData);
+        
+        console.log("Resultado del cálculo recibido:", excelResult);
+        await axiosClient.saveResults(projectId, excelResult);
+        
+        navTarget = { 
+            path: "/estadoResultados", 
+            state: { projectId, openingYear, resultadosCalculados: excelResult } 
+        };
+      } catch (err) {
+        console.error("Error en el proceso:", err);
+        setError(err.message || "Ocurrió un error al procesar los datos.");
+      }
+    });
+    if (navTarget) navigate(navTarget.path, { state: navTarget.state });
   };
 
   if (isLoading) return <p>Cargando...</p>;
-  if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
 
   return (
     <div className="project-info-container">
+      {isProcessing && <CeipaLoader />}
       <Navbar />
       <div className="white-container-n">
         <div className="robot-container-an">
@@ -266,6 +262,7 @@ const PlanFinanciero = () => {
         </div>
         <div className="contenido-container-p">
           <p>Una vez cuantificados los ingresos...</p>
+          {error && <p style={{ color: "red", fontWeight: "bold", margin: "10px 0" }}>Error: {error}</p>}
           
           <form onSubmit={handleSubmit} style={{ width: "100%" }}>
             
@@ -373,7 +370,7 @@ const PlanFinanciero = () => {
           </form>
 
           <div className="buttons-container">
-            <button type="button" className="nav-btn anterior" onClick={() => navigate(-1)}></button>
+            <button type="button" className="nav-btn anterior" onClick={handleGoBack}></button>
             <button 
                 type="button" 
                 className="nav-btn procesar" 

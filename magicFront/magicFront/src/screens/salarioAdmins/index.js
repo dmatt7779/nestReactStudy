@@ -4,6 +4,8 @@ import "../../style/styles.css";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
 import CustomInput from "../../components/CustomInput";
+import CeipaLoader from "../../components/CeipaLoader";
+import useProcessing from "../../hooks/useProcessing";
 import cabezoteSalarios from "../../images/cabezote_salario_admins.png";
 import axiosClient from "../../utils/axios";
 
@@ -30,6 +32,7 @@ const SalarioAdmins = () => {
     const [openingYear, setOpeningYear] = useState(() => location.state?.openingYear || new Date().getFullYear().toString());
     
     const [isLoading, setIsLoading] = useState(true);
+    const { isProcessing, runWithLoader } = useProcessing();
     const [error, setError] = useState(null);
     const [dataExists, setDataExists] = useState(false);
     const previousProjectId = useRef(null);
@@ -175,40 +178,45 @@ const SalarioAdmins = () => {
         setIncrementoSalarios((prev) => ({ ...prev, [anio]: extraerValor(valor) }));
     };
 
+    const handleGoBack = async () => {
+        await runWithLoader(async () => {});
+        navigate(-1);
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
-        setIsLoading(true);
         setError(null);
+        let navTarget = null;
 
-        const dataToSend = {
-            salarioAdmins: cargos
-                .filter(c => c.cargo.trim() !== "")
-                .map(c => ({
-                    cargo: c.cargo.trim(),
-                    valorMensual: parseFloat(c.valorMensual) || 0,
-                })),
-            incrementoSalarial: {
-                ipc: opcionSeleccionadaSalarios === "IPC",
-                otroPorcentaje: opcionSeleccionadaSalarios === "Otro Porcentaje",
-                incrementoEgresos: years.map(year => parseFloat(incrementoSalarios[year]) || 0),
+        await runWithLoader(async () => {
+            const dataToSend = {
+                salarioAdmins: cargos
+                    .filter(c => c.cargo.trim() !== "")
+                    .map(c => ({
+                        cargo: c.cargo.trim(),
+                        valorMensual: parseFloat(c.valorMensual) || 0,
+                    })),
+                incrementoSalarial: {
+                    ipc: opcionSeleccionadaSalarios === "IPC",
+                    otroPorcentaje: opcionSeleccionadaSalarios === "Otro Porcentaje",
+                    incrementoEgresos: years.map(year => parseFloat(incrementoSalarios[year]) || 0),
+                }
+            };
+
+            console.log("Data to send:", JSON.stringify(dataToSend, null, 2));
+
+            try {
+                if (dataExists) {
+                    console.log("Datos de Salario Admins actualizados.");
+                } else {
+                    await axiosClient.postSalarioAdmins(`/api/v1/salario-admins/${projectId}`, dataToSend);
+                }
+                navTarget = { path: '/planFinanciero', state: { projectId, openingYear } };
+            } catch (err) {
+                setError(err.message || "Ocurrió un error al guardar los datos.");
             }
-        };
-
-        console.log("Data to send:", JSON.stringify(dataToSend, null, 2));
-
-        try {
-            if (dataExists) {
-                // await axiosClient.put(`/api/v1/salario-admins/${projectId}`, dataToSend);
-                console.log("Datos de Salario Admins actualizados.");
-            } else {
-                await axiosClient.postSalarioAdmins(`/api/v1/salario-admins/${projectId}`, dataToSend);
-            }
-            navigate('/planFinanciero', { state: { projectId, openingYear } });
-        } catch (err) {
-            setError(err.message || "Ocurrió un error al guardar los datos.");
-        } finally {
-            setIsLoading(false);
-        }
+        });
+        if (navTarget) navigate(navTarget.path, { state: navTarget.state });
     };
 
     if (isLoading) return <p>Cargando...</p>;
@@ -216,6 +224,7 @@ const SalarioAdmins = () => {
 
     return (
         <div className="project-info-container">
+            {isProcessing && <CeipaLoader />}
             <Navbar />
             <div className="white-container-n">
                 <div className="robot-container-an">
@@ -297,7 +306,7 @@ const SalarioAdmins = () => {
                     
                     {/* Botón con Validación */}
                     <div className="buttons-container">
-                        <button type="button" className="nav-btn anterior" onClick={() => navigate(-1)}></button>
+                        <button type="button" className="nav-btn anterior" onClick={handleGoBack}></button>
                         <button 
                             type="button" 
                             className="nav-btn siguiente" 
