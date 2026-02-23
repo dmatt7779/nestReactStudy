@@ -1,8 +1,7 @@
-# app/services/informacion_inicial.py
+
 from typing import Dict, Any, List, Union
 from .base import BaseService
 import math
-
 
 class InformacionInicialService(BaseService):
     DEFAULT_HORIZON = 5

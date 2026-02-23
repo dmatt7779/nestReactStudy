@@ -1,4 +1,4 @@
-# app/services/base.py
+
 from __future__ import annotations
 from typing import Any, Dict, List, Union
 import math
@@ -21,10 +21,6 @@ class BaseService:
     - Usar o ignorar los helpers según convenga.
     """
 
-    # Claves que NO se deben redondear en _round_up_all por defecto.
-    # Los servicios hijos pueden:
-    # - Extender este set.
-    # - Sobrescribir _round_up_all si necesitan lógica distinta.
     NO_ROUND_KEYS = {
         "ipcPct", "pibPct", "devaluacionPct", "tasaInteresPct",
         "preciosPct", "unidadesPct", "costosPct",

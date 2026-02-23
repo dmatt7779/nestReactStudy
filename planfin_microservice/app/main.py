@@ -2,8 +2,9 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.routers import calculator  # importa tu router existente
+from app.routers import calculator
 
 app = FastAPI(title="Plan Financiero Microservice")
 
@@ -24,12 +25,7 @@ async def root():
         "message": "Plan Financiero Microservice running",
     }
 
-# Incluimos tu router de cálculos (core + estado_resultados)
 app.include_router(calculator.router, prefix="/api/v1")
-
-# ---------- Manejo de rutas no encontradas ----------
-from starlette.exceptions import HTTPException as StarletteHTTPException
-
 @app.exception_handler(StarletteHTTPException)
 async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
     return JSONResponse(

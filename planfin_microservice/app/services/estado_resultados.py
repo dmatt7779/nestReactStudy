@@ -1,4 +1,4 @@
-# app/services/estado_resultados_service.py
+
 import math
 import logging
 from typing import Any, Dict, List, Union
