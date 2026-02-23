@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Trash2 } from "lucide-react";
 import '../../style/styles.css';
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
@@ -7,12 +8,15 @@ import nuevoProyectoImg from "../../images/bt_nuevo_proyecto.png";
 import tituloProyectoImg from "../../images/titulo_nuevo_proyecto.png";
 import { useNavigate } from 'react-router-dom';
 import axiosClient from '../../utils/axios';
+import CeipaLoader from "../../components/CeipaLoader";
+import useProcessing from "../../hooks/useProcessing";
 
 const NewProject = () => {
   const [proyectos, setProyectos] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const navigate = useNavigate()
+  const { isProcessing, runWithLoader } = useProcessing()
   const NUM_CARDS = 5
 
   useEffect(() => {
@@ -31,7 +35,7 @@ const NewProject = () => {
 
       } catch (err) {
         console.error("Error al obtener los proyectos:", err)
-        setError(err.message || "Error al obtener los proyectos. Por favor, inténtalo de nuevo.")
+        // Toast notifications are handled automatically by axios utils
       } finally {
         setLoading(false)
       }
@@ -52,20 +56,12 @@ const NewProject = () => {
     )
   }
 
-  if (error) {
-    return (
-      <div>
-        <Navbar />
-        <div className="nuevo-proyecto-container">
-          <p style={{ color: 'red' }}>{error}</p>
-        </div>
-        <Footer />
-      </div>
-    );
-  }  
+
 
   return (
-    <div><Navbar />    
+    <div>
+      {isProcessing && <CeipaLoader />}
+      <Navbar />    
     <div className="nuevo-proyecto-container">      
       <div className="robot-container">
          <img src={robotImg} alt="Robot" className="robot-img" />
@@ -84,26 +80,74 @@ const NewProject = () => {
             {Array.from({ length: NUM_CARDS }).map((_, index) => {
               const project = proyectos[index]
               const projectId = project ? project.id : null
+              const projectName = project ? project.projectName : ""
+              // Ajuste dinámico de fuente según qué tan largo sea el texto
+              const nameLength = projectName.length;
+              let dynamicFontSize = "15px";
+              let dynamicLineHeight = "1.2";
+              
+              if (nameLength > 24) {
+                dynamicFontSize = "11px";
+                dynamicLineHeight = "1.1";
+              } else if (nameLength > 14) {
+                dynamicFontSize = "13px";
+                dynamicLineHeight = "1.15";
+              }
 
               return (
                 <div
                   key={index}
                   className="proyecto-card"
-                  onClick={() => {
-                    navigate('/projectInfo', { state: { projectId } })
+                  onClick={async () => {
+                    if (projectId) {
+                      sessionStorage.setItem("currentProjectId", projectId);
+                    } else {
+                      sessionStorage.removeItem("currentProjectId");
+                    }
+                    let navTarget = { path: '/projectInfo', state: { projectId } };
+                    await runWithLoader(async () => {});
+                    navigate(navTarget.path, { state: navTarget.state });
                   }}
                 >
-                  <div className="imagen-hover">
-                    <img src={nuevoProyectoImg} alt="Nuevo Proyecto" className="proyecto-img" />
-                  </div>
                   {project ? (
+                    <div className="proyecto-card-activo">
+                      <div className="card-top-activa">
+                        <p 
+                          className="card-titulo-activo" 
+                          style={{ fontSize: dynamicFontSize, lineHeight: dynamicLineHeight }}
+                        >
+                          {projectName}
+                        </p>
+                      </div>
+                      <div className="card-bottom-activa" onClick={async (e) => {
+                          e.stopPropagation();
+                          const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar permanentemente el proyecto "${projectName}" y todos sus datos relacionados? Esta acción no se puede deshacer.`);
+                          if (confirmDelete) {
+                            try {
+                              await runWithLoader(async () => {
+                                await axiosClient.deleteProject(`/api/v1/project-info/${projectId}`);
+                                setProyectos(prev => prev.filter(p => p.id !== projectId));
+                                if (sessionStorage.getItem("currentProjectId") === String(projectId)) {
+                                  sessionStorage.removeItem("currentProjectId");
+                                }
+                              });
+                            } catch (error) {
+                              console.error("Error al eliminar el proyecto:", error);
+                              // toast notifications are handled by the axios error interceptor
+                            }
+                          }
+                      }}>
+                        <Trash2 size={16} />
+                        <span>Eliminar proyecto</span>
+                      </div>
+                    </div>
+                  ) : (
                     <>
-                      <p>{project.projectName}</p>
-                      <p>ID: {project.id}</p>
+                      <div className="imagen-hover">
+                        <img src={nuevoProyectoImg} alt="Nuevo Proyecto" className="proyecto-img" />
+                      </div>
                     </>
-                    ) : (
-                      <p>Nuevo Proyecto</p>
-                    )}
+                  )}
                 </div>
               )
             })}

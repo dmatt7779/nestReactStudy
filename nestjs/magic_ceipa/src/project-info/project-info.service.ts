@@ -4,6 +4,12 @@ import { UpdateProjectInfoDto } from './dto/update-project-info.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectInfo } from './entities/project-info.entity';
 import { Repository } from 'typeorm';
+import { PlanFinanciero } from '../plan-financiero/entities/plan-financiero.entity';
+import { CostosGasto } from '../costos-gastos/entities/costos-gasto.entity';
+import { ActivoFijo } from '../activos-fijos/entities/activos-fijo.entity';
+import { SalarioAdmin } from '../salario-admins/entities/salario-admin.entity';
+import { ProyeccionMacro } from '../proyeccion-macro/entities/proyeccion-macro.entity';
+import { FinancialResult } from '../financial-results/entities/financial-result.entity';
 import { UserActiveInterface } from '../common/interfaces/active-user.interface';
 import { Role } from '../common/enums/rol.enum';
 
@@ -12,7 +18,19 @@ export class ProjectInfoService {
 
   constructor(
       @InjectRepository(ProjectInfo)
-      private readonly ProjectInfoRepository: Repository<ProjectInfo>
+      private readonly ProjectInfoRepository: Repository<ProjectInfo>,
+      @InjectRepository(PlanFinanciero)
+      private readonly planFinancieroRepository: Repository<PlanFinanciero>,
+      @InjectRepository(CostosGasto)
+      private readonly costosGastoRepository: Repository<CostosGasto>,
+      @InjectRepository(ActivoFijo)
+      private readonly activoFijoRepository: Repository<ActivoFijo>,
+      @InjectRepository(SalarioAdmin)
+      private readonly salarioAdminRepository: Repository<SalarioAdmin>,
+      @InjectRepository(ProyeccionMacro)
+      private readonly proyeccionMacroRepository: Repository<ProyeccionMacro>,
+      @InjectRepository(FinancialResult)
+      private readonly financialResultRepository: Repository<FinancialResult>,
   ) {}
     
   async create(createProjectInfoDto: CreateProjectInfoDto, user: UserActiveInterface) {
@@ -66,7 +84,32 @@ export class ProjectInfoService {
 
   async remove(id: number, user: UserActiveInterface) {
     const projectToDelete = await this.findOne(id, user);
-    await this.ProjectInfoRepository.softDelete({id});
+
+    // Hard delete related entities manually to bypass missing DB foreign key cascades
+    const planFinanciero = await this.planFinancieroRepository.findOne({ where: { projectInfoId: id } });
+    if (planFinanciero) await this.planFinancieroRepository.remove(planFinanciero);
+
+    const salarioAdmin = await this.salarioAdminRepository.findOne({ where: { projectInfo: { id } } });
+    if (salarioAdmin) await this.salarioAdminRepository.remove(salarioAdmin);
+
+    const activoFijo = await this.activoFijoRepository.findOne({ where: { projectInfoId: id } });
+    if (activoFijo) await this.activoFijoRepository.remove(activoFijo);
+
+    const costosGasto = await this.costosGastoRepository.findOne({ where: { projectInfoId: id } });
+    if (costosGasto) await this.costosGastoRepository.remove(costosGasto);
+
+    // ProyeccionMacro needs relations loaded to cascade delete its nested entities (Producto, EstrategiaMarketing)
+    const proyeccionMacro = await this.proyeccionMacroRepository.findOne({ 
+      where: { projectInfoId: id },
+      relations: ['producto', 'estrategiaMarketing'], 
+    });
+    if (proyeccionMacro) await this.proyeccionMacroRepository.remove(proyeccionMacro);
+
+    const financialResult = await this.financialResultRepository.findOne({ where: { projectInfoId: id } });
+    if (financialResult) await this.financialResultRepository.remove(financialResult);
+
+    // Finally, hard delete the main project using .delete() which skips soft deletion
+    await this.ProjectInfoRepository.delete({ id });
     return projectToDelete;
   }
 

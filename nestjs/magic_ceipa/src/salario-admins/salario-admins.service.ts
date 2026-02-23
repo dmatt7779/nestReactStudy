@@ -18,11 +18,15 @@ export class SalarioAdminsService {
   
   async create(createSalarioAdminDto: CreateSalarioAdminDto, projectInfoId: number, user: UserActiveInterface) {
     await this.projectInfoService.findOne(projectInfoId, user);
-    const isSalarioAdmin = await this.salarioAdminRepository.findOne({
+    
+    // UPSERT LOGIC: Check if it already exists
+    const existingSalarioAdmin = await this.salarioAdminRepository.findOne({
       where: { projectInfo: { id: projectInfoId } },
     });
-    if (isSalarioAdmin) {
-      throw new BadRequestException('SalarioAdmin already exists for this project');
+    
+    if (existingSalarioAdmin) {
+      // Hard delete the parent SalarioAdmin block to make room for the new JSON
+      await this.salarioAdminRepository.remove(existingSalarioAdmin);
     }
 
     const dataToStore = {

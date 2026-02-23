@@ -525,6 +525,33 @@ button:active {
   box-shadow: none !important; /* Quita cualquier sombra */
 }
 
+/* === Botón Procesar (CSS Puro) === */
+.procesar {
+  background-color: #ffcc00 !important; /* Amarillo CEIPA */
+  color: #333;
+  font-weight: 700;
+  font-size: 15px;
+  border-radius: 20px; /* Bordes redondeados imitando la imagen */
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 3px 5px rgba(0,0,0,0.2) !important;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.procesar:hover:not(:disabled) {
+  background-color: #ffe066 !important; /* Amarillo brillante al hover */
+  transform: scale(1.05);
+  box-shadow: 0 5px 8px rgba(0,0,0,0.25) !important;
+}
+
+.procesar:disabled {
+  background-color: #e0e0e0 !important;
+  color: #999;
+  box-shadow: none !important;
+  transform: none;
+}
+
 /*-----------------------------------Styles New Project--------------------------------------*/
 
 .nuevo-proyecto-container {
@@ -538,7 +565,7 @@ button:active {
   display: flex;
   justify-content: center; /* Centra el robot */
   align-items: center;
-  margin-top: -64px;
+  margin-top: -20px;
 }
 
 .robot-img {
@@ -563,7 +590,7 @@ button:active {
 
 .contenido-container p {
   font-size: 14px;
-  margin: 20px 0 10px 0; /* 0 arriba, 0 a los lados, 10px abajo */
+  margin: 20px 0 20px 0; /* 0 arriba, 0 a los lados, 10px abajo */
   text-align: left;
   padding: 0px;
 }
@@ -578,17 +605,15 @@ button:active {
 .grid-proyectos {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 0px; /* Espacio reducido entre tarjetas */
+  gap: 0px;
   padding: 0px;
   max-width: 100%;
-  overflow-x: hidden; /* Oculta cualquier scroll horizontal */
-  overflow-y: hidden; /* Oculta cualquier scroll vertical */
 }
 
 /* Tarjeta de cada proyecto (dejamos que ocupe el 100% del ancho de su celda) */
 .proyecto-card {
   border-radius: 10px;
-  padding: 0px;
+  padding: 2px;
   text-align: center;
   transition: transform 0.3s ease-in-out;
   cursor: pointer;
@@ -627,6 +652,73 @@ button:active {
 
 .imagen-hover:hover::before {
   opacity: 1; /* Al hacer hover, se muestra la imagen de hover */
+}
+
+/* === Tarjeta ACTIVA (Proyectos ya existentes) - CSS Nativo === */
+.proyecto-card-activo {
+  width: 140px; /* Ligeramente más angosta para un look esbelto */
+  height: 145px;
+  background-color: #238ea1; /* Color verdeazul de fondo */
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 0 auto; /* Centrar dentro del grid slot */
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.proyecto-card-activo:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.card-top-activa {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+}
+
+.card-titulo-activo {
+  color: #ffcc00 !important; /* Amarillo CEIPA */
+  font-weight: 700 !important;
+  /* font-size and line-height are handled dynamically in JS for long text */
+  text-align: center;
+  margin: 0 !important; /* Sobreescribir el margen por defecto */
+  word-break: break-word; /* Permitir que textos lagos se dividan */
+  transition: text-shadow 0.3s ease, color 0.3s ease;
+  padding: 5px;
+}
+
+.card-titulo-activo:hover {
+  text-shadow: 0 0 8px rgba(255, 204, 0, 0.8), 0 0 15px rgba(255, 204, 0, 0.5);
+  color: #fff280 !important; /* Amarillo más brillante/iluminado al hacer hover */
+}
+
+.card-bottom-activa {
+  height: 35px;
+  background-color: #d9534f; /* Fondo rojo para denotar eliminación */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  border-top: 1px solid rgba(255, 255, 255, 0.3); /* Línea divisoria semi transparente */
+  cursor: pointer;
+  transition: background-color 0.3s ease, text-shadow 0.3s ease, box-shadow 0.3s ease;
+  padding-bottom: 5px; /* Darle algo de aire al ícono */
+}
+
+.card-bottom-activa:hover {
+  background-color: #c9302c; /* Rojo más oscuro en hover */
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.9), 0 0 12px rgba(255, 255, 255, 0.6); /* Letra iluminada */
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
 }
 
 /* Contenedor de los botones */

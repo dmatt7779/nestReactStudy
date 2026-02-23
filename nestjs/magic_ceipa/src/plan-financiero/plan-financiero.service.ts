@@ -17,21 +17,26 @@ export class PlanFinancieroService {
   ) {}
 
   async create(createPlanFinancieroDto: CreatePlanFinancieroDto, projectInfoId: number, user: UserActiveInterface) {
-    await this.projectInfoService.findOne(projectInfoId, user)
-    const isplanFinanciero = await this.planFinancieroRepository.findOne({
+    await this.projectInfoService.findOne(projectInfoId, user);
+
+    // UPSERT LOGIC: Check if it already exists
+    const existingPlanFinanciero = await this.planFinancieroRepository.findOne({
       where: { projectInfoId },
     });
-    if(isplanFinanciero){
-      throw new BadRequestException('Plan Financiero already exists for this project');
+
+    if (existingPlanFinanciero) {
+      // Hard delete the parent PlanFinanciero block to make room for the new JSON
+      await this.planFinancieroRepository.remove(existingPlanFinanciero);
     }
-    try{
+    
+    try {
       const newPlanFinanciero = this.planFinancieroRepository.create({
         planFinanciero: createPlanFinancieroDto,
         projectInfo: { id: projectInfoId },
         userEmail: user.email,
-      })
+      });
       return await this.planFinancieroRepository.save(newPlanFinanciero);
-    }catch (error){
+    } catch (error) {
         console.log(error);
     }
   }

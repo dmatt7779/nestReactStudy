@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import toast from 'react-hot-toast';
 class AxiosClient {
   constructor() {
     this.axiosInstance = axios.create({
@@ -35,9 +35,21 @@ class AxiosClient {
         if (error.response && error.response.status === 401) {
           localStorage.removeItem('token');
           window.location.href = '/';
-        }
-        if (!error.response) {
+          toast.error('Tu sesión ha expirado o las credenciales son inválidas.');
+        } else if (!error.response) {
+          toast.error("Error intermitente o de red. Verifica tu conexión.");
           return Promise.reject("Error contact administrator.");
+        } else {
+          const status = error.response.status;
+          const method = error.config?.method?.toLowerCase();
+          
+          if (status === 404 && method === 'get') {
+              // Silently ignore 404s for GET requests as they logically indicate empty/new forms in this app
+              console.warn("404 GET ignorado en toast global:", error.config?.url);
+          } else {
+              const apiErrorMsg = error.response?.data?.message || "Ocurrió un error en el servidor.";
+              toast.error(apiErrorMsg);
+          }
         }
         return Promise.reject(error.response?.data || error);
     };
@@ -49,7 +61,9 @@ class AxiosClient {
   async register(userData) { return await this.axiosInstance.post('api/v1/auth/register', userData); }
   async login(userData) { return await this.axiosInstance.post('api/v1/auth/login', userData); }
   async get(url, config = {}) { return await this.axiosInstance.get(url, config); }
+  async deleteProject(url) { return await this.axiosInstance.delete(url); }
   async postProjectInfo(url, body) { return await this.axiosInstance.post(url, body); }
+  async patchProjectInfo(url, body) { return await this.axiosInstance.patch(url, body); }
   async postProyeccionMacro(url, body) { return await this.axiosInstance.post(url, body); }
   async postCostosGastos(url, body) { return await this.axiosInstance.post(url, body); }
   async postActivosFijos(url, body) { return await this.axiosInstance.post(url, body); } 

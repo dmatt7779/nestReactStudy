@@ -18,21 +18,26 @@ export class ActivosFijosService {
   ) { }
 
   async create(activosFijos: CreateActivosFijoDto, projectInfoId: number, user: UserActiveInterface) {
-    await this.projectInfoService.findOne(projectInfoId, user)
-    const isActivosFijos = await this.activoFijoRepository.findOne({
+    await this.projectInfoService.findOne(projectInfoId, user);
+
+    // UPSERT LOGIC: Check if it already exists
+    const existingActivosFijos = await this.activoFijoRepository.findOne({
       where: { projectInfoId },
     });
-    if(isActivosFijos){
-      throw new BadRequestException('ActivosFijos already exists for this project');
+
+    if (existingActivosFijos) {
+      // Hard delete the parent ActivoFijo block to make room for the new JSON
+      await this.activoFijoRepository.remove(existingActivosFijos);
     }
-    try{
+    
+    try {
       const activosFijosCreated = this.activoFijoRepository.create({
         activosFijos,
         projectInfo: { id: projectInfoId },
         userEmail: user.email,
-      })
+      });
       return await this.activoFijoRepository.save(activosFijosCreated);
-    }catch (error){
+    } catch (error) {
         console.log(error);
     }
   }

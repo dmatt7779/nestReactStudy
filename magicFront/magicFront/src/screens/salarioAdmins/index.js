@@ -206,11 +206,9 @@ const SalarioAdmins = () => {
             console.log("Data to send:", JSON.stringify(dataToSend, null, 2));
 
             try {
-                if (dataExists) {
-                    console.log("Datos de Salario Admins actualizados.");
-                } else {
-                    await axiosClient.postSalarioAdmins(`/api/v1/salario-admins/${projectId}`, dataToSend);
-                }
+                console.log("Enviando datos de Salarios Admins (Upsert)...");
+                await axiosClient.postSalarioAdmins(`/api/v1/salario-admins/${projectId}`, dataToSend);
+                
                 navTarget = { path: '/planFinanciero', state: { projectId, openingYear } };
             } catch (err) {
                 setError(err.message || "Ocurrió un error al guardar los datos.");

@@ -76,7 +76,11 @@ const ProjectInfo = () => {
                   }))
                 : [{ cedula: "", nombre: "" }]
             )
-            setProfessors(proyectoData.professor || [])
+            setProfessors(
+              proyectoData.professor 
+                ? proyectoData.professor.map(p => Number(p)) 
+                : []
+            )
             
             // CAMBIO 3: Si viene de la BD úsalo, si no, usa el año actual dinámico
             setAno(proyectoData.openingYear ? proyectoData.openingYear.toString() : currentYear)
@@ -146,17 +150,19 @@ const ProjectInfo = () => {
                 projectName: projectName,
                 teamMembers: integrantes.map(integrante => ({ id: integrante.cedula, name: integrante.nombre })),
                 openingYear: parseInt(ano),
-                professor: professors,
+                professor: professors.map(p => Number(p)),
             }
 
             if (projectId) {
                 console.log("ProjectInfo - Actualizando proyecto existente con ID:", projectId)
+                await axiosClient.patchProjectInfo(`/api/v1/project-info/${projectId}`, dataToSend)
                 navTarget = { path: '/proyeccionMacro', state: { projectId: projectId, openingYear: ano } }
             } else {
               console.log("ProjectInfo - Creando nuevo proyecto...")
               const response = await axiosClient.postProjectInfo('/api/v1/project-info', dataToSend)
               if (response && response.id) {
                   console.log("ProjectInfo - Proyecto creado con éxito. Nuevo ID:", response.id)
+                  sessionStorage.setItem("currentProjectId", response.id)
                   navTarget = { path: '/proyeccionMacro', state: { projectId: response.id, openingYear: ano } }
               } else {
                   console.error("Error: El backend no devolvió un ID para el nuevo proyecto.")
@@ -272,7 +278,6 @@ const ProjectInfo = () => {
                   {profesor.nombre}
                 </label>
               ))}
-              <p>Profesores seleccionados: {professors.join(", ")}</p>
           </div>
 
           <div className="robot-container">

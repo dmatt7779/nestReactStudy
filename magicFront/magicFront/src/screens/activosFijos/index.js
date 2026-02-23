@@ -259,12 +259,8 @@ const ActivosFijos = () => {
             console.log("Data to send:", JSON.stringify(activosFijosPayload, null, 2));
 
             try {
-                if (dataExists) {
-                     console.log("Datos actualizados (Simulación)");
-                } else {
-                    await axiosClient.postActivosFijos(`/api/v1/activos-fijos/${projectId}`, activosFijosPayload);
-                    console.log("Datos creados (POST)");
-                }
+                console.log("Enviando datos de Activos Fijos (Upsert)");
+                await axiosClient.postActivosFijos(`/api/v1/activos-fijos/${projectId}`, activosFijosPayload);
                 navTarget = { path: '/salarioAdmins', state: { projectId, openingYear } };
             } catch (err) {
                 setError(err.message || "Ocurrió un error al guardar los datos.");

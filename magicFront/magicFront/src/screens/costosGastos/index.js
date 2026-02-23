@@ -245,12 +245,9 @@ const CostosGastos = () => {
             console.log("Data to send:", JSON.stringify(dataToSend, null, 2));
 
             try {
-                if (dataExists) {
-                    console.log("Datos de Costos y Gastos actualizados.");
-                } else {
-                    await axiosClient.postCostosGastos(`/api/v1/costos-gastos/${projectId}`, dataToSend);
-                    console.log("Datos de Costos y Gastos creados.");
-                }
+                console.log("Enviando datos de Costos y Gastos (Upsert)...");
+                await axiosClient.postCostosGastos(`/api/v1/costos-gastos/${projectId}`, dataToSend);
+                
                 navTarget = { path: '/activosFijos', state: { projectId, openingYear } };
             } catch (err) {
                 setError(err.message || "Ocurrió un error al guardar los datos.");

@@ -511,24 +511,20 @@ const ProyeccionMacro = () => {
                     }
                 }
                 console.log("proyeccionMacro - Data to send: ", JSON.stringify(dataToSend, null, 2))
+                console.log("proyeccionMacro - Data to send: ", JSON.stringify(dataToSend, null, 2))
                 try {
-                    await axiosClient.get(`/api/v1/proyeccion-macro/${projectId}`)
-                    console.log(`proyeccionMacro - Actualizando proyecto existente ProyeccionMacro: ${projectId}`)
-                    navTarget = { path: '/costosGastos', state: { projectId, openingYear } }
-                } catch (error) {
-                    if (error && error.statusCode === 404) {
-                        console.log(`proyeccionMacro - Guardando proyecto nuevo ProyeccionMacro: ${projectId}`)
-                        const response = await axiosClient.postProyeccionMacro(`/api/v1/proyeccion-macro/${projectId}`, dataToSend)
-                        if (response) {
-                            navTarget = { path: '/costosGastos', state: { projectId, openingYear } }
-                        }
-                    } else {
-                        throw error
+                    console.log(`proyeccionMacro - Enviando datos (Crear o Actualizar) para el proyecto: ${projectId}`)
+                    const response = await axiosClient.postProyeccionMacro(`/api/v1/proyeccion-macro/${projectId}`, dataToSend)
+                    if (response) {
+                        navTarget = { path: '/costosGastos', state: { projectId, openingYear } }
                     }
+                } catch (error) {
+                    console.error("Error al guardar la proyeccion macro:", error)
+                    setError(error.message || "Error al guardar la proyeccion macro.")
                 }
             } catch (error) {
-                console.error("Error al guardar la proyeccion macro:", error)
-                setError(error.message || "Error al guardar la proyeccion macro.")
+                console.error("Error al preparar o enviar datos:", error)
+                setError(error.message || "Error al preparar la proyeccion macro.")
             }
         })
         if (navTarget) navigate(navTarget.path, { state: navTarget.state })

@@ -81,9 +81,6 @@ function Login() {
             <a href="aquiVaLaUrlparaRecuperarContrasena">Olvidé contraseña</a>
           </div>
 
-          {/* Mensaje de error */}
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-
           {/* Botón de enviar con indicador de carga */}
           <button type="submit" disabled={loading}>
             {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}

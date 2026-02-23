@@ -3,13 +3,12 @@ import { CostosGastosService } from './costos-gastos.service';
 import { CostosGastosController } from './costos-gastos.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CostosGasto } from './entities/costos-gasto.entity';
-import { ProjectInfoService } from '../project-info/project-info.service';
-import { ProjectInfo } from '../project-info/entities/project-info.entity';
+import { ProjectInfoModule } from '../project-info/project-info.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CostosGasto, ProjectInfo])],
+  imports: [TypeOrmModule.forFeature([CostosGasto]), ProjectInfoModule],
   controllers: [CostosGastosController],
-  providers: [CostosGastosService, ProjectInfoService],
+  providers: [CostosGastosService],
   exports: [CostosGastosModule, CostosGastosService],
 })
 export class CostosGastosModule {}

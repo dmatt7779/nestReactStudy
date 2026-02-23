@@ -22,16 +22,31 @@ export class ProyeccionMacroService {
   ) {}
 
   async create(createProyeccionMacroDto: CreateProyeccionMacroDto, projectInfoId: number, user: UserActiveInterface) {
-    await this.projectInfoService.findOne(projectInfoId, user)
-    const isProyeccionMacro = await this.proyeccionMacroRepository.findOne({
+    await this.projectInfoService.findOne(projectInfoId, user);
+    
+    // UPSERT LOGIC: Check if it already exists
+    const existingProyeccion = await this.proyeccionMacroRepository.findOne({
       where: { projectInfoId },
+      relations: ['producto', 'estrategiaMarketing'],
     });
-    if(isProyeccionMacro){
-      throw new BadRequestException('ProyeccionMacro already exists for this project');
+
+    if (existingProyeccion) {
+      // 1. Hard delete related arrays to prevent orphans
+      if (existingProyeccion.estrategiaMarketing && existingProyeccion.estrategiaMarketing.length > 0) {
+        await this.estrategiaMarketingRepository.remove(existingProyeccion.estrategiaMarketing);
+      }
+      if (existingProyeccion.producto && existingProyeccion.producto.length > 0) {
+        await this.productoRepository.remove(existingProyeccion.producto);
+      }
+      
+      // 2. Hard delete the parent ProyeccionMacro to make room for the fresh one
+      await this.proyeccionMacroRepository.remove(existingProyeccion);
     }
     
     const { analisisMercado, proyeccionesMacroeconomicas } = createProyeccionMacroDto;
     const { productos, estrategiaMarketing, ...restOfAnalisisMercado } = analisisMercado;
+    
+    // Create new fresh instance (Insert)
     const proyeccionMacro = this.proyeccionMacroRepository.create({
       proyeccionesMacroeconomicas,
       analisisMercado: restOfAnalisisMercado, 

@@ -1,16 +1,53 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import '../style/styles.css';
 import Titulo from "../images/titulo_simulador.png";
 import lineImg from "../images/linea_divisora.png";
+import axiosClient from '../utils/axios';
+import toast from 'react-hot-toast';
+import useProcessing from '../hooks/useProcessing';
+import CeipaLoader from './CeipaLoader';
 
 const Navbar = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isProcessing, runWithLoader } = useProcessing();
 
-  const handleSelect = (path) => {
-    navigate(path);
+  const handleSelect = async (path, section) => {
     setOpenDropdown(null);
+    const projectId = sessionStorage.getItem("currentProjectId");
+    
+    // Si no hay proyecto no navega a ciegas (no debe pasar en teoria por la condicion del drop)
+    if (!projectId) {
+      toast.error('Ocurrió un error. No se encontró un ID de Proyecto Activo.');
+      return;
+    }
+
+    if (section === "instrucciones") {
+      // Inyectar estado en las hojas de instrucciones
+      navigate(path, { state: { projectId } });
+    } else if (section === "resultados") {
+      // Validar primero
+      await runWithLoader(async () => {
+        try {
+          const response = await axiosClient.getResults(projectId);
+          if (response && response.result) {
+             navigate(path, { 
+               state: { projectId, resultadosCalculados: response } 
+             });
+          } else {
+             toast.error('Aún no hay resultados. Procesa el Plan Financiero primero.');
+          }
+        } catch (error) {
+           // Toast de interceptores ya va a alertar, pero sumamos uno mas explicito por UX 
+           // si tira un 404 (no encontrado) o algo similar la api
+           if(error?.statusCode === 404 || error?.status === 404) {
+               toast.error('Aún no existen resultados guardados calculados para este proyecto.', { duration: 6000 });
+           }
+        }
+      });
+    }
   };
 
   const handleLogout = () => {
@@ -18,12 +55,15 @@ const Navbar = () => {
     if (confirmLogout) {
       localStorage.removeItem("token");
       sessionStorage.clear();
-      navigate("/login/index.js");
+      navigate("/");
     }
   };
 
+  const showDropdowns = location.pathname !== '/newProject';
+
   return (
     <>
+      {isProcessing && <CeipaLoader />}
       <div className="navbar">
         <img
           src={Titulo}
@@ -32,45 +72,49 @@ const Navbar = () => {
         />
 
         <div className="nav-buttons">
-          <div className="dropdown"
-            onMouseEnter={() => setOpenDropdown("instrucciones")}
-            onMouseLeave={() => setOpenDropdown(null)}
-          >
-            <button className="nav-btn" type="button">
-              Instrucciones ▾
-            </button>
+          {showDropdowns && (
+            <>
+              <div className="dropdown"
+                onMouseEnter={() => setOpenDropdown("instrucciones")}
+                onMouseLeave={() => setOpenDropdown(null)}
+              >
+                <button className="nav-btn" type="button">
+                  Instrucciones ▾
+                </button>
 
-            {openDropdown === "instrucciones" && (
-              <ul className="dropdown-menu">
-                <li onClick={() => handleSelect("/projectInfo")}>Información inicial</li>
-                <li onClick={() => handleSelect("/proyeccionMacro")}>Análisis del entorno</li>
-                <li onClick={() => handleSelect("/costosGastos")}>Costos y gastos</li>
-                <li onClick={() => handleSelect("/activosFijos")}>Activos fijos</li>
-                <li onClick={() => handleSelect("/planFinanciero")}>Plan financiero</li>
-              </ul>
-            )}
-          </div>
+                {openDropdown === "instrucciones" && (
+                  <ul className="dropdown-menu">
+                    <li onClick={() => handleSelect("/projectInfo", "instrucciones")}>Información inicial</li>
+                    <li onClick={() => handleSelect("/proyeccionMacro", "instrucciones")}>Análisis del entorno</li>
+                    <li onClick={() => handleSelect("/costosGastos", "instrucciones")}>Costos y gastos</li>
+                    <li onClick={() => handleSelect("/activosFijos", "instrucciones")}>Activos fijos</li>
+                    <li onClick={() => handleSelect("/planFinanciero", "instrucciones")}>Plan financiero</li>
+                  </ul>
+                )}
+              </div>
 
-          <div className="dropdown"
-            onMouseEnter={() => setOpenDropdown("resultados")}
-            onMouseLeave={() => setOpenDropdown(null)}
-          >
-            <button className="nav-btn" type="button">
-              Resultados ▾
-            </button>
+              <div className="dropdown"
+                onMouseEnter={() => setOpenDropdown("resultados")}
+                onMouseLeave={() => setOpenDropdown(null)}
+              >
+                <button className="nav-btn" type="button">
+                  Resultados ▾
+                </button>
 
-            {openDropdown === "resultados" && (
-              <ul className="dropdown-menu">
-                <li onClick={() => handleSelect("/estadoResultados")}>Estado de resultados</li>
-                <li onClick={() => handleSelect("/flujoEfectivo")}>Flujo de efectivo</li>
-                <li onClick={() => handleSelect("/estadoSituaFin")}>Estado situación financiera</li>
-                <li onClick={() => handleSelect("/flujoCaja")}>Flujo de caja</li>
-                <li onClick={() => handleSelect("/wacc")}>WACC</li>
-                <li onClick={() => handleSelect("/indiFinancieros")}>Indicadores financieros</li>
-                <li onClick={() => handleSelect("/indicadores")}>Indicadores</li>
-              </ul>
-            )}
-          </div>
+                {openDropdown === "resultados" && (
+                  <ul className="dropdown-menu">
+                    <li onClick={() => handleSelect("/estadoResultados", "resultados")}>Estado de resultados</li>
+                    <li onClick={() => handleSelect("/flujoEfectivo", "resultados")}>Flujo de efectivo</li>
+                    <li onClick={() => handleSelect("/estadoSituaFin", "resultados")}>Estado situación financiera</li>
+                    <li onClick={() => handleSelect("/flujoCaja", "resultados")}>Flujo de caja</li>
+                    <li onClick={() => handleSelect("/wacc", "resultados")}>WACC</li>
+                    <li onClick={() => handleSelect("/indiFinancieros", "resultados")}>Indicadores financieros</li>
+                    <li onClick={() => handleSelect("/indicadores", "resultados")}>Indicadores</li>
+                  </ul>
+                )}
+              </div>
+            </>
+          )}
 
           <button className="nav-btn" onClick={() => navigate("/newProject")}>
             Ver proyectos

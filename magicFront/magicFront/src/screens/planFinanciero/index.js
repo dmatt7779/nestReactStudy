@@ -53,7 +53,6 @@ const PlanFinanciero = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const { isProcessing, runWithLoader } = useProcessing();
-  const [error, setError] = useState(null);
   const [dataExists, setDataExists] = useState(false);
   const previousProjectId = useRef(null);
 
@@ -109,7 +108,6 @@ const PlanFinanciero = () => {
       }
 
       setIsLoading(true);
-      setError(null);
       previousProjectId.current = projectId;
 
       try {
@@ -155,7 +153,7 @@ const PlanFinanciero = () => {
           setInversionActivos(["", "", "", "", ""]);
           setRepartoDividendos(["", "", "", "", ""]);
         } else {
-          setError(planFinancieroError.message || "Error al cargar los datos.");
+          console.error("Error al cargar los datos.", planFinancieroError);
         }
       } finally {
         setIsLoading(false);
@@ -202,7 +200,6 @@ const PlanFinanciero = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setError(null);
     let navTarget = null;
 
     await runWithLoader(async () => {
@@ -221,12 +218,8 @@ const PlanFinanciero = () => {
       };
 
       try {
-        if (dataExists) {
-          console.log("Actualizando Plan Financiero...");
-        } else {
-          await axiosClient.postPlanFinanciero(`/api/v1/plan-financiero/${projectId}`, dataToSend);
-          console.log("Guardando Plan Financiero...");
-        }
+        console.log("Guardando Plan Financiero (Upsert)...");
+        await axiosClient.postPlanFinanciero(`/api/v1/plan-financiero/${projectId}`, dataToSend);
 
         console.log("Obteniendo resumen del proyecto...");
         const timestamp = new Date().getTime();
@@ -244,7 +237,6 @@ const PlanFinanciero = () => {
         };
       } catch (err) {
         console.error("Error en el proceso:", err);
-        setError(err.message || "Ocurrió un error al procesar los datos.");
       }
     });
     if (navTarget) navigate(navTarget.path, { state: navTarget.state });
@@ -262,7 +254,6 @@ const PlanFinanciero = () => {
         </div>
         <div className="contenido-container-p">
           <p>Una vez cuantificados los ingresos...</p>
-          {error && <p style={{ color: "red", fontWeight: "bold", margin: "10px 0" }}>Error: {error}</p>}
           
           <form onSubmit={handleSubmit} style={{ width: "100%" }}>
             
