@@ -34,3 +34,14 @@ services:
     restart: always
     depends_on:
       - backend-prod
+
+  python-backend-prod:
+    build:
+      context: ./planfin_microservice
+      target: production
+    container_name: magic_python_back_prod
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=production
+    restart: always
