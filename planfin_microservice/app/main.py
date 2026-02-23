@@ -7,14 +7,15 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.routers import calculator
 
 app = FastAPI(title="Plan Financiero Microservice")
+origins_regex = "https?://.*\.ceipa\.edu\.co"
 
-# ---------- CORS: aceptar cualquier origen (*) ----------
+# ---------- CORS: Políticas estrictas para Producción ----------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],        # acepta peticiones desde cualquier dominio
+    allow_origin_regex=origins_regex,
     allow_credentials=True,
-    allow_methods=["*"],        # permite todos los métodos: GET, POST, PUT, DELETE, etc.
-    allow_headers=["*"],        # permite todos los headers
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "Accept", "Authorization"],
 )
 
 # ---------- Rutas principales ----------

@@ -71,6 +71,19 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 - **API del Backend (NestJS) disponible en:** puerto `3006`
 - **API del Backend (Python) disponible en:** puerto `3007`
 
+### 🌍 Archivos a modificar para Producción (Cambiar `localhost` por IP/Dominio)
+
+Antes de hacer el build de producción en tu servidor (o si no logran comunicarse los contenedores desde internet), **debes** reemplazar la palabra `localhost` por la IP pública de tu servidor o tu dominio oficial en los siguientes archivos:
+
+1. **`magicFront/magicFront/.env` (Variables de entorno de React)**
+   - `REACT_APP_API_URL=http://<TU_IP_O_DOMINIO>:3006` (Apunta NestJS)
+   - `REACT_APP_PY_APP_API_URL=http://<TU_IP_O_DOMINIO>:3007` (Apunta Python)
+     > _React se ejecuta en el navegador del cliente (celulares o laptops externos), por lo que intentar buscar `localhost` literalmente buscaría el servidor de NestJS dentro del celular del usuario, provocando un error de red._
+
+2. **`nestjs/magic_ceipa/.env` (Variables de entorno de NestJS)**
+   - `CORS_ORIGIN=http://<TU_IP_O_DOMINIO>:3005` (Autoriza a tu Front-End a hacer peticiones)
+     > _Si no se actualiza, el Backend NestJS bloqueará todas tus peticiones HTTP desde produccíon por políticas restrictivas CORS._
+
 ---
 
 ## 💻 Comandos Útiles de Docker

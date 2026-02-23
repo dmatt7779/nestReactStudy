@@ -36,5 +36,5 @@ WORKDIR /app
 COPY . /app
 
 EXPOSE 3007
-# Run uvicorn without hot reload for better performance
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3007"]
+# Run uvicorn without hot reload for better performance and 4 parallel CPU workers
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3007", "--workers", "4"]
