@@ -1029,10 +1029,26 @@ class ExcelEngineService:
         1) Escribir input.
         2) Recalcular con LibreOffice (nuevo archivo en calc_out).
         3) Leer resultados desde el archivo recalculado.
+        4) Limpiar el directorio temporal completo para no llenar el container.
         """
         original_path = Path(self.input_writer.write_input(self.payload))
         recalculated_path = self._run_libreoffice_calc(original_path)
         output_reader = ExcelOutputReader()
+        
+        # Extraemos la data
         data = output_reader.read_outputs(recalculated_path)
         data["excelPath"] = str(recalculated_path)
+        
+        # Recolección de basura: Borrar el directorio padre UUID completo
+        work_dir = original_path.parent
+        if work_dir.exists() and work_dir.is_dir():
+            try:
+                import shutil
+                shutil.rmtree(work_dir, ignore_errors=True)
+                print(f"[ExcelEngineService] Garbage collection complete: Removed {work_dir}")
+            except Exception as e:
+                print(f"[ExcelEngineService] Warning: Failed to clean up {work_dir} - {e}")
+                
         return data
+
+

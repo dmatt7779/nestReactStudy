@@ -7,8 +7,8 @@ Este documento detalla paso a paso cómo levantar el entorno de desarrollo y pro
 ## 🛠 Stack de Tecnología
 
 - **Frontend:** React.js (Create React App), Nginx (para servir estáticos en producción)
-- **Backend (Core):** NestJS, TypeScript, Node.js (v20)
-- **Backend (Python):** FastAPI, Uvicorn, Python 3.11 (Microservicio Plan Financiero)
+- **Backend Core (NestJS):** NestJS, TypeScript, Node.js, TypeORM
+- **Motor Financiero (Python):** FastAPI, Uvicorn, Python 3.11, OpenPyXL y libreoffice-headless (Embebidos en Docker)
 - **Infraestructura:** Docker, Docker Compose
 
 ---
@@ -28,14 +28,14 @@ Este documento detalla paso a paso cómo levantar el entorno de desarrollo y pro
 
 Es importante asegurarse de que estos puertos estén libres en tu máquina o servidor antes de levantar los contenedores. Estos se configuran en los archivos `docker-compose`.
 
-| Servicio             | Entorno    | Puerto Externo (Host) | Puerto Interno (Contenedor) | Notas                                                             |
-| :------------------- | :--------- | :-------------------- | :-------------------------- | :---------------------------------------------------------------- |
-| **Frontend (React)** | Desarrollo | `3000`                | `3000`                      | Interfaz de Usuario                                               |
-| **Backend (NestJS)** | Desarrollo | `3001`                | `3001`                      | Acceso a la API Core localmente                                   |
-| **Backend (Python)** | Desarrollo | `3002`                | `3002`                      | Acceso al Microservicio de Python localmente                      |
-| **Frontend (Nginx)** | Producción | `80`                  | `80`                        | Puerto HTTP por defecto, modificable en `docker-compose.prod.yml` |
-| **Backend (NestJS)** | Producción | `3001`                | `3001`                      | Modificable en `docker-compose.prod.yml`                          |
-| **Backend (Python)** | Producción | `3002`                | `3002`                      | Modificable en `docker-compose.prod.yml`                          |
+| Servicio             | Entorno    | Puerto Externo (Host) | Puerto Interno (Contenedor) | Notas                                                            |
+| :------------------- | :--------- | :-------------------- | :-------------------------- | :--------------------------------------------------------------- |
+| **Frontend (React)** | Desarrollo | `3005`                | `3005`                      | Interfaz de Usuario                                              |
+| **Backend (NestJS)** | Desarrollo | `3006`                | `3006`                      | Acceso a la API Core localmente                                  |
+| **Backend (Python)** | Desarrollo | `3007`                | `3007`                      | Acceso al Microservicio de Python localmente                     |
+| **Frontend (Nginx)** | Producción | `3005`                | `80`                        | Web Server de producción, sirviendo el bundle compilado de React |
+| **Backend (NestJS)** | Producción | `3006`                | `3006`                      | Modificable en `docker-compose.prod.yml`                         |
+| **Backend (Python)** | Producción | `3007`                | `3007`                      | Modificable en `docker-compose.prod.yml`                         |
 
 ---
 
@@ -53,9 +53,9 @@ docker-compose up --build
 
 > _Nota: Para detenerlo, simplemente presiona `Ctrl+C` en la terminal. Si deseas correrlo en segundo plano, añade la bandera `-d` al final del comando._
 
-- **Frontend disponible en:** [http://localhost:3000](http://localhost:3000)
-- **Backend (NestJS) disponible en:** [http://localhost:3001](http://localhost:3001)
-- **Backend (Python) disponible en:** [http://localhost:3002](http://localhost:3002)
+- **Frontend disponible en:** [http://localhost:3005](http://localhost:3005)
+- **Backend (NestJS) disponible en:** [http://localhost:3006](http://localhost:3006)
+- **Backend (Python) disponible en:** [http://localhost:3007](http://localhost:3007)
 
 ### 2. Entorno de Producción (Servidor Linux)
 
@@ -67,9 +67,9 @@ Este entorno compila el código (Javascript minimizado) y no escucha cambios loc
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```
 
-- **Aplicación web disponible en:** puerto `80` (ej: `http://tudominio.com` o la IP de tu servidor)
-- **API del Backend (NestJS) disponible en:** puerto `3001`
-- **API del Backend (Python) disponible en:** puerto `3002`
+- **Aplicación web disponible en:** puerto `3005` (ej: `http://tudominio.com:3005` o la IP de tu servidor)
+- **API del Backend (NestJS) disponible en:** puerto `3006`
+- **API del Backend (Python) disponible en:** puerto `3007`
 
 ---
 
@@ -93,8 +93,8 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ## ⚠️ Posibles Fallas y Soluciones (Troubleshooting)
 
 1.  **Error: "Port is already allocated" o EADDRINUSE**
-    - **Causa:** Otra aplicación (quizás otro proyecto de Node) ya está usando los puertos configurados (3000, 3001 o 80).
-    - **Solución:** Ve al `docker-compose.yml` o `docker-compose.prod.yml` y cambia el puerto del Host (el número a la izquierda de los dos puntos `:`) a otro número libre (ej. `3005:3001`).
+    - **Causa:** Otra aplicación (quizás otro proyecto de Node) ya está usando los puertos configurados (3005, 3006 o 3007).
+    - **Solución:** Ve al `docker-compose.yml` o `docker-compose.prod.yml` y cambia el puerto del Host (el número a la izquierda de los dos puntos `:`) a otro número libre.
 2.  **Los paquetes NPM instalados en local dan conflicto y el contenedor se rompe**
     - **Causa:** Tu subida accidental de tu `node_modules` de macOS mezclado con el entorno Alpine Linux del contenedor.
     - **Solución:** Los archivos `.dockerignore` previenen esto, pero si un volumen lo sobreescribió, corre:
@@ -109,4 +109,4 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
     - **Arquitectura:** El código internamente (`ExcelTemplateManager`) accede a sus plantillas mediante una ruta relativa.
     - **En Desarrollo:** Gracias al volumen que mapea `./planfin_microservice:/app`, el contenedor de Python lee tu misma carpeta local en tiempo real. Si editas u ocupas un Excel nuevo, el contenedor lo procesará al instante.
     - **En Producción:** El Dockerfile utiliza `COPY . /app`, por lo que todos los `excel_templates` son "empaquetados y congelados" directamente dentro del contenedor inyectado con Linux y Libreoffice.
-    - _Solución:_ ¡No tienes que hacer ninguna modificación en tu código o ruta local! Está diseñado para ser 100% cloud-native y compatible de forma transparente.
+    - **Procesamiento de Macros (LibreOffice):** Cuando NestJS envía datos, Python inyecta los json al Excel base, llama a **LibreOffice Headless** directamente dentro de la máquina virtual Alpine Linux del contenedor interactuando con el kernel del sistema para re-calcular las celdas formuladas (WACC, VPN, etc.), las extrae y retorna por JSON al intermediario NestJS.

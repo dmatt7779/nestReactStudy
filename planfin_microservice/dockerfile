@@ -24,9 +24,9 @@ FROM builder as development
 WORKDIR /app
 # We will mount the code via volumes in docker-compose.yml 
 # so we don't need to COPY the code here.
-EXPOSE 3002
+EXPOSE 3007
 # Run uvicorn with hot reload looking at /app
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3002", "--reload"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3007", "--reload"]
 
 
 # --- PRODUCTION STAGE ---
@@ -35,6 +35,6 @@ WORKDIR /app
 # Copy the actual code for production
 COPY . /app
 
-EXPOSE 3002
+EXPOSE 3007
 # Run uvicorn without hot reload for better performance
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3002"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3007"]

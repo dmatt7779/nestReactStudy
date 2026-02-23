@@ -9,8 +9,8 @@ services:
       target: development
     container_name: magic_nestjs_back_dev
     ports:
-      # Map host port 3000 to container port 3000
-      - "3001:3001"
+      # Map host port 3006 to container port 3006
+      - "3006:3006"
     volumes:
       # Sync source code for live reloading
       - ./nestjs/magic_ceipa:/usr/src/app
@@ -27,8 +27,8 @@ services:
       target: development
     container_name: magic_react_front_dev
     ports:
-      # Map host port 3001 to container port 3000 (React's default)
-      - "3000:3000"
+      # Map host port 3005 to container port 3005
+      - "3005:3005"
     volumes:
       # Sync source code for live reloading
       - ./magicFront/magicFront:/usr/src/app
@@ -36,6 +36,8 @@ services:
       - /usr/src/app/node_modules
     environment:
       - NODE_ENV=development
+      # Tell React to strictly bind to 3005
+      - PORT=3005
       # Adding this prevents React scripts from opening the browser in the container silently failing
       - BROWSER=none
       # Allows connecting to the development server from the host
@@ -50,7 +52,7 @@ services:
       target: development
     container_name: magic_python_back_dev
     ports:
-      - "3002:3002"
+      - "3007:3007"
     volumes:
       # Sync source code for live-reloading python files
       - ./planfin_microservice:/app
