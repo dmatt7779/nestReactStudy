@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+
+  backend-prod:
+    # Targets the 'production' stage which creates a much smaller, optimized image
+    build:
+      context: ./nestjs/magic_ceipa
+      target: production
+    container_name: nestjs_backend_prod
+    ports:
+      # In production on your Linux server, you can change the host port here
+      # Format is "HOST_PORT:CONTAINER_PORT"
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+    # In production, we do NOT map local code volumes to the container,
+    # because the code is baked directly into the Docker image.
+    restart: always
+
+  frontend-prod:
+    # Targets the 'production' stage which uses Nginx to serve static files
+    build:
+      context: ./magicFront/magicFront
+      target: production
+    container_name: react_frontend_prod
+    ports:
+      # Expose Nginx on port 80 (standard HTTP port)
+      # In production, you can change "80:80" to something else if using a reverse proxy
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    # We do NOT map local code volumes here either.
+    restart: always
+    depends_on:
+      - backend-prod

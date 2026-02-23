@@ -25,11 +25,11 @@ import { FinancialResultsModule } from './financial-results/financial-results.mo
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: '127.0.0.1',
-      port: 3307,
-      username: 'user_crud',
-      password: 'root',
-      database: 'db_magic',
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
       // entities: [ProjectInfo, ProyeccionMacro, CostosGasto, PlanFinanciero, ActivoFijo, User, EstrategiaMarketing, Producto],
       autoLoadEntities: true,
       synchronize: true

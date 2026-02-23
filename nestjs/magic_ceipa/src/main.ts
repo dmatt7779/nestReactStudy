@@ -16,12 +16,12 @@ async function bootstrap() {
   )
 
   app.enableCors({
-    origin: [process.env.CORS_ORIGIN], // Especifica el origen aquí
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], // Métodos permitidos
-    credentials: true, // Si necesitas cookies
+    origin: [process.env.CORS_ORIGIN],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    credentials: true,
     allowedHeaders: 'Content-Type, Accept, Authorization',
   });
 
-  await app.listen(process.env.PORT ?? 3001);
+  await app.listen(process.env.MAGIC_PORT);
 }
 bootstrap();

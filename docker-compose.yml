@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+
+  backend-dev:
+    # Use the development stage from our NestJS multi-stage Dockerfile
+    build:
+      context: ./nestjs/magic_ceipa
+      target: development
+    container_name: magic_nestjs_back_dev
+    ports:
+      # Map host port 3000 to container port 3000
+      - "3001:3001"
+    volumes:
+      # Sync source code for live reloading
+      - ./nestjs/magic_ceipa:/usr/src/app
+      # Anonymous volume keeps node_modules persistent and avoids overwriting them with the host's folder
+      - /usr/src/app/node_modules
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped
+
+  frontend-dev:
+    # Use the development stage from our ReactJS multi-stage Dockerfile
+    build:
+      context: ./magicFront/magicFront
+      target: development
+    container_name: magic_react_front_dev
+    ports:
+      # Map host port 3001 to container port 3000 (React's default)
+      - "3000:3000"
+    volumes:
+      # Sync source code for live reloading
+      - ./magicFront/magicFront:/usr/src/app
+      # Anonymous volume keeps node_modules persistent and avoids overwriting them with the host's folder
+      - /usr/src/app/node_modules
+    environment:
+      - NODE_ENV=development
+      # Adding this prevents React scripts from opening the browser in the container silently failing
+      - BROWSER=none
+      # Allows connecting to the development server from the host
+      - WDS_SOCKET_PORT=0
+    restart: unless-stopped
+    depends_on:
+      - backend-dev
