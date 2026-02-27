@@ -12,17 +12,17 @@ export class RolesGuard implements CanActivate {
     context: ExecutionContext,
   ): Promise<boolean>{
 
-    const role = this.reflector.getAllAndOverride<Role>(ROLES_KEY, [
+    const roles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
-    if (!role) {
+    if (!roles || roles.length === 0) {
       return true;
     }
     const {user} = context.switchToHttp().getRequest();
     if(user.role === Role.ADMIN){
       return true;
     }
-    return role === user.role;
+    return roles.includes(user.role);
   }
 }

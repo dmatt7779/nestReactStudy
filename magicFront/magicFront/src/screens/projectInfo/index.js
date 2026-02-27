@@ -29,18 +29,9 @@ const ProjectInfo = () => {
   const [projectName, setProjectName] = useState("")
   const [integrantes, setIntegrantes] = useState([{ cedula: "", nombre: "" }])
   const [professors, setProfessors] = useState([])
-  
-  // CAMBIO 2: Usar el año actual como estado inicial por defecto
-  const [ano, setAno] = useState(currentYear)
-
-  const profesoresLista = [
-    { id: 1, nombre: "Profesor Mauricio" },
-    { id: 2, nombre: "Profesor Antonio" },
-    { id: 3, nombre: "Profesor Diana" },
-    { id: 4, nombre: "Profesor Cristina" }
-  ]
-
+  const [profesoresLista, setProfesoresLista] = useState([])
   const [formularioCompleto, setFormularioCompleto] = useState(false)
+  const [ano, setAno] = useState(currentYear)
 
   // Lógica de validación (Aprendida)
   useEffect(() => {
@@ -61,6 +52,15 @@ const ProjectInfo = () => {
       setLoading(true)
       setError(null)
       try {
+        // Cargar lista de profesores dinámicamente siempre
+        const profesResponse = await axiosClient.getProfessors()
+        if (profesResponse) {
+           setProfesoresLista(profesResponse.map(p => ({
+               id: p.id,
+               nombre: p.name
+           })))
+        }
+
         if (projectId) {
           const response = await axiosClient.get(`/api/v1/project-info/${projectId}`)
           console.log(`ProjectInfo ${JSON.stringify(response, null, 2)}`)

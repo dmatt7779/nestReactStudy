@@ -31,15 +31,15 @@ body {
   display: flex;
   justify-content: left;
   align-items: left;
-  padding-right: 400px; /* Agrega más espacio a la derecha */
+  padding-right: 400px;
   position: relative;
   z-index: 1;
 }
 
 .right-panel {
-  background: none; /* Elimina cualquier fondo */
-  background-color: transparent; /* Asegura que sean completamente transparentes */
-  padding-left: 100px; /* Agrega más espacio a la derecha */
+  background: none;
+  background-color: transparent;
+  padding-left: 100px;
   position: relative;
   z-index: 1;
 }
@@ -48,51 +48,51 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 5px; /* Agrega más espacio a la derecha */
-  gap: 20px; /* Reduce el espacio entre los elementos */
+  padding: 5px;
+  gap: 20px;
   width: 100%;
 }
 
 .login-form .icon {
-  margin-right: 10px; /* espacio entre el icono y el texto hacia la izquierda*/
+  margin-right: 10px;
 }
 
 a {
   text-decoration: none;
   font-size: 15px;
   font-weight: bold;
-  margin-top: 11px; /* Espacio arriba del label */
+  margin-top: 11px;
   display: inline-block;
 }
 
 button {
-  padding: 12px; /* Espaciado interno para mejor apariencia */
-  background-color: #efa020; /* Color de fondo */
-  color: white; /* Texto en blanco */
-  border: none; /* Sin bordes */
-  border-radius: 5px; /* Bordes redondeados */
-  font-size: 16px; /* Tamaño de fuente */
-  font-weight: bold; /* Negrita */
-  cursor: pointer; /* Cursor de mano */
-  transition: background-color 0.3s ease; /* Transición suave */
+  padding: 12px;
+  background-color: #efa020;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #efa020c5; /* Azul más oscuro */
-  transform: scale(1.02); /* Hace que el botón se agrande un poco */
+  background-color: #efa020c5;
+  transform: scale(1.02);
 }
 
 button:active {
-  transform: scale(0.95); /* Hace que el botón se amplie al hacer clic */
+  transform: scale(0.95);
 }
 
 .title-imagen {
-  width: 500px; /* Ajusta según el tamaño de la imagen */
-  height: 100px; /* Ajusta la altura de la imagen */
-  background-image: url("../images/titulo_simulador.png"); /* Ruta correcta */
-  background-size: contain; /* Ajusta la imagen sin distorsionarla */
-  background-repeat: no-repeat; /* Evita que la imagen se repita */
-  background-position: center; /* Centra la imagen */
+  width: 500px;
+  height: 100px;
+  background-image: url("../images/titulo_simulador.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .input-container {
@@ -102,11 +102,11 @@ button:active {
   border: 1px solid #ccc;
   border-radius: 7px;
   padding: 8px;
-  width: 80%; /* Tamaño del formulario login */
+  width: 80%;
 }
 
 .input-container input {
-  font-size: 14px; /* Tamaño del texto ingresado */
+  font-size: 14px;
   border: none;
   outline: none;
   flex: 1;
@@ -115,9 +115,9 @@ button:active {
 
 .input-container .divider {
   height: 20px;
-  width: 1px; /* Grosor de la línea */
+  width: 1px;
   background-color: #ccc;
-  margin-right: 10px; /* Espacio entre el icono de usuario y el texto hacia la derecha */
+  margin-right: 10px;
 }
 
 .divider-line {
@@ -125,37 +125,36 @@ button:active {
   left: 45%;
   top: 20%;
   bottom: 15%;
-  width: 20px; /* Grosor de la línea */
+  width: 20px;
   background-image: url("../images/linea_login.png");
-  background-repeat: repeat-y; /* Para que se repita en vertical */
-  background-size: contain; /* Ajusta la imagen al tamaño del div */
+  background-repeat: repeat-y;
+  background-size: contain;
 }
 
 .options {
   display: flex;
-  justify-content: space-between; /* Mueve un elemento a la izquierda y otro a la derecha */
-  align-items: center; /* Asegura que estén alineados verticalmente */
-  width: 80%; /* Ocupa todo el ancho disponible */
+  justify-content: space-between;
+  align-items: center;
+  width: 80%;
   font-size: 14px;
-  margin-top: 1px; /* Espacio arriba */
+  margin-top: 1px;
 }
 
 .options label {
   display: flex;
   align-items: center;
-  gap: 5px; /* Espacio entre el checkbox y el texto */
+  gap: 5px;
 }
 
-/* Estilo del enlace "Olvidé contraseña" */
 .options a {
   color: #542f92;
   text-decoration: none;
   transition: color 0.3s ease;
-  font-size: 14px; /* Tamaño de fuente */
+  font-size: 14px;
 }
 
 .options a:hover {
-  color: #7747ca; /* Cambia el color al pasar el mouse olvidé contraseña */
+  color: #7747ca;
   text-decoration: underline;
 }
 
@@ -170,64 +169,61 @@ button:active {
 
 .footer {
   background-color: #1f2738;
-  height: 60px; /* Altura del footer */
-  width: 100%; /* Ancho completo */
-  position: fixed; /* Fijado en la parte inferior */
+  height: 60px;
+  width: 100%;
+  position: fixed;
   bottom: 0;
   left: 0;
   display: flex;
-  justify-content: center; /* Centra el contenido */
-  align-items: center; /* Centra el contenido */
+  justify-content: center;
+  align-items: center;
 }
 
-/* Logo dentro del footer */
 .footer::before {
   content: "";
   background-image: url("../images/logo_ceipa.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  width: 160px; /* Tamaño del logo Ceipa footer */
+  width: 160px;
   height: 40px;
   display: block;
 }
 
 /*---------------------------------- Styles Register ----------------------------------------*/
 
-/* Contenedor de la imagen y formulario */
 .register-container {
   position: relative;
-  width: 50vw; /* 50% del ancho de la pantalla */
-  height: 100vh; /* 50% del alto de la pantalla */
+  width: 50vw;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* Imagen de fondo robot registro */
 .register-background {
   position: absolute;
   top: 40%;
   left: 50%;
   width: 150%;
-  max-width: none; /* Permite que la imagen crezca más allá del tamaño normal */
+  max-width: none;
   height: auto;
   transform: translate(-50%, -50%);
   z-index: -1;
-  overflow: hidden; /* Evita que la imagen genere barras de desplazamiento */
+  overflow: hidden;
 }
 
 .register-form-r {
   position: absolute;
   top: 54%;
-  left: 83%; /* Mueve el formulario más a la izquierda */
-  transform: translate(-55%, -50%); /* Ajusta más la posición */
+  left: 83%;
+  transform: translate(-55%, -50%);
   width: 100%;
   max-width: 450px;
   padding: 0px;
   border-radius: 10px;
   box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.2);
-  outline: none; /* Evita el borde azul al hacer clic */
+  outline: none;
 }
 
 .register-form-r label {
@@ -246,14 +242,12 @@ button:active {
   margin-bottom: 3px;
 }
 
-/* Iconos de registro*/
 .input-icon {
   width: 30px;
   height: 24px;
   margin-right: 10px;
 }
 
-/* Divider entre el ícono y el input */
 .input-divider-r {
   width: 1px;
   height: 20px;
@@ -261,7 +255,6 @@ button:active {
   margin-right: 10px;
 }
 
-/* Ajustes para los inputs */
 .input-container-r input {
   flex: 1;
   border: none;
@@ -272,15 +265,15 @@ button:active {
 }
 
 .register-form-r button {
-  width: 100%; /* Ocupa todo el ancho del contenedor */
+  width: 100%;
 }
 
 .register-form-r p {
-  text-align: right; /* Alinea el texto a la derecha */
-  width: 100%; /* Asegura que ocupe todo el ancho disponible */
-  margin: 5px 0; /* Ajusta el margen: arriba y abajo 5px, sin margen lateral */
-  padding: 8px; /* Espaciado interno uniforme */
-  display: block; /* Asegura que el párrafo se comporte como un bloque */
+  text-align: right;
+  width: 100%;
+  margin: 5px 0;
+  padding: 8px;
+  display: block;
   font-size: 14px;
 }
 
@@ -290,27 +283,24 @@ button:active {
 
 /*---------------------------------- navbar --------------------------------------------------*/
 
-/* Contenedor principal del navbar */
 .navbar {
-  display: flex; /* Alinea los elementos en fila */
-  align-items: center; /* Centra verticalmente */
-  justify-content: space-between; /* Imagen a la izquierda, botones a la derecha */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
   padding: 10px 20px;
-  background: transparent; /* Usa el fondo del body (o el color que quieras) */
+  background: transparent;
 }
 
-/* Imagen del título "Simulación financiera..." */
 .nav-title {
-  height: 70px; /* Ajusta según tu diseño */
-  width: auto; /* Mantiene la proporción */
-  cursor: pointer; /* Opcional, si quieres que parezca clickable */
+  height: 70px;
+  width: auto;
+  cursor: pointer;
 }
 
-/* Contenedor de los botones a la derecha */
 .nav-buttons {
   display: flex;
-  gap: 10px; /* Espacio horizontal entre botones */
+  gap: 10px;
 }
 
 .nav-btn {
@@ -322,24 +312,22 @@ button:active {
   transition:
     color 0.3s ease,
     background-color 0.3s ease;
-  white-space: nowrap; /* Evita que el texto se parta en varias líneas */
+  white-space: nowrap;
 }
 
 .nav-btn:hover {
-  color: #444; /* Cambio sutil al pasar el mouse */
-  background-color: #f0f0f0; /* Fondo gris claro */
-  border-radius: 4px; /* Bordes redondeados para un toque extra */
+  color: #444;
+  background-color: #f0f0f0;
+  border-radius: 4px;
 }
 
-/* Contenedor de la línea debajo del navbar */
 .navbar-line {
   width: 100%;
-  text-align: center; /* Centra la imagen de la línea si es más pequeña que el ancho */
+  text-align: center;
 }
 
-/* Imagen de la línea */
 .line-img {
-  width: 100%; /* Ocupará todo el ancho disponible */
+  width: 100%;
   height: auto;
   display: block;
   margin-bottom: 53px;
@@ -351,12 +339,12 @@ button:active {
 
 .dropdown-menu {
   position: absolute;
-  top: 100%; /* aparece justo debajo del botón */
+  top: 100%;
   left: 0;
   background-color: white;
   border: 1px solid #ddd;
   border-radius: 8px;
-  list-style: none; /* quita las viñetas */
+  list-style: none;
   margin: 0;
   padding: 4px 0;
   width: 180px;
@@ -366,8 +354,8 @@ button:active {
 
 .dropdown-menu li {
   padding: 7px 10px;
-  font-size: 13px; /* texto más pequeño */
-  cursor: pointer; /* muestra la mano al pasar */
+  font-size: 13px;
+  cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
@@ -378,45 +366,45 @@ button:active {
 /*---------------------------------- Styles Project Info ----------------------------------------*/
 
 .white-container {
-  background-color: #fff; /* Fondo blanco */
-  padding: 20px; /* Espaciado interno */
-  margin: 20px auto; /* Centrado horizontal y margen vertical */
-  max-width: 800px; /* Ancho máximo */
-  border-radius: 10px; /* Bordes redondeados */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Sombra sutil para darle profundidad */
+  background-color: #fff;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 800px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .project-info-container {
-  min-height: 100vh; /* Ocupa toda la altura de la pantalla */
+  min-height: 100vh;
   position: relative;
 }
 
 .section {
-  margin: 10px 0; /* Espacio vertical entre secciones */
+  margin: 10px 0;
 }
 
 .section-img1 {
-  width: 270px; /* Ajusta según tu diseño */
+  width: 270px;
   max-width: 100%;
   height: auto;
 }
 
 .section-img2 {
-  width: 190px; /* Ajusta según tu diseño */
+  width: 190px;
   max-width: 100%;
   height: auto;
   margin-bottom: 5px;
 }
 
 .section-img3 {
-  width: 270px; /* Ajusta según tu diseño */
+  width: 270px;
   max-width: 100%;
   height: auto;
   margin-bottom: 5px;
 }
 
 .section-img4 {
-  width: 270px; /* Ajusta según tu diseño */
+  width: 270px;
   max-width: 100%;
   height: auto;
   margin-bottom: 5px;
@@ -425,29 +413,29 @@ button:active {
 .integrantes-container {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Espacio entre cada par de inputs */
+  gap: 10px;
   margin-bottom: 15px;
 }
 
 .integrante-fields {
   display: flex;
   align-items: center;
-  gap: 15px; /* Espacio entre cada par de label e input */
+  gap: 15px;
   margin-bottom: 10px;
 }
 
 .integrante-field {
   display: flex;
   align-items: center;
-  gap: 5px; /* Espacio entre el label y el input */
+  gap: 5px;
 }
 
 .cedula-input {
-  width: 120px; /* Más pequeño para Cédula */
+  width: 120px;
 }
 
 .nombre-input {
-  width: 300px; /* Más grande para Nombre */
+  width: 300px;
   flex-grow: 1;
 }
 
@@ -477,23 +465,22 @@ button:active {
 .profesor-lista {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Alinea todo a la izquierda */
+  align-items: flex-start;
   gap: 10px;
 }
 
 .profesor-item {
   display: flex;
   align-items: center;
-  gap: 5px; /* Espacio entre el checkbox y el nombre */
-  white-space: nowrap; /* Evita que el nombre se divida en varias líneas */
+  gap: 5px;
+  white-space: nowrap;
 }
 
-/* Botón base sin fondo ni borde */
 .nav-btn {
   background: none;
   border: none;
   cursor: pointer;
-  width: 120px; /* Ajusta el tamaño */
+  width: 120px;
   height: 40px;
   background-size: contain;
   background-repeat: no-repeat;
@@ -501,37 +488,32 @@ button:active {
   transition: transform 0.2s ease-in-out;
 }
 
-/* Imagen por defecto del botón Anterior */
 .anterior {
   background-image: url("../images/bt_anterior.png");
 }
 
-/* Imagen en hover del botón Anterior */
 .anterior:hover {
   background-image: url("../images/bt_anterior_hover.png");
-  background-color: transparent !important; /* Asegura que no haya fondo gris */
-  box-shadow: none !important; /* Quita cualquier sombra */
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
 
-/* Imagen por defecto del botón Siguiente */
 .siguiente {
   background-image: url("../images/bt_siguiente.png");
 }
 
-/* Imagen en hover del botón Siguiente */
 .siguiente:hover {
   background-image: url("../images/bt_siguiente_hover.png");
-  background-color: transparent !important; /* Asegura que no haya fondo gris */
-  box-shadow: none !important; /* Quita cualquier sombra */
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
 
-/* === Botón Procesar (CSS Puro) === */
 .procesar {
-  background-color: #ffcc00 !important; /* Amarillo CEIPA */
+  background-color: #ffcc00 !important;
   color: #333;
   font-weight: 700;
   font-size: 15px;
-  border-radius: 20px; /* Bordes redondeados imitando la imagen */
+  border-radius: 20px;
   display: flex !important;
   justify-content: center;
   align-items: center;
@@ -540,7 +522,7 @@ button:active {
 }
 
 .procesar:hover:not(:disabled) {
-  background-color: #ffe066 !important; /* Amarillo brillante al hover */
+  background-color: #ffe066 !important;
   transform: scale(1.05);
   box-shadow: 0 5px 8px rgba(0,0,0,0.25) !important;
 }
@@ -556,14 +538,13 @@ button:active {
 
 .nuevo-proyecto-container {
   display: flex;
-  align-items: center; /* Asegura que el contenido se alinee verticalmente */
+  align-items: center;
 }
 
-/* Sección izquierda (Robot) */
 .robot-container {
-  flex: 1; /* Asegura que tome el espacio a la izquierda */
+  flex: 1;
   display: flex;
-  justify-content: center; /* Centra el robot */
+  justify-content: center;
   align-items: center;
   margin-top: -20px;
 }
@@ -573,35 +554,33 @@ button:active {
   max-width: 300px;
 }
 
-/* Sección derecha (Contenido) */
 .contenido-container {
   flex: 2;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  width: 100%; /* Puedes ajustar un ancho fijo si lo prefieres */
+  width: 100%;
 }
 
 .contenido-container h4 {
   font-size: 16px;
-  margin: 40px 0 0px 0; /* 0 arriba, 0 a los lados, 10px abajo */
+  margin: 40px 0 0px 0;
 }
 
 .contenido-container p {
   font-size: 14px;
-  margin: 20px 0 20px 0; /* 0 arriba, 0 a los lados, 10px abajo */
+  margin: 20px 0 20px 0;
   text-align: left;
   padding: 0px;
 }
 
 .img-resizable {
-  width: 400px; /* Ajusta el ancho según lo necesites */
-  height: auto; /* Mantiene la proporción */
-  max-width: 100%; /* Evita que la imagen se salga del contenedor */
+  width: 400px;
+  height: auto;
+  max-width: 100%;
 }
 
-/* Grid de proyectos */
 .grid-proyectos {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -610,7 +589,6 @@ button:active {
   max-width: 100%;
 }
 
-/* Tarjeta de cada proyecto (dejamos que ocupe el 100% del ancho de su celda) */
 .proyecto-card {
   border-radius: 10px;
   padding: 2px;
@@ -625,16 +603,14 @@ button:active {
 
 .imagen-hover {
   position: relative;
-  overflow: hidden; /* Asegura que el pseudo-elemento no se desborde */
+  overflow: hidden;
 }
 
-/* Ajustar la imagen dentro de cada tarjeta */
 .proyecto-img {
-  width: 140px; /* Ajusta el tamaño según sea necesario */
+  width: 140px;
   transition: opacity 0.3s;
 }
 
-/* Pseudo-elemento que contiene la imagen de hover */
 .imagen-hover::before {
   content: "";
   position: absolute;
@@ -645,26 +621,25 @@ button:active {
   background: url("../images/bt_nuevo_proyecto_over.png") no-repeat center
     center;
   background-size: cover;
-  opacity: 0; /* Inicialmente invisible */
+  opacity: 0;
   transition: opacity 0.3s ease-in-out;
   z-index: 2;
 }
 
 .imagen-hover:hover::before {
-  opacity: 1; /* Al hacer hover, se muestra la imagen de hover */
+  opacity: 1;
 }
 
-/* === Tarjeta ACTIVA (Proyectos ya existentes) - CSS Nativo === */
 .proyecto-card-activo {
-  width: 140px; /* Ligeramente más angosta para un look esbelto */
+  width: 140px;
   height: 145px;
-  background-color: #238ea1; /* Color verdeazul de fondo */
+  background-color: #238ea1;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin: 0 auto; /* Centrar dentro del grid slot */
+  margin: 0 auto;
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
@@ -684,24 +659,24 @@ button:active {
 }
 
 .card-titulo-activo {
-  color: #ffcc00 !important; /* Amarillo CEIPA */
+  color: #ffcc00 !important;
   font-weight: 700 !important;
-  /* font-size and line-height are handled dynamically in JS for long text */
+
   text-align: center;
-  margin: 0 !important; /* Sobreescribir el margen por defecto */
-  word-break: break-word; /* Permitir que textos lagos se dividan */
+  margin: 0 !important;
+  word-break: break-word;
   transition: text-shadow 0.3s ease, color 0.3s ease;
   padding: 5px;
 }
 
 .card-titulo-activo:hover {
   text-shadow: 0 0 8px rgba(255, 204, 0, 0.8), 0 0 15px rgba(255, 204, 0, 0.5);
-  color: #fff280 !important; /* Amarillo más brillante/iluminado al hacer hover */
+  color: #fff280 !important;
 }
 
 .card-bottom-activa {
   height: 35px;
-  background-color: #d9534f; /* Fondo rojo para denotar eliminación */
+  background-color: #d9534f;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -709,24 +684,23 @@ button:active {
   color: white;
   font-size: 11px;
   font-weight: 600;
-  border-top: 1px solid rgba(255, 255, 255, 0.3); /* Línea divisoria semi transparente */
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
   cursor: pointer;
   transition: background-color 0.3s ease, text-shadow 0.3s ease, box-shadow 0.3s ease;
-  padding-bottom: 5px; /* Darle algo de aire al ícono */
+  padding-bottom: 5px;
 }
 
 .card-bottom-activa:hover {
-  background-color: #c9302c; /* Rojo más oscuro en hover */
-  text-shadow: 0 0 6px rgba(255, 255, 255, 0.9), 0 0 12px rgba(255, 255, 255, 0.6); /* Letra iluminada */
+  background-color: #c9302c;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.9), 0 0 12px rgba(255, 255, 255, 0.6);
   box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
 }
 
-/* Contenedor de los botones */
 .buttons-container {
   display: flex;
-  justify-content: center; /* Centra horizontalmente */
-  align-items: center; /* Centra verticalmente */
-  gap: 20px; /* Espacio entre los botones */
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
   width: 100%;
   margin-top: 20px;
 }
@@ -736,15 +710,15 @@ button:active {
 .white-container-n {
   background-color: #fff;
   padding: 20px;
-  margin: 100px auto; /* Aumenta el espacio superior */
+  margin: 100px auto;
   max-width: 1100px;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 .robot-container-an {
-  flex: 1; /* Asegura que tome el espacio a la izquierda */
+  flex: 1;
   display: flex;
-  justify-content: center; /* Centra el robot */
+  justify-content: center;
   align-items: center;
   margin-top: -110px;
 }
@@ -754,7 +728,7 @@ button:active {
 }
 
 .table-container {
-  max-width: 600px; /* Reduje el tamaño */
+  max-width: 600px;
   margin: 20px auto;
 }
 
@@ -764,26 +738,26 @@ button:active {
 .table-container table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px; /* Tamaño de fuente más pequeño */
+  font-size: 14px;
 }
 
 .table-container th,
 .table-container td {
-  border: 1px solid #ddd; /* Bordes más sutiles */
-  padding: 6px; /* Menos espaciado */
+  border: 1px solid #ddd;
+  padding: 6px;
   text-align: center;
 }
 
 .table-container th {
-  background-color: #f8f8f8; /* Color más suave */
+  background-color: #f8f8f8;
   font-weight: bold;
 }
 
 input.percentage-input {
-  width: 70%; /* Un poco más pequeño */
+  width: 70%;
   padding: 4px;
   text-align: center;
-  border: 1px solid #ccc; /* Borde más tenue */
+  border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 12px;
 }
@@ -805,7 +779,7 @@ input.percentage-input {
 
 label {
   font-size: 12px;
-  /* font-weight: bold; */
+
 }
 
 input {
@@ -829,7 +803,7 @@ input {
 }
 
 .custom-input {
-  padding-right: 25px; /* Espacio para el % */
+  padding-right: 25px;
 }
 
 .percentage-symbol {
@@ -888,25 +862,15 @@ input {
   color: #333;
 }
 
-/* .tabla-productos td:first-child,
-.tabla-productos th:first-child {
-  border-left: none;
-} */
-
 .tabla-productos td:last-child,
 .tabla-productos th:last-child {
   border-right: none;
 }
 
-/* .tabla-productos tr:first-child th {
-  border-top: none;
-} */
-
 .tabla-productos tr:last-child td {
   border-bottom: none;
 }
 
-/* Columna de nombre más ancha */
 .producto-celda-nombre {
   min-width: 220px;
   text-align: left;
@@ -943,10 +907,10 @@ input {
   color: white;
   border: none;
   border-radius: 5px;
-  padding: 2px 5px; /* Reduce el espacio interno */
-  font-size: 14px; /* Reduce el tamaño del icono o texto */
-  width: 30px; /* Ajusta el ancho */
-  height: 30px; /* Ajusta la altura */
+  padding: 2px 5px;
+  font-size: 14px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -959,7 +923,7 @@ input {
 }
 
 .boton-agregar {
-  background-color: #1f2738; /* Azul */
+  background-color: #1f2738;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -971,18 +935,18 @@ input {
 }
 
 .boton-agregar:hover {
-  background-color: #005f72; /* Azul más oscuro al pasar el mouse */
+  background-color: #005f72;
 }
 
 .contenedor-crecimiento {
   display: flex;
   flex-direction: column;
-  gap: 1rem; /* Espaciado entre secciones */
+  gap: 1rem;
 }
 
 .fila-crecimiento {
   display: flex;
-  gap: 1rem; /* Espaciado entre los inputs */
+  gap: 1rem;
   align-items: center;
   margin-top: 15px;
 }
@@ -1005,8 +969,8 @@ input {
 
 .radio-group {
   display: flex;
-  flex-direction: row; /* Alinea en fila (horizontal) */
-  gap: 20px; /* Espacio entre opciones */
+  flex-direction: row;
+  gap: 20px;
   align-items: center;
 }
 
@@ -1018,8 +982,8 @@ input {
 }
 
 .input-disabled {
-  background-color: #e0e0e0; /* Gris claro */
-  color: #757575; /* Texto gris oscuro */
+  background-color: #e0e0e0;
+  color: #757575;
   cursor: not-allowed;
 }
 .proyeccion-container {
@@ -1116,7 +1080,6 @@ input {
   border-bottom: none;
 }
 
-/* Esquinas redondeadas a la primera y última celda del encabezado */
 .tabla-estrategias th:first-child {
   border-top-left-radius: 8px;
 }
@@ -1124,7 +1087,6 @@ input {
   border-top-right-radius: 8px;
 }
 
-/* Bordes redondeados en la última fila si quieres que la tabla tenga efecto "card" */
 .tabla-estrategias tr:last-child td:first-child {
   border-bottom-left-radius: 8px;
 }
@@ -1133,7 +1095,7 @@ input {
 }
 
 .estrategia-celda-nombre {
-  width: 200px; /* O cualquier valor mayor que los demás */
+  width: 200px;
   min-width: 160px;
   text-align: left;
 }
@@ -1158,7 +1120,7 @@ input {
 }
 
 .estrategia-boton-agregar {
-  background-color: #1f2738; /* Azul */
+  background-color: #1f2738;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -1171,11 +1133,11 @@ input {
 }
 
 .estrategia-boton-agregar:hover {
-  background-color: #005f72; /* Azul más oscuro al pasar el mouse */
+  background-color: #005f72;
 }
 
 .section-img6 {
-  width: 320px; /* Ajusta según tu diseño */
+  width: 320px;
   max-width: 100%;
   height: auto;
 }
@@ -1212,14 +1174,14 @@ input {
 .fila-costos-producto {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* Alinea todo a la izquierda */
-  gap: 10px; /* Espaciado entre elementos */
+  justify-content: flex-start;
+  gap: 10px;
   margin-bottom: 10px;
 }
 
 .input-costos {
-  flex: 1; /* Permite que los inputs se ajusten al espacio */
-  min-width: 150px; /* Define un ancho mínimo para que no se hagan muy pequeños */
+  flex: 1;
+  min-width: 150px;
 }
 
 .boton-eliminar-costos {
@@ -1227,10 +1189,10 @@ input {
   color: white;
   border: none;
   border-radius: 5px;
-  padding: 2px 5px; /* Reduce el espacio interno */
-  font-size: 14px; /* Reduce el tamaño del icono o texto */
-  width: 30px; /* Ajusta el ancho */
-  height: 30px; /* Ajusta la altura */
+  padding: 2px 5px;
+  font-size: 14px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1342,7 +1304,7 @@ input {
 
 .contenido-container-p p {
   font-size: 14px;
-  margin: 10px 0 10px 0; /* 0 arriba, 0 a los lados, 10px abajo */
+  margin: 10px 0 10px 0;
   text-align: left;
   padding: 0px;
 }
@@ -1385,7 +1347,6 @@ input {
   }
 }
 
-/* -----------------------------------------Estilos para ActivosFijos--------------------------------------------------------- */
 
 .activos-container {
   margin-top: 2rem;
@@ -1471,7 +1432,6 @@ input {
   border-bottom: 2px solid #ccc;
 }
 
-/* Encabezado */
 .estado-tabla-encabezado th {
   background-color: #cd8030;
   color: #fff;
@@ -1481,20 +1441,17 @@ input {
   border: 1px solid #d1d5db;
 }
 
-/* Columnas */
 .estado-columna-concepto,
 .estado-columna-año {
   padding: 8px;
   border: 1px solid #d1d5db;
 }
 
-/* Fila por defecto */
 .estado-fila {
   background-color: white;
   border-top: 1px solid #e5e7eb;
 }
 
-/* Celdas numéricas */
 .estado-celda {
   border: 1px solid #d1d5db;
   text-align: right;
@@ -1502,7 +1459,6 @@ input {
   white-space: nowrap;
 }
 
-/* Columna de conceptos */
 .estado-concepto {
   text-align: left;
   padding: 8px;
@@ -1510,7 +1466,6 @@ input {
   white-space: nowrap;
 }
 
-/* Fila sombreada completa para "utilidades" intermedias */
 .fila-negrita {
   background-color: #eeeeee;
   font-weight: 600;
@@ -1523,7 +1478,6 @@ input {
   border: 1px solid #d1d5db;
 }
 
-/* Fila negra para "Utilidad neta" */
 .fila-black {
   background-color: rgb(15, 13, 23);
   color: white;
@@ -1537,7 +1491,6 @@ input {
   border: 1px solid #d1d5db;
 }
 
-/* Contenedor del análisis */
 .estado-analisis-container {
   margin-top: 24px;
 }
@@ -1574,8 +1527,8 @@ input {
 }
 
 .fila-decision-roja td {
-  background-color: #e61010; /* rojo claro */
-  color: #f3f3f3; /* texto rojo oscuro */
+  background-color: #e61010;
+  color: #f3f3f3;
   font-weight: bold;
 }
 
@@ -1679,7 +1632,7 @@ input {
 }
 
 .fila-blue {
-  background-color: #1f6ca3; /* Azul claro */
+  background-color: #1f6ca3;
   font-weight: 600;
   color: #ffffff;
 }
@@ -1698,7 +1651,7 @@ input {
 }
 
 .guardar-avance-container {
-  width: 70%; /* Ajuste solicitado */
+  width: 70%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1741,7 +1694,6 @@ input {
   width: 85%;
 }
 
-/* Títulos de sección */
 .fila-titulo-seccion {
   background-color: #e0e0e0;
   font-weight: bold;
@@ -1749,9 +1701,9 @@ input {
 }
 
 .container-titulo {
-  flex: 1; /* Asegura que tome el espacio a la izquierda */
+  flex: 1;
   display: flex;
-  justify-content: center; /* Centra el titulo */
+  justify-content: center;
   align-items: center;
 }
 
@@ -1800,7 +1752,7 @@ input {
 .fila-imagen-centro {
   text-align: center;
   padding: 10px 0;
-  background: #fff; /* opcional */
+  background: #fff;
 }
 
 /*--------------------Estilo flujo de caja------------------------------*/
@@ -1810,13 +1762,13 @@ input {
 }
 
 .empty-row {
-  height: 15px; /* ajusta el espacio */
-  border: none; /* sin bordes */
+  height: 15px;
+  border: none;
   background: transparent;
 }
 
 .celda-titulo-azul {
-  background-color: #4db6d2; /* azul claro */
+  background-color: #4db6d2;
   font-weight: bold;
   color: #f7f8f9;
   text-align: left;
@@ -1887,15 +1839,15 @@ input {
 }
 
 .tabla-pe {
-  border-collapse: collapse; /* Para que las líneas sean continuas */
-  margin-left: 20px; /* Margen a la izquierda */
-  width: auto; /* Ajusta el ancho si quieres */
+  border-collapse: collapse;
+  margin-left: 20px;
+  width: auto;
 }
 
 .tabla-pe th,
 .tabla-pe td {
-  border: 1px solid #ccc; /* Línea de la celda */
-  padding: 8px 12px; /* Espaciado interno */
+  border: 1px solid #ccc;
+  padding: 8px 12px;
   text-align: left;
 }
 
@@ -1914,12 +1866,12 @@ input {
 }
 
 .subtitulo-tabla {
-  background-color: #1f2a44; /* azul oscuro */
+  background-color: #1f2a44;
   color: #ffffff;
   font-weight: bold;
   text-align: center;
   padding: 10px;
-  margin: 27px 0; /* espacio arriba y abajo */
+  margin: 27px 0;
   border-radius: 4px;
   width: 100%;
   display: block;
@@ -1939,7 +1891,6 @@ input {
   padding: 15px;
 }
 
-/* Fila gris para resaltar un total o título */
 .fila-gray td {
   background-color: #d9d9d9;
   font-weight: bold;
@@ -1947,7 +1898,6 @@ input {
   padding: 8px;
 }
 
-/* Celda de valor en naranja */
 .celda-naranja {
   background-color: #e07b39;
   color: #ffffff;
@@ -1957,7 +1907,7 @@ input {
 }
 
 .celda-titulo-naranja {
-  background-color: #f7941d; /* naranja CEIPA */
+  background-color: #f7941d;
   color: #fff;
   font-weight: bold;
 }
@@ -1969,11 +1919,10 @@ input {
   font-size: 14px;
 }
 
-/* Tabla de tasas */
 .tabla-tasas {
   width: 100%;
   border-collapse: collapse;
-  box-shadow: none; /* sin sombra */
+  box-shadow: none;
   font-size: 14px;
 }
 
@@ -1983,7 +1932,6 @@ input {
   vertical-align: middle;
 }
 
-/* Celda azul */
 .celda-azul {
   background-color: #3b9ecf;
   color: #fff;
@@ -1992,7 +1940,6 @@ input {
   font-size: 14px;
 }
 
-/* Bloque de costo promedio ponderado */
 .bloque-costo-promedio {
   text-align: center;
   min-width: 200px;
@@ -2000,7 +1947,6 @@ input {
   font-size: 14px;
 }
 
-/* Celda naranja */
 .celda-naranja {
   background-color: #e07b39;
   color: #fff;
@@ -2039,7 +1985,6 @@ input {
   padding: 6px 8px;
 }
 
-/* Concept & formula columns can wrap */
 .estado-tabla-in td:first-child {
   max-width: 180px;
   word-wrap: break-word;
@@ -2049,7 +1994,6 @@ input {
   word-wrap: break-word;
 }
 
-/* Number columns: never wrap, shrink text if needed */
 .estado-tabla-in td:nth-child(n + 3) {
   white-space: nowrap;
   text-align: right;
@@ -2059,3 +2003,51 @@ input {
   width: 45%;
   margin-top: -12px;
 }
+
+/*-----------------------------------Styles Professor Dashboard--------------------------------------*/
+.professor-dashboard-container {
+  min-height: 75vh;
+  padding-top: 2rem;
+}
+
+.professor-dashboard-content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.professor-dashboard-title {
+  color: #002554;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+.professor-dashboard-empty {
+  font-size: 1.2rem;
+  color: #666;
+  margin-top: 3rem;
+}
+
+.professor-dashboard-subtitle {
+  margin-bottom: 2rem;
+  color: #555;
+}
+
+.professor-dashboard-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.professor-card-id {
+  font-size: 12px;
+  color: #FFF;
+  margin-top: 10px;
+}
+
+.professor-card-bottom {
+  background-color: #136c7a !important;
+}
+

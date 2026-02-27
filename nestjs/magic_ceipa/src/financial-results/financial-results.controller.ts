@@ -35,6 +35,7 @@ export class FinancialResultsController {
   }
 
   @Get('project/:projectId')
+  @Auth(Role.USER, Role.PROFESSOR)
   findByProject(
     @Param('projectId', ParseIntPipe) projectId: number,
     @ActiveUser() user: UserActiveInterface,

@@ -18,6 +18,7 @@ import FlujoCaja from './screens/results/flujoCaja';
 import Wacc from './screens/results/wacc';
 import IndiFinancieros from './screens/results/indiFinancieros';
 import Indicadores from './screens/results/indicadores';
+import ProfessorDashboard from './screens/professorDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
           <Route path="/Wacc/" element={<Wacc />} />
           <Route path="/IndiFinancieros/" element={<IndiFinancieros />} />
           <Route path="/Indicadores/" element={<Indicadores />} />
+          <Route path="/ProfessorDashboard/" element={<ProfessorDashboard />} />
         </Route>
       </Routes>
     </BrowserRouter>

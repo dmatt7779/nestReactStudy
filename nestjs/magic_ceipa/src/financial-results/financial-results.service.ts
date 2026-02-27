@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/co
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FinancialResult } from './entities/financial-result.entity';
+import { ProjectInfo } from '../project-info/entities/project-info.entity';
 import { CreateFinancialResultDto } from './dto/create-financial-result.dto';
 import { UpdateFinancialResultDto } from './dto/update-financial-result.dto';
 import { UserActiveInterface } from '../common/interfaces/active-user.interface';
@@ -12,6 +13,8 @@ export class FinancialResultsService {
   constructor(
     @InjectRepository(FinancialResult)
     private readonly financialResultRepository: Repository<FinancialResult>,
+    @InjectRepository(ProjectInfo)
+    private readonly projectInfoRepository: Repository<ProjectInfo>,
   ) {}
 
   async create(createFinancialResultDto: CreateFinancialResultDto, projectInfoId: number, user: UserActiveInterface) {
@@ -54,7 +57,7 @@ export class FinancialResultsService {
       throw new NotFoundException('Financial result not found');
     }
 
-    this.validateOwnership(financialResult, user);
+    await this.validateOwnership(financialResult, user);
     return financialResult;
   }
 
@@ -67,7 +70,7 @@ export class FinancialResultsService {
       throw new NotFoundException('Financial result not found for this project');
     }
 
-    this.validateOwnership(financialResult, user);
+    await this.validateOwnership(financialResult, user);
     return financialResult;
   }
 
@@ -89,8 +92,19 @@ export class FinancialResultsService {
     return financialResult;
   }
 
-  private validateOwnership(financialResult: FinancialResult, user: UserActiveInterface) {
-    if (user.role !== Role.ADMIN && financialResult.userEmail !== user.email) {
+  private async validateOwnership(financialResult: FinancialResult, user: UserActiveInterface) {
+    if (user.role === Role.ADMIN) return;
+
+    if (user.role === Role.PROFESSOR) {
+      const project = await this.projectInfoRepository.findOne({ where: { id: financialResult.projectInfoId } });
+      if (project && project.professor) {
+        const professorIds = project.professor.map(id => Number(id));
+        if (professorIds.includes(user.id)) return;
+      }
+      throw new UnauthorizedException('You do not have access to this project results');
+    }
+
+    if (financialResult.userEmail !== user.email) {
       throw new UnauthorizedException();
     }
   }

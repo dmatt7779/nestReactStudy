@@ -59,7 +59,29 @@ const Navbar = () => {
     }
   };
 
-  const showDropdowns = location.pathname !== '/newProject';
+  // Extraer el rol del token de forma manual
+  let userRole = 'user';
+  const token = localStorage.getItem('token');
+  if (token) {
+    try {
+      const payloadBase64 = token.split('.')[1];
+      const decodedJson = atob(payloadBase64);
+      const decoded = JSON.parse(decodedJson);
+      if (decoded && decoded.role) {
+        userRole = decoded.role;
+      }
+    } catch (e) {
+      console.error("Error decoding token in Navbar", e);
+    }
+  }
+
+  const isProfessor = userRole === 'professor';
+
+  // Los profesores nunca ven los dropdowns de "Instrucciones" o "Resultados"
+  const showDropdowns = !isProfessor && location.pathname !== '/newProject' && location.pathname !== '/ProfessorDashboard';
+  
+  // Dependiendo del rol y de la ruta, decidimos si mostrar el botón de volver
+  const showVerProyectos = location.pathname !== '/ProfessorDashboard' && location.pathname !== '/newProject';
 
   return (
     <>
@@ -116,9 +138,14 @@ const Navbar = () => {
             </>
           )}
 
-          <button className="nav-btn" onClick={() => navigate("/newProject")}>
-            Ver proyectos
-          </button>
+          {showVerProyectos && (
+            <button 
+              className="nav-btn" 
+              onClick={() => navigate(isProfessor ? "/ProfessorDashboard" : "/newProject")}
+            >
+              {isProfessor ? "Ver asignaciones" : "Ver proyectos"}
+            </button>
+          )}
           <button className="nav-btn" onClick={handleLogout}>
             Cerrar sesión
           </button>

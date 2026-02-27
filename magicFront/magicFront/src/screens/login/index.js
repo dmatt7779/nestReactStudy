@@ -7,9 +7,12 @@ import passIcon from "../../images/passIcon.png";
 import Footer from "../../components/Footer";
 import ParticleBackground from "../../components/ParticleBackground";
 import axiosClient from '../../utils/axios';
+import useProcessing from '../../hooks/useProcessing';
+import CeipaLoader from '../../components/CeipaLoader';
 
 function Login() {
   const navigate = useNavigate();
+  const { isProcessing, runWithLoader } = useProcessing();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -21,15 +24,29 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await axiosClient.login({
-        email: email,
-        password: password,
+      let navTarget = '';
+      await runWithLoader(async () => {
+        const response = await axiosClient.login({
+          email: email,
+          password: password,
+        });
+        if (response.token && response.payload.role) {
+          localStorage.setItem('token', response.token);
+          
+          // Redirección condicional según el Rol
+          if (response.payload.role === 'user') {
+            navTarget = '/newProject';
+          } else {
+            // Si es professor o admin o falla el rol
+            navTarget = '/ProfessorDashboard';
+          }
+        } else {
+          setError('Error al iniciar sesión: No se recibió un token.');
+        }
       });
-      if (response.token && response.payload.role) {
-        localStorage.setItem('token', response.token);
-        navigate('/newProject');
-      } else {
-        setError('Error al iniciar sesión: No se recibió un token.');
+      
+      if (navTarget) {
+        navigate(navTarget);
       }
     } catch (err) {
       if (!err.response) {
@@ -46,6 +63,7 @@ function Login() {
 
   return (
     <div className="container">
+      {isProcessing && <CeipaLoader />}
       <ParticleBackground particleCount={15000} />
       <div className="left-panel"></div>
       <div className="divider_"></div>

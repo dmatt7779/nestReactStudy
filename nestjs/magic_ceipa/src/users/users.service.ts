@@ -33,6 +33,13 @@ export class UsersService {
     })
   }
 
+  async findAllProfessors() {
+    return await this.userRepository.find({
+      where: { role: 'professor' },
+      select: ['id', 'name', 'email'] // Excluimos password y otros datos sensibles
+    });
+  }
+
   async findAll() {
     return `This action returns all users`;
   }

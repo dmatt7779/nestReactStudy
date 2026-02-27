@@ -22,6 +22,12 @@ export class ProjectInfoController {
     return this.projectInfoService.findAll(user);
   }
 
+  @Get('professor/dashboard')
+  @Auth(Role.PROFESSOR)
+  findProfessorDashboard(@ActiveUser() user: UserActiveInterface) {
+    return this.projectInfoService.findProfessorDashboard(user);
+  }
+
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number, @ActiveUser() user: UserActiveInterface) {
     return this.projectInfoService.findOne(id, user);
