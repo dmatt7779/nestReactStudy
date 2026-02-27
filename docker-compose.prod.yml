@@ -1,11 +1,10 @@
-version: '3.8'
+version: "3.8"
 
 services:
-
   backend-prod:
     # Targets the 'production' stage which creates a much smaller, optimized image
     build:
-      context: ./nestjs/magic_ceipa
+      context: /data/magic/nestjs/magic_ceipa
       target: production
     container_name: nestjs_backend_prod
     ports:
@@ -21,7 +20,7 @@ services:
   frontend-prod:
     # Targets the 'production' stage which uses Nginx to serve static files
     build:
-      context: ./magicFront/magicFront
+      context: /data/magic/magicFront/magicFront
       target: production
     container_name: react_frontend_prod
     ports:
@@ -37,7 +36,7 @@ services:
 
   python-backend-prod:
     build:
-      context: ./planfin_microservice
+      context: /data/magic/planfin_microservice
       target: production
     container_name: magic_python_back_prod
     ports:

@@ -61,28 +61,117 @@ docker-compose up --build
 
 Este entorno compila el código (Javascript minimizado) y no escucha cambios locales. El frontend es servido a través de **Nginx** logrando un alto rendimiento.
 
-**Comando para levantar producción en segundo plano (Recomendado):**
+#### 📁 Estructura de Carpetas en el Servidor
+
+El servidor de producción tiene una estructura de **rutas separadas**:
+
+| Ubicación                            | Contenido                                                                         |
+| :----------------------------------- | :-------------------------------------------------------------------------------- |
+| `/home/dtc_user/docker/magic/`       | Archivos de orquestación Docker (`docker-compose.yml`, `docker-compose.prod.yml`) |
+| `/data/magic/nestjs/magic_ceipa/`    | Código fuente del Backend NestJS + su `.env` y `Dockerfile`                       |
+| `/data/magic/magicFront/magicFront/` | Código fuente del Frontend React + su `.env` y `Dockerfile`                       |
+| `/data/magic/planfin_microservice/`  | Código fuente del Microservicio Python + su `Dockerfile`                          |
+
+> ⚠️ El `docker-compose.prod.yml` usa **rutas absolutas** (`context: /data/magic/...`) en los `build.context` para apuntar al código fuente, ya que los compose files no están en la misma carpeta que el proyecto.
+
+#### Comando para levantar producción
+
+Ejecutar desde `/home/dtc_user/docker/magic/`:
 
 ```bash
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+cd /home/dtc_user/docker/magic/
+docker-compose -f docker-compose.prod.yml up -d --build
 ```
 
 - **Aplicación web disponible en:** puerto `3005` (ej: `http://tudominio.com:3005` o la IP de tu servidor)
 - **API del Backend (NestJS) disponible en:** puerto `3006`
 - **API del Backend (Python) disponible en:** puerto `3007`
 
-### 🌍 Archivos a modificar para Producción (Cambiar `localhost` por IP/Dominio)
+---
 
-Antes de hacer el build de producción en tu servidor (o si no logran comunicarse los contenedores desde internet), **debes** reemplazar la palabra `localhost` por la IP pública de tu servidor o tu dominio oficial en los siguientes archivos:
+## 🌍 Checklist de Archivos a Modificar para Producción
 
-1. **`magicFront/magicFront/.env` (Variables de entorno de React)**
-   - `REACT_APP_API_URL=http://<TU_IP_O_DOMINIO>:3006` (Apunta NestJS)
-   - `REACT_APP_PY_APP_API_URL=http://<TU_IP_O_DOMINIO>:3007` (Apunta Python)
-     > _React se ejecuta en el navegador del cliente (celulares o laptops externos), por lo que intentar buscar `localhost` literalmente buscaría el servidor de NestJS dentro del celular del usuario, provocando un error de red._
+Antes de hacer el build de producción en tu servidor, **debes** verificar y ajustar los siguientes archivos. Si no se actualizan, la aplicación podrá compilar pero **no funcionará** desde dispositivos externos.
 
-2. **`nestjs/magic_ceipa/.env` (Variables de entorno de NestJS)**
-   - `CORS_ORIGIN=http://<TU_IP_O_DOMINIO>:3005` (Autoriza a tu Front-End a hacer peticiones)
-     > _Si no se actualiza, el Backend NestJS bloqueará todas tus peticiones HTTP desde produccíon por políticas restrictivas CORS._
+### 📄 1. `/data/magic/magicFront/magicFront/.env`
+
+Variables del Frontend React. Este archivo es leído al momento del **build** (no en runtime), así que cualquier cambio requiere reconstruir la imagen.
+
+```env
+REACT_APP_API_URL=http://<TU_IP_O_DOMINIO>:3006
+REACT_APP_PY_APP_API_URL=http://<TU_IP_O_DOMINIO>:3007
+```
+
+> ⚠️ React se ejecuta en el **navegador del cliente** (celulares o laptops externos), por lo que `localhost` literalmente buscaría el servidor de NestJS dentro del celular del usuario, provocando un error de red. Reemplaza `localhost` por la IP pública o dominio de tu servidor.
+
+### 📄 2. `/data/magic/nestjs/magic_ceipa/.env`
+
+Variables del Backend NestJS. Este archivo es leído en **runtime** por el contenedor.
+
+```env
+CORS_ORIGIN=http://<TU_IP_O_DOMINIO>:3005
+MAGIC_PORT=3006
+DB_HOST=<IP_DEL_HOST_MYSQL>
+DB_PORT=3307
+DB_USERNAME=<USUARIO_DB_PROD>
+DB_PASSWORD=<CONTRASEÑA_DB_PROD>
+DB_DATABASE=db_magic
+```
+
+| Variable      | Qué cambiar                                                                                                 |
+| :------------ | :---------------------------------------------------------------------------------------------------------- |
+| `CORS_ORIGIN` | ⚠️ **Obligatorio.** Cambiar `localhost` por IP/Dominio. Si no, el backend bloqueará peticiones CORS.        |
+| `DB_HOST`     | En Linux nativo (sin Docker Desktop), cambiar `host.docker.internal` a la IP del host MySQL o `172.17.0.1`. |
+| `DB_PORT`     | Ajustar si tu MySQL corre en otro puerto.                                                                   |
+| `DB_USERNAME` | Credenciales de tu base de datos de producción.                                                             |
+| `DB_PASSWORD` | Credenciales de tu base de datos de producción.                                                             |
+| `DB_DATABASE` | Nombre de la base de datos de producción.                                                                   |
+
+### 📄 3. `/home/dtc_user/docker/magic/docker-compose.prod.yml`
+
+El archivo de orquestación ya apunta a las rutas absolutas de producción. **Verifica** que estas rutas coincidan con donde realmente está el código en el servidor:
+
+```yaml
+backend-prod:
+  build:
+    context: /data/magic/nestjs/magic_ceipa # ← Verificar ruta
+frontend-prod:
+  build:
+    context: /data/magic/magicFront/magicFront # ← Verificar ruta
+python-backend-prod:
+  build:
+    context: /data/magic/planfin_microservice # ← Verificar ruta
+```
+
+### 📄 4. Base de Datos MySQL
+
+TypeORM está configurado con `synchronize: true` en `app.module.ts`, lo que significa que **automáticamente creará o actualizará** las tablas y columnas al iniciar el backend. Esto incluye las columnas nuevas agregadas recientemente (`verified`, `verifiedBy`, `verifiedAt` en la tabla `financial_result`).
+
+> ⚠️ Si tu entorno de producción tiene `synchronize: false` por seguridad, deberás ejecutar las migraciones manualmente o agregar las columnas con SQL:
+>
+> ```sql
+> ALTER TABLE financial_result ADD COLUMN verified TINYINT(1) DEFAULT 0;
+> ALTER TABLE financial_result ADD COLUMN verifiedBy INT NULL;
+> ALTER TABLE financial_result ADD COLUMN verifiedAt DATETIME NULL;
+> ```
+
+---
+
+## 📋 Changelog de Funcionalidades Recientes
+
+Estas funcionalidades fueron integradas al sistema y están incluidas en el ciclo de despliegue:
+
+| Feature                              | Descripción                                                                                                                    |
+| :----------------------------------- | :----------------------------------------------------------------------------------------------------------------------------- |
+| **Dashboard de Profesores**          | Pantalla exclusiva para profesores que muestra solo los proyectos asignados a su ID con resultados financieros.                |
+| **Verificación de Proyectos**        | Los profesores pueden marcar proyectos como "verificados", separándolos del listado principal.                                 |
+| **Pantalla de Verificados**          | Vista `/VerifiedProjects` lista los proyectos ya aprobados con opción de desmarcar.                                            |
+| **Buscador Dinámico**                | Filtrado en tiempo real por nombre de proyecto, nombre de estudiante o cédula en el dashboard del profesor.                    |
+| **Roles JWT Mejorados**              | El JWT ahora incluye `id` y `role` del usuario. Endpoints protegidos con `@Auth(Role.USER, Role.PROFESSOR)`.                   |
+| **Navbar Condicional**               | Menú de navegación adaptado según el rol: estudiantes ven instrucciones/resultados, profesores ven asignaciones y verificados. |
+| **CeipaLoader Animado**              | Animación de carga con ciclo mínimo garantizado de 8s en login y navegación entre pantallas.                                   |
+| **Eliminación en Cascada**           | Borrar un proyecto elimina todos los datos relacionados (macros, costos, activos, resultados financieros).                     |
+| **Microservicio Python Dockerizado** | FastAPI + LibreOffice Headless empaquetados en Alpine Linux para el cálculo financiero automatizado.                           |
 
 ---
 
@@ -97,7 +186,7 @@ Antes de hacer el build de producción en tu servidor (o si no logran comunicars
   `docker-compose build --no-cache`
 - **Entrar a la terminal interactiva de un contenedor corriendo:**
   `docker exec -it <nombre_del_contenedor> sh`
-  _(Ej: `docker exec -it nestjs_backend_dev sh`)_
+  _(Ej: `docker exec -it nestjs_backend_prod sh`)_
 - **Limpiar el sistema Docker (Imágenes no usadas, redes, volúmenes colgados):**
   `docker system prune` o de forma más agresiva `docker system prune -a --volumes`
 
@@ -106,7 +195,7 @@ Antes de hacer el build de producción en tu servidor (o si no logran comunicars
 ## ⚠️ Posibles Fallas y Soluciones (Troubleshooting)
 
 1.  **Error: "Port is already allocated" o EADDRINUSE**
-    - **Causa:** Otra aplicación (quizás otro proyecto de Node) ya está usando los puertos configurados (3005, 3006 o 3007).
+    - **Causa:** Otra aplicación ya está usando los puertos configurados (3005, 3006 o 3007).
     - **Solución:** Ve al `docker-compose.yml` o `docker-compose.prod.yml` y cambia el puerto del Host (el número a la izquierda de los dos puntos `:`) a otro número libre.
 2.  **Los paquetes NPM instalados en local dan conflicto y el contenedor se rompe**
     - **Causa:** Tu subida accidental de tu `node_modules` de macOS mezclado con el entorno Alpine Linux del contenedor.
@@ -123,3 +212,9 @@ Antes de hacer el build de producción en tu servidor (o si no logran comunicars
     - **En Desarrollo:** Gracias al volumen que mapea `./planfin_microservice:/app`, el contenedor de Python lee tu misma carpeta local en tiempo real. Si editas u ocupas un Excel nuevo, el contenedor lo procesará al instante.
     - **En Producción:** El Dockerfile utiliza `COPY . /app`, por lo que todos los `excel_templates` son "empaquetados y congelados" directamente dentro del contenedor inyectado con Linux y Libreoffice.
     - **Procesamiento de Macros (LibreOffice):** Cuando NestJS envía datos, Python inyecta los json al Excel base, llama a **LibreOffice Headless** directamente dentro de la máquina virtual Alpine Linux del contenedor interactuando con el kernel del sistema para re-calcular las celdas formuladas (WACC, VPN, etc.), las extrae y retorna por JSON al intermediario NestJS.
+6.  **Error 403 Forbidden al acceder desde el Dashboard del Profesor**
+    - **Causa:** El profesor no está asignado al proyecto o el endpoint no tiene el decorador `@Auth(Role.PROFESSOR)`.
+    - **Solución:** Verificar que el `id` del profesor esté en el array `professor` del `ProjectInfo`.
+7.  **Las nuevas columnas de verificación no aparecen en la DB**
+    - **Causa:** `synchronize: true` puede no estar habilitado, o TypeORM no recargó el schema.
+    - **Solución:** Reiniciar el contenedor de NestJS: `docker-compose restart backend-prod`. Si no funciona, agregar las columnas manualmente (ver sección de Base de Datos arriba).
