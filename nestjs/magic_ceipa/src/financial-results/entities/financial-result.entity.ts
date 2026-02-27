@@ -44,4 +44,13 @@ export class FinancialResult {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Column({ default: false })
+  verified: boolean;
+
+  @Column({ nullable: true })
+  verifiedBy: number;
+
+  @Column({ type: 'datetime', nullable: true })
+  verifiedAt: Date;
 }

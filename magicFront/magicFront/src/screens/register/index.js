@@ -113,16 +113,19 @@ function Register() {
                             }}
                             required
                         />
-                    <div className='input-container-r'> 
-                        {errorServidor && <p style={{ color: 'red' }}>{errorServidor}</p>}
-                        {mostrarErrorContrasena && (
-                            <p style={{ color: 'red' }}>Las contraseñas no coinciden</p>
-                        )}
-                        {registroExitoso && (
-                            <p style={{ color: 'green' }}>Registro exitoso! Redirigiendo...</p>
-                        )}
-                    </div>
                 </div>
+
+                {/* Notificaciones de estado del formulario */}
+                {errorServidor && (
+                    <p style={{ color: 'red', fontSize: '13px', textAlign: 'center', margin: '6px 0' }}>{errorServidor}</p>
+                )}
+                {mostrarErrorContrasena && (
+                    <p style={{ color: 'red', fontSize: '13px', textAlign: 'center', margin: '6px 0' }}>Las contraseñas no coinciden</p>
+                )}
+                {registroExitoso && (
+                    <p style={{ color: 'green', fontSize: '13px', textAlign: 'center', margin: '6px 0' }}>Registro exitoso! Redirigiendo...</p>
+                )}
+
                 <button type="submit">Registrarse</button>
                 <div className='register-option'><p>¿Ya tienes cuenta? <Link to="/">Iniciar Sesión</Link></p> </div>
             </form>

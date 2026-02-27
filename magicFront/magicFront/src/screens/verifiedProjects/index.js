@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, Search, CheckCircle } from 'lucide-react';
+import { Eye, Search, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Navbar from '../../components/Navbar';
 import Footer from "../../components/Footer";
@@ -9,7 +9,7 @@ import useProcessing from "../../hooks/useProcessing";
 import axiosClient from '../../utils/axios';
 import '../../style/styles.css';
 
-function ProfessorDashboard() {
+function VerifiedProjects() {
   const [proyectos, setProyectos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,7 +20,7 @@ function ProfessorDashboard() {
     const fetchProyectos = async () => {
       setLoading(true);
       try {
-        const response = await axiosClient.getProfessorProjects();
+        const response = await axiosClient.getProfessorVerifiedProjects();
         if (response && Array.isArray(response)) {
           const proyectosOrdenados = response.sort((a, b) => b.id - a.id);
           setProyectos(proyectosOrdenados);
@@ -28,7 +28,7 @@ function ProfessorDashboard() {
           setProyectos([]);
         }
       } catch (err) {
-        console.error("Error al obtener los proyectos de profesor:", err);
+        console.error("Error al obtener los proyectos verificados:", err);
       } finally {
         setLoading(false);
       }
@@ -36,14 +36,11 @@ function ProfessorDashboard() {
     fetchProyectos();
   }, [navigate]);
 
-  // Filtrado dinámico por nombre de proyecto, nombre de estudiante o cédula
   const filteredProyectos = useMemo(() => {
     if (!searchTerm.trim()) return proyectos;
     const term = searchTerm.toLowerCase().trim();
     return proyectos.filter((project) => {
-      // Buscar por nombre de proyecto
       if ((project.projectName || '').toLowerCase().includes(term)) return true;
-      // Buscar por nombre o cédula del estudiante en teamMembers
       if (Array.isArray(project.teamMembers)) {
         return project.teamMembers.some(
           (member) =>
@@ -60,7 +57,7 @@ function ProfessorDashboard() {
       <div>
         <Navbar />
         <div className="nuevo-proyecto-container">
-          <p>Cargando tus proyectos asignados...</p>
+          <p>Cargando proyectos verificados...</p>
         </div>
         <Footer />
       </div>
@@ -84,16 +81,16 @@ function ProfessorDashboard() {
             <Search size={18} className="professor-search-icon" />
           </div>
 
-          <h2 className="professor-dashboard-title">Panel de Tutorías (Profesor)</h2>
+          <h2 className="professor-dashboard-title">Proyectos Verificados</h2>
           
           {proyectos.length === 0 ? (
             <p className="professor-dashboard-empty">
-              Aún no tienes proyectos valorados o listos para revisión asignados a tu ID.
+              Aún no has verificado ningún proyecto.
             </p>
           ) : (
             <>
               <p className="professor-dashboard-subtitle">
-                A continuación se listan los proyectos que los estudiantes han valorado financieramente y te han asignado como tutor. Haz clic en cualquiera para revisar sus resultados financieros.
+                Estos son los proyectos que ya has marcado como verificados. Puedes desmarcarlos para devolverlos al panel principal.
               </p>
 
               {filteredProyectos.length === 0 ? (
@@ -135,7 +132,7 @@ function ProfessorDashboard() {
                               };
                             }
                           } catch (error) {
-                            toast.error('No se pudieron cargar los resultados de este proyecto. El estudiante aún no ha guardado datos finales.');
+                            toast.error('No se pudieron cargar los resultados de este proyecto.');
                           }
                         });
                         
@@ -144,7 +141,7 @@ function ProfessorDashboard() {
                         }
                       }}
                     >
-                      <div className="proyecto-card-activo">
+                      <div className="proyecto-card-activo professor-card-verified">
                         <div className="card-top-activa">
                           <p 
                             className="card-titulo-activo" 
@@ -159,22 +156,22 @@ function ProfessorDashboard() {
                         </div>
                       </div>
                       <div
-                        className="professor-card-verify"
+                        className="professor-card-verify professor-card-unverify"
                         onClick={async (e) => {
                           e.stopPropagation();
-                          const confirmVerify = window.confirm(`¿Deseas marcar el proyecto "${projectName}" como verificado?`);
-                          if (!confirmVerify) return;
+                          const confirmUnverify = window.confirm(`¿Deseas desmarcar el proyecto "${projectName}" como verificado?`);
+                          if (!confirmUnverify) return;
                           try {
                             await axiosClient.toggleVerification(projectId);
-                            toast.success(`Proyecto "${projectName}" marcado como verificado.`);
+                            toast.success(`Proyecto "${projectName}" devuelto al panel principal.`);
                             setProyectos(prev => prev.filter(p => p.id !== projectId));
                           } catch (error) {
-                            toast.error('Error al verificar el proyecto.');
+                            toast.error('Error al desmarcar el proyecto.');
                           }
                         }}
                       >
-                        <CheckCircle size={14} />
-                        <span>Marcar verificado</span>
+                        <XCircle size={14} />
+                        <span>Desmarcar</span>
                       </div>
                     </div>
                   );
@@ -190,4 +187,4 @@ function ProfessorDashboard() {
   );
 }
 
-export default ProfessorDashboard;
+export default VerifiedProjects;

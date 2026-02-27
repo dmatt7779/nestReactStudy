@@ -65,10 +65,11 @@ export class ProjectInfoService {
     });
   }
 
-  async findProfessorDashboard(user: UserActiveInterface) {
-    // 1. Obtener todos los resultados financieros existentes
+  async findProfessorDashboard(user: UserActiveInterface, verified: boolean = false) {
+    // 1. Obtener los resultados financieros filtrados por estado de verificación
     const financialResults = await this.financialResultRepository.find({
-      select: ['projectInfoId']
+      select: ['projectInfoId'],
+      where: { verified },
     });
 
     const projectIdsWithResults = financialResults.map(fr => fr.projectInfoId);
@@ -78,14 +79,11 @@ export class ProjectInfoService {
     }
 
     // 2. Buscar los proyectos asociados a esos resultados
-    // Usamos QueryBuilder para buscar los IDs de la lista y traer la relación mínima necesaria si se desea
     const projects = await this.ProjectInfoRepository.createQueryBuilder('project')
       .where('project.id IN (:...ids)', { ids: projectIdsWithResults })
       .getMany();
 
     // 3. Filtrar aquellos donde el ID del profesor actual esté en el arreglo "professor"
-    // Nota: Como es un 'simple-array' en base de datos, TypeORM lo trae como array de strings o números dependiendo de la BD.
-    // Hacemos el mapeo a número seguro para la validación.
     const professorProjects = projects.filter(project => {
       if (!project.professor) return false;
       const professorIds = project.professor.map(id => Number(id));

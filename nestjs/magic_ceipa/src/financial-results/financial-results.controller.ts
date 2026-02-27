@@ -59,4 +59,13 @@ export class FinancialResultsController {
   ) {
     return this.financialResultsService.remove(id, user);
   }
+
+  @Patch('verify/project/:projectInfoId')
+  @Auth(Role.PROFESSOR)
+  toggleVerification(
+    @Param('projectInfoId', ParseIntPipe) projectInfoId: number,
+    @ActiveUser() user: UserActiveInterface,
+  ) {
+    return this.financialResultsService.toggleVerification(projectInfoId, user);
+  }
 }

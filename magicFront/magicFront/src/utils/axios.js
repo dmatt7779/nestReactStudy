@@ -63,6 +63,8 @@ class AxiosClient {
   async get(url, config = {}) { return await this.axiosInstance.get(url, config); }
   async getProfessors() { return await this.axiosInstance.get('api/v1/users/professors'); }
   async getProfessorProjects() { return await this.axiosInstance.get('api/v1/project-info/professor/dashboard'); }
+  async getProfessorVerifiedProjects() { return await this.axiosInstance.get('api/v1/project-info/professor/dashboard?verified=true'); }
+  async toggleVerification(projectInfoId) { return await this.axiosInstance.patch(`api/v1/save-results/verify/project/${projectInfoId}`); }
   async deleteProject(url) { return await this.axiosInstance.delete(url); }
   async postProjectInfo(url, body) { return await this.axiosInstance.post(url, body); }
   async patchProjectInfo(url, body) { return await this.axiosInstance.patch(url, body); }

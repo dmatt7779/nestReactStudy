@@ -18,17 +18,16 @@ const Navbar = () => {
     setOpenDropdown(null);
     const projectId = sessionStorage.getItem("currentProjectId");
     
-    // Si no hay proyecto no navega a ciegas (no debe pasar en teoria por la condicion del drop)
     if (!projectId) {
       toast.error('Ocurrió un error. No se encontró un ID de Proyecto Activo.');
       return;
     }
 
     if (section === "instrucciones") {
-      // Inyectar estado en las hojas de instrucciones
+
       navigate(path, { state: { projectId } });
     } else if (section === "resultados") {
-      // Validar primero
+
       await runWithLoader(async () => {
         try {
           const response = await axiosClient.getResults(projectId);
@@ -40,8 +39,8 @@ const Navbar = () => {
              toast.error('Aún no hay resultados. Procesa el Plan Financiero primero.');
           }
         } catch (error) {
-           // Toast de interceptores ya va a alertar, pero sumamos uno mas explicito por UX 
-           // si tira un 404 (no encontrado) o algo similar la api
+      
+      
            if(error?.statusCode === 404 || error?.status === 404) {
                toast.error('Aún no existen resultados guardados calculados para este proyecto.', { duration: 6000 });
            }
@@ -58,8 +57,6 @@ const Navbar = () => {
       navigate("/");
     }
   };
-
-  // Extraer el rol del token de forma manual
   let userRole = 'user';
   const token = localStorage.getItem('token');
   if (token) {
@@ -76,12 +73,9 @@ const Navbar = () => {
   }
 
   const isProfessor = userRole === 'professor';
-
-  // Los profesores nunca ven los dropdowns de "Instrucciones" o "Resultados"
   const showDropdowns = !isProfessor && location.pathname !== '/newProject' && location.pathname !== '/ProfessorDashboard';
-  
-  // Dependiendo del rol y de la ruta, decidimos si mostrar el botón de volver
-  const showVerProyectos = location.pathname !== '/ProfessorDashboard' && location.pathname !== '/newProject';
+
+  const showVerProyectos = isProfessor || (location.pathname !== '/ProfessorDashboard' && location.pathname !== '/newProject');
 
   return (
     <>
@@ -144,6 +138,14 @@ const Navbar = () => {
               onClick={() => navigate(isProfessor ? "/ProfessorDashboard" : "/newProject")}
             >
               {isProfessor ? "Ver asignaciones" : "Ver proyectos"}
+            </button>
+          )}
+          {isProfessor && (
+            <button 
+              className="nav-btn" 
+              onClick={() => navigate("/VerifiedProjects")}
+            >
+              Verificados
             </button>
           )}
           <button className="nav-btn" onClick={handleLogout}>

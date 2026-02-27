@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
 import { ProjectInfoService } from './project-info.service';
 import { CreateProjectInfoDto } from './dto/create-project-info.dto';
 import { UpdateProjectInfoDto } from './dto/update-project-info.dto';
@@ -24,8 +24,12 @@ export class ProjectInfoController {
 
   @Get('professor/dashboard')
   @Auth(Role.PROFESSOR)
-  findProfessorDashboard(@ActiveUser() user: UserActiveInterface) {
-    return this.projectInfoService.findProfessorDashboard(user);
+  findProfessorDashboard(
+    @ActiveUser() user: UserActiveInterface,
+    @Query('verified') verified?: string,
+  ) {
+    const isVerified = verified === 'true';
+    return this.projectInfoService.findProfessorDashboard(user, isVerified);
   }
 
   @Get(':id')

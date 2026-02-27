@@ -92,6 +92,33 @@ export class FinancialResultsService {
     return financialResult;
   }
 
+  async toggleVerification(projectInfoId: number, user: UserActiveInterface) {
+    const financialResult = await this.financialResultRepository.findOne({
+      where: { projectInfoId },
+    });
+
+    if (!financialResult) {
+      throw new NotFoundException('Financial result not found for this project');
+    }
+
+    // Validar que el profesor esté asignado al proyecto
+    await this.validateOwnership(financialResult, user);
+
+    // Toggle el estado de verificación
+    if (financialResult.verified) {
+      financialResult.verified = false;
+      financialResult.verifiedBy = null;
+      financialResult.verifiedAt = null;
+    } else {
+      financialResult.verified = true;
+      financialResult.verifiedBy = user.id;
+      financialResult.verifiedAt = new Date();
+    }
+
+    await this.financialResultRepository.save(financialResult);
+    return { verified: financialResult.verified, projectInfoId };
+  }
+
   private async validateOwnership(financialResult: FinancialResult, user: UserActiveInterface) {
     if (user.role === Role.ADMIN) return;
 
