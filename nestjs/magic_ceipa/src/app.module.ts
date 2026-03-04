@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { ProjectSummaryModule } from './project-summary/project-summary.module';
 import { FinancialResultsModule } from './financial-results/financial-results.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { FinancialResultsModule } from './financial-results/financial-results.mo
     AuthModule,
     ProjectSummaryModule,
     FinancialResultsModule,
+    ReportsModule,
   ],
   controllers: [],
   providers: [],

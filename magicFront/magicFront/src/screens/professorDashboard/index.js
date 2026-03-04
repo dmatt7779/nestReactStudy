@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, Search, CheckCircle } from 'lucide-react';
+import { Eye, Search, CheckCircle, FileDown } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Navbar from '../../components/Navbar';
 import Footer from "../../components/Footer";
@@ -157,6 +157,23 @@ function ProfessorDashboard() {
                           <Eye size={16} />
                           <span>Ver resultados</span>
                         </div>
+                      </div>
+                      <div
+                        className="professor-card-verify"
+                        style={{ backgroundColor: '#1a237e' }}
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          try {
+                            toast.loading('Generando reporte...', { id: 'report' });
+                            await axiosClient.downloadReport(projectId);
+                            toast.success('Reporte descargado.', { id: 'report' });
+                          } catch (error) {
+                            toast.error('Error al generar el reporte.', { id: 'report' });
+                          }
+                        }}
+                      >
+                        <FileDown size={14} />
+                        <span>Descargar Reporte</span>
                       </div>
                       <div
                         className="professor-card-verify"

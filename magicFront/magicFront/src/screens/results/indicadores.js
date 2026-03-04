@@ -7,13 +7,16 @@ import tituloIndicadores from "../../images/titulo_indicadores.png";
 import tituloRentabilidad from "../../images/indi_ren.png";
 import tituloGeneracion from "../../images/indi_ge_va.png";
 import tituloComentarios from "../../images/titulo_comentarios.png";
-import { DownloadCloud } from "lucide-react";
+import { DownloadCloud, FileDown } from "lucide-react";
 import axiosClient from "../../utils/axios";
 import toast from "react-hot-toast";
+import CeipaLoader from "../../components/CeipaLoader";
+import useProcessing from "../../hooks/useProcessing";
 
 const Indicadores = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isProcessing, runWithLoader } = useProcessing();
 
   const projectId = location.state?.projectId || sessionStorage.getItem("currentProjectId");
   const openingYear = location.state?.openingYear || new Date().getFullYear();
@@ -213,6 +216,7 @@ const Indicadores = () => {
 
   return (
     <div className="project-info-container">
+      {isProcessing && <CeipaLoader />}
       <Navbar />
       <div className="white-container-n">
         <div className="robot-container-wacc">
@@ -319,6 +323,22 @@ const Indicadores = () => {
             {/* Navegación */}
             <div className="buttons-container">
               <button className="nav-btn anterior" type="button" onClick={() => navigate(-1)}></button>
+              <button
+                className="procesar"
+                type="button"
+                onClick={async () => {
+                  const toastId = toast.loading("Generando reporte PDF...");
+                  try {
+                    await axiosClient.downloadReport(projectId);
+                    toast.success("Reporte descargado.", { id: toastId });
+                  } catch (error) {
+                    toast.error("Error al generar el reporte.", { id: toastId });
+                  }
+                }}
+              >
+                <FileDown size={18} style={{ marginRight: '6px' }} />
+                Generar Reporte
+              </button>
             </div>
           </div>
         </form>

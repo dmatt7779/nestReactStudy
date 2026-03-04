@@ -102,6 +102,24 @@ class AxiosClient {
       throw error;
     }
   }
+
+  async downloadReport(projectInfoId) {
+    const token = localStorage.getItem('token');
+    const baseUrl = process.env.REACT_APP_API_URL.replace(/\/$/, '');
+    const response = await fetch(`${baseUrl}/api/v1/reports/project/${projectInfoId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) throw new Error('Error al generar el reporte');
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `reporte_proyecto_${projectInfoId}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  }
 }
 
 const axiosClient = new AxiosClient();

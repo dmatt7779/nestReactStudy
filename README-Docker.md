@@ -7,7 +7,7 @@ Este documento detalla paso a paso cómo levantar el entorno de desarrollo y pro
 ## 🛠 Stack de Tecnología
 
 - **Frontend:** React.js (Create React App), Nginx (para servir estáticos en producción)
-- **Backend Core (NestJS):** NestJS, TypeScript, Node.js, TypeORM
+- **Backend Core (NestJS):** NestJS, TypeScript, Node.js, TypeORM, PDFKit (generación de reportes PDF)
 - **Motor Financiero (Python):** FastAPI, Uvicorn, Python 3.11, OpenPyXL y libreoffice-headless (Embebidos en Docker)
 - **Infraestructura:** Docker, Docker Compose
 
@@ -153,6 +153,7 @@ TypeORM está configurado con `synchronize: true` en `app.module.ts`, lo que sig
 > ALTER TABLE financial_result ADD COLUMN verified TINYINT(1) DEFAULT 0;
 > ALTER TABLE financial_result ADD COLUMN verifiedBy INT NULL;
 > ALTER TABLE financial_result ADD COLUMN verifiedAt DATETIME NULL;
+> ALTER TABLE financial_result ADD COLUMN comments JSON NULL;
 > ```
 
 ---
@@ -161,17 +162,20 @@ TypeORM está configurado con `synchronize: true` en `app.module.ts`, lo que sig
 
 Estas funcionalidades fueron integradas al sistema y están incluidas en el ciclo de despliegue:
 
-| Feature                              | Descripción                                                                                                                    |
-| :----------------------------------- | :----------------------------------------------------------------------------------------------------------------------------- |
-| **Dashboard de Profesores**          | Pantalla exclusiva para profesores que muestra solo los proyectos asignados a su ID con resultados financieros.                |
-| **Verificación de Proyectos**        | Los profesores pueden marcar proyectos como "verificados", separándolos del listado principal.                                 |
-| **Pantalla de Verificados**          | Vista `/VerifiedProjects` lista los proyectos ya aprobados con opción de desmarcar.                                            |
-| **Buscador Dinámico**                | Filtrado en tiempo real por nombre de proyecto, nombre de estudiante o cédula en el dashboard del profesor.                    |
-| **Roles JWT Mejorados**              | El JWT ahora incluye `id` y `role` del usuario. Endpoints protegidos con `@Auth(Role.USER, Role.PROFESSOR)`.                   |
-| **Navbar Condicional**               | Menú de navegación adaptado según el rol: estudiantes ven instrucciones/resultados, profesores ven asignaciones y verificados. |
-| **CeipaLoader Animado**              | Animación de carga con ciclo mínimo garantizado de 8s en login y navegación entre pantallas.                                   |
-| **Eliminación en Cascada**           | Borrar un proyecto elimina todos los datos relacionados (macros, costos, activos, resultados financieros).                     |
-| **Microservicio Python Dockerizado** | FastAPI + LibreOffice Headless empaquetados en Alpine Linux para el cálculo financiero automatizado.                           |
+| Feature                              | Descripción                                                                                                                                                                                                          |
+| :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Dashboard de Profesores**          | Pantalla exclusiva para profesores que muestra solo los proyectos asignados a su ID con resultados financieros.                                                                                                      |
+| **Verificación de Proyectos**        | Los profesores pueden marcar proyectos como "verificados", separándolos del listado principal.                                                                                                                       |
+| **Pantalla de Verificados**          | Vista `/VerifiedProjects` lista los proyectos ya aprobados con opción de desmarcar.                                                                                                                                  |
+| **Buscador Dinámico**                | Filtrado en tiempo real por nombre de proyecto, nombre de estudiante o cédula en el dashboard del profesor.                                                                                                          |
+| **Roles JWT Mejorados**              | El JWT ahora incluye `id` y `role` del usuario. Endpoints protegidos con `@Auth(Role.USER, Role.PROFESSOR)`.                                                                                                         |
+| **Navbar Condicional**               | Menú de navegación adaptado según el rol: estudiantes ven instrucciones/resultados, profesores ven asignaciones y verificados.                                                                                       |
+| **CeipaLoader Animado**              | Animación de carga con ciclo mínimo garantizado de 8s en login y navegación entre pantallas.                                                                                                                         |
+| **Eliminación en Cascada**           | Borrar un proyecto elimina todos los datos relacionados (macros, costos, activos, resultados financieros).                                                                                                           |
+| **Microservicio Python Dockerizado** | FastAPI + LibreOffice Headless empaquetados en Alpine Linux para el cálculo financiero automatizado.                                                                                                                 |
+| **Comentarios por Pantalla**         | Los estudiantes pueden escribir análisis/comentarios en cada pantalla de resultados. Se guardan en columna JSON de la DB.                                                                                            |
+| **Generación de Reportes PDF**       | Endpoint `GET /api/v1/reports/project/:id` genera un PDF con todas las tablas financieras y comentarios del estudiante. Descargable desde la pantalla de Indicadores (estudiante) y desde el Dashboard del Profesor. |
+| **Expiración de Token JWT**          | El `ProtectedRoute` del frontend ahora decodifica el JWT y verifica su expiración. Si el token venció (4h), redirige a login automáticamente al recargar o navegar.                                                  |
 
 ---
 
@@ -218,3 +222,6 @@ Estas funcionalidades fueron integradas al sistema y están incluidas en el cicl
 7.  **Las nuevas columnas de verificación no aparecen en la DB**
     - **Causa:** `synchronize: true` puede no estar habilitado, o TypeORM no recargó el schema.
     - **Solución:** Reiniciar el contenedor de NestJS: `docker-compose restart backend-prod`. Si no funciona, agregar las columnas manualmente (ver sección de Base de Datos arriba).
+8.  **Error al generar el reporte PDF (500 Internal Server Error)**
+    - **Causa:** El proyecto no tiene resultados financieros guardados, o `pdfkit` no se instaló correctamente.
+    - **Solución:** Verificar que el proyecto tenga datos en `financial_result`. Si el error persiste, reconstruir la imagen de NestJS: `docker-compose up --build backend-prod`.
