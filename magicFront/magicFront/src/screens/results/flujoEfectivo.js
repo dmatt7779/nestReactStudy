@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../style/styles.css";
 import Footer from "../../components/Footer";
@@ -7,6 +7,7 @@ import tituloFlujoEfectivo from "../../images/titulo_flujo_efectivo.png";
 import tituloComentarios from "../../images/titulo_comentarios.png";
 import { DownloadCloud } from "lucide-react";
 import axiosClient from "../../utils/axios";
+import toast from "react-hot-toast";
 
 const FlujoEfectivo = () => {
   const navigate = useNavigate();
@@ -66,23 +67,22 @@ const FlujoEfectivo = () => {
 
   const [valores, setValores] = useState({});
   const [analisis, setAnalisis] = useState("");
+  const [allComments, setAllComments] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const savedComment = useRef("");
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
         if (resultadosCalculados && Object.keys(resultadosCalculados).length > 0) {
-          const result = resultadosCalculados.result;
-          console.log("📊 flujoEfectivo (navegación):", result.flujoEfectivo);
-          setValores(result);
-        } else {
-          console.log("🔄 Obteniendo resultados de la BD para projectId:", projectId);
-          const data = await axiosClient.getResults(projectId);
-          const result = data.result;
-          console.log("📊 flujoEfectivo (BD):", result.flujoEfectivo);
-          setValores(result);
+          setValores(resultadosCalculados.result);
         }
+        const data = await axiosClient.getResults(projectId);
+        setValores(data.result);
+        setAllComments(data.comments || {});
+        setAnalisis(data.comments?.flujoEfectivo || "");
+        savedComment.current = data.comments?.flujoEfectivo || "";
       } catch (error) {
         console.error("❌ Error cargando flujo de efectivo:", error);
       } finally {
@@ -90,11 +90,21 @@ const FlujoEfectivo = () => {
       }
     };
     loadData();
-  }, [projectId, resultadosCalculados]);
+  }, [projectId]);
 
-  const handleGuardar = (e) => {
+  const handleGuardar = async (e) => {
     e.preventDefault();
-    alert("Progreso guardado correctamente.");
+    if (analisis === savedComment.current) {
+      toast.success("No hay cambios que guardar.");
+      return;
+    }
+    try {
+      await axiosClient.saveComment(projectId, "flujoEfectivo", analisis);
+      savedComment.current = analisis;
+      toast.success("Comentario guardado correctamente.");
+    } catch (error) {
+      toast.error("Error al guardar el comentario.");
+    }
   };
 
   // Formatea un número como moneda COP con máximo 2 decimales
@@ -261,9 +271,15 @@ const FlujoEfectivo = () => {
               <button
                 className="nav-btn siguiente"
                 type="button"
-                onClick={() => navigate("/estadoSituaFin", {
-                  state: { projectId, openingYear, resultadosCalculados: valores ? { result: valores } : null }
-                })}
+                onClick={async () => {
+                  const updatedComments = { ...allComments, flujoEfectivo: analisis };
+                  if (analisis !== savedComment.current) {
+                    try { await axiosClient.saveComment(projectId, "flujoEfectivo", analisis); } catch(e) {}
+                  }
+                  navigate("/estadoSituaFin", {
+                    state: { projectId, openingYear, resultadosCalculados: valores ? { result: valores, comments: updatedComments } : null }
+                  });
+                }}
               ></button>
             </div>
           </div>

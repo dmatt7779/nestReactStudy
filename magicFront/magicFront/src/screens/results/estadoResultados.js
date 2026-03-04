@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../style/styles.css";
 import Footer from "../../components/Footer";
@@ -7,6 +7,7 @@ import tituloEstadoResultados from "../../images/titulo_estado_resultado.png";
 import tituloComentarios from "../../images/titulo_comentarios.png";
 import { DownloadCloud } from "lucide-react";
 import axiosClient from "../../utils/axios";
+import toast from "react-hot-toast";
 
 const EstadoResultados = () => {
   const navigate = useNavigate();
@@ -33,41 +34,24 @@ const EstadoResultados = () => {
 
   const [valores, setValores] = useState({});
   const [analisis, setAnalisis] = useState("");
+  const [allComments, setAllComments] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const savedComment = useRef("");
   
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        if (resultadosCalculados && Object.keys(resultadosCalculados).length > 0) {          
-          const result = resultadosCalculados.result;
-          console.log("📊 Datos recibidos por navegación (resultadosCalculados):", resultadosCalculados);
-          console.log("📌 estadoResultados:", result.estadoResultados);
-          console.log("📌 flujoEfectivo:", result.flujoEfectivo);
-          console.log("📌 EstadoSituacionFinanc:", result.EstadoSituacionFinanc);
-          console.log("📌 flujoCaja:", result.flujoCaja);
-          console.log("📌 wacc:", result.wacc);
-          console.log("📌 indLiquidez:", result.indLiquidez);
-          console.log("📌 indEndeudamiento:", result.indEndeudamiento);
-          console.log("📌 indRentabilidad:", result.indRentabilidad);
-          console.log("📌 excelPath:", result.excelPath);
-          setValores(result);
-        } else {
-          console.log("🔄 No hay datos en state. Obteniendo resultados de la BD para projectId:", projectId);
-          const data = await axiosClient.getResults(projectId);
-          const result = data.result;
-          console.log("📊 Datos obtenidos de la BD:", data);
-          console.log("📌 estadoResultados:", result.estadoResultados);
-          console.log("📌 flujoEfectivo:", result.flujoEfectivo);
-          console.log("📌 EstadoSituacionFinanc:", result.EstadoSituacionFinanc);
-          console.log("📌 flujoCaja:", result.flujoCaja);
-          console.log("📌 wacc:", result.wacc);
-          console.log("📌 indLiquidez:", result.indLiquidez);
-          console.log("📌 indEndeudamiento:", result.indEndeudamiento);
-          console.log("📌 indRentabilidad:", result.indRentabilidad);
-          console.log("📌 excelPath:", result.excelPath);
-          setValores(result);
+        // Set result from navigation state for instant table render
+        if (resultadosCalculados && Object.keys(resultadosCalculados).length > 0) {
+          setValores(resultadosCalculados.result);
         }
+        // Always fetch from DB to get the latest comments
+        const data = await axiosClient.getResults(projectId);
+        setValores(data.result);
+        setAllComments(data.comments || {});
+        setAnalisis(data.comments?.estadoResultados || "");
+        savedComment.current = data.comments?.estadoResultados || "";
       } catch (error) {
         console.error("❌ Error cargando datos:", error);
       } finally {
@@ -75,10 +59,21 @@ const EstadoResultados = () => {
       }
     };
     loadData();
-  }, [projectId, resultadosCalculados]);
+  }, [projectId]);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    if (analisis === savedComment.current) {
+      toast.success("No hay cambios que guardar.");
+      return;
+    }
+    try {
+      await axiosClient.saveComment(projectId, "estadoResultados", analisis);
+      savedComment.current = analisis;
+      toast.success("Comentario guardado correctamente.");
+    } catch (error) {
+      toast.error("Error al guardar el comentario.");
+    }
   };
 
   // Formatea un número como moneda COP
@@ -162,9 +157,15 @@ const EstadoResultados = () => {
 
             <div className="buttons-container">
               <button className="nav-btn anterior" onClick={() => navigate(-1)}></button>
-              <button className="nav-btn siguiente" onClick={() => navigate("/flujoEfectivo", {
-                state: { projectId, openingYear, resultadosCalculados: valores ? { result: valores } : null }
-              })}></button>
+              <button className="nav-btn siguiente" onClick={async () => {
+                const updatedComments = { ...allComments, estadoResultados: analisis };
+                if (analisis !== savedComment.current) {
+                  try { await axiosClient.saveComment(projectId, "estadoResultados", analisis); } catch(e) {}
+                }
+                navigate("/flujoEfectivo", {
+                  state: { projectId, openingYear, resultadosCalculados: valores ? { result: valores, comments: updatedComments } : null }
+                });
+              }}></button>
             </div>
           </form>
         </div>

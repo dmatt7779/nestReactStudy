@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../style/styles.css";
 import Footer from "../../components/Footer";
@@ -8,6 +8,7 @@ import tituloPuntoEqu from "../../images/punto_equ.png";
 import tituloComentarios from "../../images/titulo_comentarios.png";
 import { DownloadCloud } from "lucide-react";
 import axiosClient from "../../utils/axios";
+import toast from "react-hot-toast";
 
 const FlujoCaja = () => {
   const navigate = useNavigate();
@@ -57,23 +58,22 @@ const FlujoCaja = () => {
 
   const [valores, setValores] = useState({});
   const [analisis, setAnalisis] = useState("");
+  const [allComments, setAllComments] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const savedComment = useRef("");
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
         if (resultadosCalculados && Object.keys(resultadosCalculados).length > 0) {
-          const result = resultadosCalculados.result;
-          console.log("📊 flujoCaja (navegación):", result.flujoCaja);
-          setValores(result);
-        } else {
-          console.log("🔄 Obteniendo resultados de la BD para projectId:", projectId);
-          const data = await axiosClient.getResults(projectId);
-          const result = data.result;
-          console.log("📊 flujoCaja (BD):", result.flujoCaja);
-          setValores(result);
+          setValores(resultadosCalculados.result);
         }
+        const data = await axiosClient.getResults(projectId);
+        setValores(data.result);
+        setAllComments(data.comments || {});
+        setAnalisis(data.comments?.flujoCaja || "");
+        savedComment.current = data.comments?.flujoCaja || "";
       } catch (error) {
         console.error("❌ Error cargando flujo de caja:", error);
       } finally {
@@ -81,11 +81,21 @@ const FlujoCaja = () => {
       }
     };
     loadData();
-  }, [projectId, resultadosCalculados]);
+  }, [projectId]);
 
-  const handleGuardar = (e) => {
+  const handleGuardar = async (e) => {
     e.preventDefault();
-    alert("Progreso guardado correctamente.");
+    if (analisis === savedComment.current) {
+      toast.success("No hay cambios que guardar.");
+      return;
+    }
+    try {
+      await axiosClient.saveComment(projectId, "flujoCaja", analisis);
+      savedComment.current = analisis;
+      toast.success("Comentario guardado correctamente.");
+    } catch (error) {
+      toast.error("Error al guardar el comentario.");
+    }
   };
 
   
@@ -338,9 +348,15 @@ const FlujoCaja = () => {
             {/* Navegación */}
             <div className="buttons-container">
               <button className="nav-btn anterior" type="button" onClick={() => navigate(-1)}></button>
-              <button className="nav-btn siguiente" type="button" onClick={() => navigate("/wacc", {
-                state: { projectId, openingYear, resultadosCalculados: valores ? { result: valores } : null }
-              })}></button>
+              <button className="nav-btn siguiente" type="button" onClick={async () => {
+                const updatedComments = { ...allComments, flujoCaja: analisis };
+                if (analisis !== savedComment.current) {
+                  try { await axiosClient.saveComment(projectId, "flujoCaja", analisis); } catch(e) {}
+                }
+                navigate("/wacc", {
+                  state: { projectId, openingYear, resultadosCalculados: valores ? { result: valores, comments: updatedComments } : null }
+                });
+              }}></button>
             </div>
           </div>
         </form>

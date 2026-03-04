@@ -119,6 +119,26 @@ export class FinancialResultsService {
     return { verified: financialResult.verified, projectInfoId };
   }
 
+  async updateComments(projectInfoId: number, screenKey: string, comment: string, user: UserActiveInterface) {
+    const financialResult = await this.financialResultRepository.findOne({
+      where: { projectInfoId },
+    });
+
+    if (!financialResult) {
+      throw new NotFoundException('Financial result not found for this project');
+    }
+
+    await this.validateOwnership(financialResult, user);
+
+    // Merge: preservar comentarios existentes y actualizar solo la clave de esta pantalla
+    const currentComments = financialResult.comments || {};
+    currentComments[screenKey] = comment;
+    financialResult.comments = currentComments;
+
+    await this.financialResultRepository.save(financialResult);
+    return { comments: financialResult.comments, projectInfoId };
+  }
+
   private async validateOwnership(financialResult: FinancialResult, user: UserActiveInterface) {
     if (user.role === Role.ADMIN) return;
 

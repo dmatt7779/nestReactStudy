@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../style/styles.css";
 import Footer from "../../components/Footer";
@@ -9,6 +9,7 @@ import tituloGeneracion from "../../images/indi_ge_va.png";
 import tituloComentarios from "../../images/titulo_comentarios.png";
 import { DownloadCloud } from "lucide-react";
 import axiosClient from "../../utils/axios";
+import toast from "react-hot-toast";
 
 const Indicadores = () => {
   const navigate = useNavigate();
@@ -120,25 +121,22 @@ const Indicadores = () => {
 
   const [valores, setValores] = useState({});
   const [analisis, setAnalisis] = useState("");
+  const [allComments, setAllComments] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const savedComment = useRef("");
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
         if (resultadosCalculados && Object.keys(resultadosCalculados).length > 0) {
-          const result = resultadosCalculados.result;
-          console.log("📊 indRentabilidad (navegación):", result.indRentabilidad);
-          console.log("📊 indGeneracionValor (navegación):", result.indGeneracionValor);
-          setValores(result);
-        } else {
-          console.log("🔄 Obteniendo resultados de la BD para projectId:", projectId);
-          const data = await axiosClient.getResults(projectId);
-          const result = data.result;
-          console.log("📊 indRentabilidad (BD):", result.indRentabilidad);
-          console.log("📊 indGeneracionValor (BD):", result.indGeneracionValor);
-          setValores(result);
+          setValores(resultadosCalculados.result);
         }
+        const data = await axiosClient.getResults(projectId);
+        setValores(data.result);
+        setAllComments(data.comments || {});
+        setAnalisis(data.comments?.indicadores || "");
+        savedComment.current = data.comments?.indicadores || "";
       } catch (error) {
         console.error("❌ Error cargando Indicadores:", error);
       } finally {
@@ -146,11 +144,21 @@ const Indicadores = () => {
       }
     };
     loadData();
-  }, [projectId, resultadosCalculados]);
+  }, [projectId]);
 
-  const handleGuardar = (e) => {
+  const handleGuardar = async (e) => {
     e.preventDefault();
-    alert("Progreso guardado correctamente.");
+    if (analisis === savedComment.current) {
+      toast.success("No hay cambios que guardar.");
+      return;
+    }
+    try {
+      await axiosClient.saveComment(projectId, "indicadores", analisis);
+      savedComment.current = analisis;
+      toast.success("Comentario guardado correctamente.");
+    } catch (error) {
+      toast.error("Error al guardar el comentario.");
+    }
   };
 
   const formatCurrency = (value) => {

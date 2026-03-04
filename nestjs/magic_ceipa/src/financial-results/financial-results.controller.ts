@@ -68,4 +68,14 @@ export class FinancialResultsController {
   ) {
     return this.financialResultsService.toggleVerification(projectInfoId, user);
   }
+
+  @Patch('comments/project/:projectInfoId')
+  @Auth(Role.USER)
+  updateComments(
+    @Param('projectInfoId', ParseIntPipe) projectInfoId: number,
+    @Body() body: { screenKey: string; comment: string },
+    @ActiveUser() user: UserActiveInterface,
+  ) {
+    return this.financialResultsService.updateComments(projectInfoId, body.screenKey, body.comment, user);
+  }
 }

@@ -11,7 +11,6 @@ import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class FinancialResult {
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -53,4 +52,15 @@ export class FinancialResult {
 
   @Column({ type: 'datetime', nullable: true })
   verifiedAt: Date;
+
+  @Column({ type: 'json', nullable: true })
+  comments: {
+    estadoResultados?: string;
+    flujoEfectivo?: string;
+    estadoSituacionFinanc?: string;
+    flujoCaja?: string;
+    wacc?: string;
+    indiFinancieros?: string;
+    indicadores?: string;
+  };
 }
