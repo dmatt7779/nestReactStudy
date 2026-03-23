@@ -44,8 +44,8 @@ function ForgotPassword() {
         <div className="title-imagen"></div>
         <form className="login-form" onSubmit={handleSubmit}>
           
-          <h2 style={{color: 'white', textAlign: 'center', marginBottom: '20px'}}>Recuperar Contraseña</h2>
-          <p style={{color: '#ccc', textAlign: 'center', marginBottom: '30px', fontSize: '14px'}}>
+          <h2 className="forgot-password-title">Recuperar Contraseña</h2>
+          <p className="forgot-password-subtitle">
             Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.
           </p>
 
@@ -62,8 +62,8 @@ function ForgotPassword() {
             />
           </div>
 
-          {message && <p style={{ color: '#4caf50', fontSize: '14px', textAlign: 'center', margin: '10px 0' }}>{message}</p>}
-          {error && <p style={{ color: '#f44336', fontSize: '14px', textAlign: 'center', margin: '10px 0' }}>{error}</p>}
+          {message && <p className="form-success-msg" style={{margin: '10px 0', padding: 0}}>{message}</p>}
+          {error && <p className="form-error-msg" style={{margin: '10px 0', padding: 0}}>{error}</p>}
 
           <button type="submit" disabled={loading}>
             {loading ? 'Enviando...' : 'Enviar enlace de recuperación'}

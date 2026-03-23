@@ -28,9 +28,12 @@ function ResetPassword() {
         if (tokenParam) {
             setToken(tokenParam);
         } else {
-            setErrorServidor('Enlace inválido. No se encontró el token de seguridad en la URL.');
+            setErrorServidor('Enlace inválido. Serás redirigido al inicio...');
+            setTimeout(() => {
+                navigate('/');
+            }, 3000);
         }
-    }, [location]);
+    }, [location, navigate]);
 
     const validarContrasena = (pass1, pass2) => {
         if (pass1 !== pass2) {
@@ -45,7 +48,7 @@ function ResetPassword() {
         setErrorServidor('');
 
         if (!token) {
-            setErrorServidor('No hay un token válido. Por favor solicita un nuevo enlace.');
+            setErrorServidor('Enlace inválido. Por favor solicita un nuevo enlace.');
             return;
         }
 
@@ -77,7 +80,7 @@ function ResetPassword() {
 
         } catch (error) {
             console.error('Error al restablecer:', error.message);
-            setErrorServidor(error.message || "Error al restablecer la contraseña. El enlace puede haber expirado.");
+            setErrorServidor(error.message || "Error al restablecer la contraseña.");
         } finally {
             setLoading(false);
         }
@@ -89,8 +92,8 @@ function ResetPassword() {
             <img src={bgImage} alt="Restablecer Contraseña" className="register-background" />
             <div className='register-form-r'>
             <form onSubmit={handleSubmit}>
-                <h2 style={{color: '#1a237e', textAlign: 'center', marginBottom: '20px'}}>Crear Nueva Contraseña</h2>
-                <p style={{textAlign: 'center', marginBottom: '30px', color: '#666', fontSize: '14px'}}>
+                <h2 className="forgot-password-title">Crear Nueva Contraseña</h2>
+                <p className="forgot-password-subtitle">
                     Ingresa tu nueva contraseña para acceder a la plataforma.
                 </p>
 
@@ -130,13 +133,13 @@ function ResetPassword() {
 
                 {/* Notificaciones */}
                 {errorServidor && (
-                    <p style={{ color: 'red', fontSize: '14px', textAlign: 'center', padding: '10px 0' }}>{errorServidor}</p>
+                    <p className="form-error-msg">{errorServidor}</p>
                 )}
                 {mostrarErrorContrasena && (
-                    <p style={{ color: 'red', fontSize: '14px', textAlign: 'center', padding: '10px 0' }}>Las contraseñas no coinciden</p>
+                    <p className="form-error-msg">Las contraseñas no coinciden</p>
                 )}
                 {registroExitoso && (
-                    <p style={{ color: 'green', fontSize: '14px', textAlign: 'center', padding: '10px 0', fontWeight: 'bold' }}>
+                    <p className="form-success-msg">
                         ¡Contraseña actualizada exitosamente! Redirigiendo al login...
                     </p>
                 )}

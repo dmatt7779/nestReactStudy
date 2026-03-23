@@ -281,6 +281,36 @@ button:active {
   font-size: 14px;
 }
 
+/*---------------------------------- Styles Forgot Password ----------------------------------------*/
+
+.forgot-password-title {
+  color: #1a237e;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.forgot-password-subtitle {
+  color: #333;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 14px;
+}
+
+.form-success-msg {
+  color: #4caf50;
+  font-size: 14px;
+  text-align: center;
+  padding: 10px 0;
+  font-weight: bold;
+}
+
+.form-error-msg {
+  color: #f44336;
+  font-size: 14px;
+  text-align: center;
+  padding: 10px 0;
+}
+
 /*---------------------------------- navbar --------------------------------------------------*/
 
 .navbar {
