@@ -104,13 +104,11 @@ class AxiosClient {
   }
 
   async downloadReport(projectInfoId) {
-    const token = localStorage.getItem('token');
-    const baseUrl = process.env.REACT_APP_API_URL.replace(/\/$/, '');
-    const response = await fetch(`${baseUrl}/api/v1/reports/project/${projectInfoId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!response.ok) throw new Error('Error al generar el reporte');
-    const blob = await response.blob();
+    const response = await this.axiosInstance.get(
+      `api/v1/reports/project/${projectInfoId}`,
+      { responseType: 'blob' }
+    );
+    const blob = response instanceof Blob ? response : new Blob([response], { type: 'application/pdf' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;

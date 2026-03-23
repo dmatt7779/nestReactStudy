@@ -22,7 +22,6 @@ const extraerValor = (input) => {
 const limpiarNumero = (valor) => {
     const dato = extraerValor(valor);
     if (dato === null || dato === undefined) return "0";
-    // Preserve decimals: remove everything except digits, dots, and minus
     return String(dato).replace(/[^0-9.\-]/g, '') || "0";
 };
 

@@ -9,43 +9,60 @@ const formatWithThousands = (rawValue) => {
   return decPart !== undefined ? `${formatted},${decPart}` : formatted;
 };
 
-// Helper: strip thousand dots and convert display comma to raw dot
-// Input: "1.234.567,89" → Output: "1234567.89"
 const stripThousands = (displayValue) => {
-  // Remove all dots (thousand separators), then convert comma to dot (decimal)
   return displayValue.replace(/\./g, "").replace(/,/g, ".");
+};
+const toCommaDisplay = (rawValue) => {
+  if (!rawValue && rawValue !== "0") return "";
+  return String(rawValue).replace(".", ",");
+};
+
+// Helper: convert display value (with comma decimal) to raw with dot decimal
+// Input: "3,5" → Output: "3.5"
+const fromCommaDisplay = (displayValue) => {
+  return displayValue.replace(",", ".");
 };
 
 const CustomInput = ({ label, value, onChange, placeholder, type, options, name, disabled }) => {
   // Internal display state for number inputs (shows thousand separators)
   const [displayValue, setDisplayValue] = useState("");
+  // Internal display state for percentage inputs (shows comma as decimal)
+  const [percentDisplay, setPercentDisplay] = useState("");
   const isInternalChange = useRef(false);
 
   // Sync display value when the prop value changes externally
   useEffect(() => {
-    if (type === "number" && !isInternalChange.current) {
-      setDisplayValue(formatWithThousands(value || ""));
+    if (isInternalChange.current) {
+      isInternalChange.current = false;
+      return;
     }
-    isInternalChange.current = false;
+    if (type === "number") {
+      setDisplayValue(formatWithThousands(value || ""));
+    } else if (type === "percentage") {
+      setPercentDisplay(toCommaDisplay(value || ""));
+    }
   }, [value, type]);
 
   const handleChange = (e) => {
     let newValue = e.target.value;
 
     if (type === "percentage") {
-      // Reemplaza comas por puntos
-      newValue = newValue.replace(/,/g, ".");
-      // Permitir solo dígitos, punto y guion
-      newValue = newValue.replace(/[^0-9.\-]/g, "");
+      // Permitir solo dígitos, coma, punto y guion
+      newValue = newValue.replace(/[^0-9,.\-]/g, "");
+      // Convertir puntos a comas (el usuario puede escribir con . o ,)
+      newValue = newValue.replace(/\./g, ",");
       // Permitir solo un guion al inicio
       newValue = newValue.replace(/(?!^)-/g, "");
-      // Permitir solo un punto (si hay más, juntarlo)
-      const parts = newValue.split(".");
+      // Permitir solo una coma decimal
+      const parts = newValue.split(",");
       if (parts.length > 2) {
-        newValue = parts[0] + "." + parts.slice(1).join("");
+        newValue = parts[0] + "," + parts.slice(1).join("");
       }
-      // Allow unlimited decimals after the point
-      onChange(newValue);
+      // Actualizar display con coma
+      isInternalChange.current = true;
+      setPercentDisplay(newValue);
+      // Enviar al padre con punto decimal para el backend
+      onChange(fromCommaDisplay(newValue));
 
     } else if (type === "number") {
       // Strip existing thousand separators, keep comma as decimal
@@ -87,11 +104,24 @@ const CustomInput = ({ label, value, onChange, placeholder, type, options, name,
         setDisplayValue(formatted);
         onChange(raw);
       }
+    } else if (type === "percentage") {
+      // Limpiar comas al final (ej: "3," → "3")
+      let display = percentDisplay;
+      if (display.endsWith(",")) {
+        display = display.slice(0, -1);
+        isInternalChange.current = true;
+        setPercentDisplay(display);
+        onChange(fromCommaDisplay(display));
+      }
     }
   };
 
   // Determine what to show in the input
-  const inputValue = type === "number" ? displayValue : value;
+  const getInputValue = () => {
+    if (type === "number") return displayValue;
+    if (type === "percentage") return percentDisplay;
+    return value;
+  };
 
   return (
     <div className="custom-input-container">
@@ -117,7 +147,7 @@ const CustomInput = ({ label, value, onChange, placeholder, type, options, name,
           <div className="input-wrapper">
           <input
               type="text"
-              value={inputValue}
+              value={getInputValue()}
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder={placeholder}
