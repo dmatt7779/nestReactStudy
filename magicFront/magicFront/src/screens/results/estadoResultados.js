@@ -156,7 +156,7 @@ const EstadoResultados = () => {
             </div>
 
             <div className="buttons-container">
-              <button className="nav-btn anterior" onClick={() => navigate(-1)}></button>
+              <button className="nav-btn anterior" onClick={() => navigate(-1)}>&lt; Anterior</button>
               <button className="nav-btn siguiente" onClick={async () => {
                 const updatedComments = { ...allComments, estadoResultados: analisis };
                 if (analisis !== savedComment.current) {
@@ -165,7 +165,7 @@ const EstadoResultados = () => {
                 navigate("/flujoEfectivo", {
                   state: { projectId, openingYear, resultadosCalculados: valores ? { result: valores, comments: updatedComments } : null }
                 });
-              }}></button>
+              }}>Guardar y continuar &gt;</button>
             </div>
           </form>
         </div>

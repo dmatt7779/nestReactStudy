@@ -361,7 +361,7 @@ const PlanFinanciero = () => {
           </form>
 
           <div className="buttons-container">
-            <button type="button" className="nav-btn anterior" onClick={handleGoBack}></button>
+            <button type="button" className="nav-btn anterior" onClick={handleGoBack}>&lt; Anterior</button>
             <button 
                 type="button" 
                 className="nav-btn procesar" 

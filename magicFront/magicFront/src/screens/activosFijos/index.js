@@ -367,7 +367,7 @@ const ActivosFijos = () => {
                     
                     {/* BOTÓN CON VALIDACIÓN */}
                     <div className="buttons-container">
-                        <button type="button" className="nav-btn anterior" onClick={handleGoBack}></button>
+                        <button type="button" className="nav-btn anterior" onClick={handleGoBack}>&lt; Anterior</button>
                         <button 
                             type="button" 
                             className="nav-btn siguiente" 
@@ -377,7 +377,7 @@ const ActivosFijos = () => {
                                 opacity: formularioCompleto ? 1 : 0.5,
                                 cursor: formularioCompleto ? 'pointer' : 'not-allowed'
                             }}
-                        ></button>
+                        >Guardar y continuar &gt;</button>
                     </div>
                 </div>
             </div>

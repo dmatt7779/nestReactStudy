@@ -267,7 +267,7 @@ const FlujoEfectivo = () => {
             </div>
 
             <div className="buttons-container">
-              <button className="nav-btn anterior" type="button" onClick={() => navigate(-1)}></button>
+              <button className="nav-btn anterior" type="button" onClick={() => navigate(-1)}>&lt; Anterior</button>
               <button
                 className="nav-btn siguiente"
                 type="button"
@@ -280,7 +280,7 @@ const FlujoEfectivo = () => {
                     state: { projectId, openingYear, resultadosCalculados: valores ? { result: valores, comments: updatedComments } : null }
                   });
                 }}
-              ></button>
+              >Guardar y continuar &gt;</button>
             </div>
           </div>
         </form>

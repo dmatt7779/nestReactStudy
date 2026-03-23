@@ -301,7 +301,7 @@ const ProjectInfo = () => {
           </div>
 
           <div className="buttons-container">
-            <button className="nav-btn anterior" onClick={handleGoBack}></button>
+            <button className="nav-btn anterior" onClick={handleGoBack}>&lt; Anterior</button>
             <button
               className="nav-btn siguiente"
               onClick={handleSubmit}
@@ -310,7 +310,7 @@ const ProjectInfo = () => {
                 opacity: formularioCompleto ? 1 : 0.5,
                 cursor: formularioCompleto ? 'pointer' : 'not-allowed'
               }}
-            ></button>
+            >Guardar y continuar &gt;</button>
           </div>
         </div>
       </div>

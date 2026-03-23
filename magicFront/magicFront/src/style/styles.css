@@ -507,35 +507,43 @@ button:active {
 }
 
 .nav-btn {
-  background: none;
+  background-color: #f39c12;
+  color: white;
   border: none;
+  border-radius: 25px;
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
-  width: 120px;
-  height: 40px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  transition: transform 0.2s ease-in-out;
+  padding: 10px 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: all 0.2s ease-in-out;
+  min-width: 140px;
+}
+
+.nav-btn:hover:not(:disabled) {
+  background-color: #e67e22;
+  transform: scale(1.05);
+  box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+}
+
+.nav-btn:disabled {
+  background-color: #e0e0e0;
+  color: #a0a0a0;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
 .anterior {
-  background-image: url("../images/bt_anterior.png");
-}
-
-.anterior:hover {
-  background-image: url("../images/bt_anterior_hover.png");
-  background-color: transparent !important;
-  box-shadow: none !important;
+  background-color: #f39c12;
 }
 
 .siguiente {
-  background-image: url("../images/bt_siguiente.png");
-}
-
-.siguiente:hover {
-  background-image: url("../images/bt_siguiente_hover.png");
-  background-color: transparent !important;
-  box-shadow: none !important;
+  background-color: #f39c12;
 }
 
 .procesar {
