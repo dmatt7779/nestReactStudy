@@ -55,4 +55,26 @@ export class UsersService {
   async remove(id: number) {
     return `This action removes a #${id} user`;
   }
+
+  async saveResetToken(userId: number, hashedToken: string, expiry: Date) {
+    await this.userRepository.update(userId, {
+      resetToken: hashedToken,
+      resetTokenExpiry: expiry,
+    });
+  }
+
+  async findByValidResetToken(hashedToken: string) {
+    return await this.userRepository.createQueryBuilder('user')
+      .where('user.resetToken = :hashedToken', { hashedToken })
+      .andWhere('user.resetTokenExpiry > :now', { now: new Date() })
+      .getOne();
+  }
+
+  async updatePassword(userId: number, hashedPassword: string) {
+    await this.userRepository.update(userId, {
+      password: hashedPassword,
+      resetToken: null,
+      resetTokenExpiry: null,
+    });
+  }
 }

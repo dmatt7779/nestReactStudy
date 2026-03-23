@@ -60,6 +60,8 @@ class AxiosClient {
 
   async register(userData) { return await this.axiosInstance.post('api/v1/auth/register', userData); }
   async login(userData) { return await this.axiosInstance.post('api/v1/auth/login', userData); }
+  async forgotPassword(data) { return await this.axiosInstance.post('api/v1/auth/forgot-password', data); }
+  async resetPassword(data) { return await this.axiosInstance.post('api/v1/auth/reset-password', data); }
   async get(url, config = {}) { return await this.axiosInstance.get(url, config); }
   async getProfessors() { return await this.axiosInstance.get('api/v1/users/professors'); }
   async getProfessorProjects() { return await this.axiosInstance.get('api/v1/project-info/professor/dashboard'); }

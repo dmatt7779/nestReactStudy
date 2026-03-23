@@ -108,7 +108,6 @@ REACT_APP_PY_APP_API_URL=http://<TU_IP_O_DOMINIO>:3007
 
 Variables del Backend NestJS. Este archivo es leído en **runtime** por el contenedor.
 
-```env
 CORS_ORIGIN=http://<TU_IP_O_DOMINIO>:3005
 MAGIC_PORT=3006
 DB_HOST=<IP_DEL_HOST_MYSQL>
@@ -116,16 +115,28 @@ DB_PORT=3307
 DB_USERNAME=<USUARIO_DB_PROD>
 DB_PASSWORD=<CONTRASEÑA_DB_PROD>
 DB_DATABASE=db_magic
-```
+MAIL_HOST=smtp.office365.com
+MAIL_PORT=587
+MAIL_USER=tu-email@ceipa.edu.co
+MAIL_PASS=tu-app-password
+MAIL_FROM="Magic CEIPA <no-reply@ceipa.edu.co>"
+FRONTEND_URL=http://<TU_IP_O_DOMINIO>:3005
 
-| Variable      | Qué cambiar                                                                                                 |
-| :------------ | :---------------------------------------------------------------------------------------------------------- |
-| `CORS_ORIGIN` | ⚠️ **Obligatorio.** Cambiar `localhost` por IP/Dominio. Si no, el backend bloqueará peticiones CORS.        |
-| `DB_HOST`     | En Linux nativo (sin Docker Desktop), cambiar `host.docker.internal` a la IP del host MySQL o `172.17.0.1`. |
-| `DB_PORT`     | Ajustar si tu MySQL corre en otro puerto.                                                                   |
-| `DB_USERNAME` | Credenciales de tu base de datos de producción.                                                             |
-| `DB_PASSWORD` | Credenciales de tu base de datos de producción.                                                             |
-| `DB_DATABASE` | Nombre de la base de datos de producción.                                                                   |
+| Variable       | Qué cambiar                                                                                                 |
+| :------------- | :---------------------------------------------------------------------------------------------------------- |
+| `CORS_ORIGIN`  | ⚠️**Obligatorio.** Cambiar `localhost` por IP/Dominio. Si no, el backend bloqueará peticiones CORS.         |
+| `DB_HOST`      | En Linux nativo (sin Docker Desktop), cambiar `host.docker.internal` a la IP del host MySQL o `172.17.0.1`. |
+| `DB_PORT`      | Ajustar si tu MySQL corre en otro puerto.                                                                   |
+| `DB_USERNAME`  | Credenciales de tu base de datos de producción.                                                             |
+| `DB_PASSWORD`  | Credenciales de tu base de datos de producción.                                                             |
+| `DB_DATABASE`  | Nombre de la base de datos de producción.                                                                   |
+| `MAIL_*`       | Configuración SMTP para enviar emails de recuperación de contraseña.                                        |
+| `FRONTEND_URL` | Requerido para crear el enlace correcto en el correo de recuperación hacia el frontend.                     |
+
+> 💡 **Tip para correos institucionales de Microsoft 365 / Outlook:**
+> CEIPA utiliza la suite de Microsoft. Para el envío de correos debes asegurar dos cosas:
+> 1. El host SMTP es `smtp.office365.com` por el puerto `587`.
+> 2. Si la cuenta corporativa tiene verificación en 2 pasos (MFA), la contraseña normal **no funcionará**. El propietario de la cuenta deberá generar una **Contraseña de Aplicación (App Password)** desde la configuración de seguridad de Microsoft e insertarla en la variable `MAIL_PASS`.
 
 ### 📄 3. `/home/dtc_user/docker/magic/docker-compose.prod.yml`
 
@@ -154,6 +165,9 @@ TypeORM está configurado con `synchronize: true` en `app.module.ts`, lo que sig
 > ALTER TABLE financial_result ADD COLUMN verifiedBy INT NULL;
 > ALTER TABLE financial_result ADD COLUMN verifiedAt DATETIME NULL;
 > ALTER TABLE financial_result ADD COLUMN comments JSON NULL;
+>
+> ALTER TABLE user ADD COLUMN resetToken VARCHAR(255) NULL;
+> ALTER TABLE user ADD COLUMN resetTokenExpiry DATETIME NULL;
 > ```
 
 ---
@@ -176,6 +190,7 @@ Estas funcionalidades fueron integradas al sistema y están incluidas en el cicl
 | **Comentarios por Pantalla**         | Los estudiantes pueden escribir análisis/comentarios en cada pantalla de resultados. Se guardan en columna JSON de la DB.                                                                                            |
 | **Generación de Reportes PDF**       | Endpoint `GET /api/v1/reports/project/:id` genera un PDF con todas las tablas financieras y comentarios del estudiante. Descargable desde la pantalla de Indicadores (estudiante) y desde el Dashboard del Profesor. |
 | **Expiración de Token JWT**          | El `ProtectedRoute` del frontend ahora decodifica el JWT y verifica su expiración. Si el token venció (4h), redirige a login automáticamente al recargar o navegar.                                                  |
+| **Recuperación de Contraseña**       | Flujo completo de recuperación por correo electrónico con token temporal (15 min) utilizando `@nestjs-modules/mailer`. Dos nuevas pantallas en React para envío de link y restablecimiento seguro.                   |
 
 ---
 
@@ -198,30 +213,30 @@ Estas funcionalidades fueron integradas al sistema y están incluidas en el cicl
 
 ## ⚠️ Posibles Fallas y Soluciones (Troubleshooting)
 
-1.  **Error: "Port is already allocated" o EADDRINUSE**
-    - **Causa:** Otra aplicación ya está usando los puertos configurados (3005, 3006 o 3007).
-    - **Solución:** Ve al `docker-compose.yml` o `docker-compose.prod.yml` y cambia el puerto del Host (el número a la izquierda de los dos puntos `:`) a otro número libre.
-2.  **Los paquetes NPM instalados en local dan conflicto y el contenedor se rompe**
-    - **Causa:** Tu subida accidental de tu `node_modules` de macOS mezclado con el entorno Alpine Linux del contenedor.
-    - **Solución:** Los archivos `.dockerignore` previenen esto, pero si un volumen lo sobreescribió, corre:
-      `docker-compose down -v` (Esto borra los volúmenes para que empiece de cero) y vuelve a correr `docker-compose up --build`.
-3.  **Cambios en el código no se refrescan en desarrollo (React o NestJS)**
-    - **Causa:** Los volúmenes en `docker-compose.yml` no están apuntando al directorio correcto de tu proyecto.
-    - **Solución:** Verifica que la ruta `./nestjs/magic_ceipa` y `./magicFront/magicFront` del lado izquierdo del `:` correspondan exactamente a los nombres de tus carpetas en relación a donde corres el comando.
-4.  **Error al "Instalar" dependencias con NPM (ELIFECYCLE, ENOENT)**
-    - **Causa:** Puede deberse a caché corrompida durante el build original.
-    - **Solución:** Reconstruye las imágenes sin el caché previo: `docker-compose build --no-cache` o elimina toda tu carpeta en tu S.O anfitrión `node_modules` y `package-lock.json` e intenta de nuevo.
-5.  **¿Qué pasa con la carpeta `excel_templates/` en el proyecto de Python con Docker?**
-    - **Arquitectura:** El código internamente (`ExcelTemplateManager`) accede a sus plantillas mediante una ruta relativa.
-    - **En Desarrollo:** Gracias al volumen que mapea `./planfin_microservice:/app`, el contenedor de Python lee tu misma carpeta local en tiempo real. Si editas u ocupas un Excel nuevo, el contenedor lo procesará al instante.
-    - **En Producción:** El Dockerfile utiliza `COPY . /app`, por lo que todos los `excel_templates` son "empaquetados y congelados" directamente dentro del contenedor inyectado con Linux y Libreoffice.
-    - **Procesamiento de Macros (LibreOffice):** Cuando NestJS envía datos, Python inyecta los json al Excel base, llama a **LibreOffice Headless** directamente dentro de la máquina virtual Alpine Linux del contenedor interactuando con el kernel del sistema para re-calcular las celdas formuladas (WACC, VPN, etc.), las extrae y retorna por JSON al intermediario NestJS.
-6.  **Error 403 Forbidden al acceder desde el Dashboard del Profesor**
-    - **Causa:** El profesor no está asignado al proyecto o el endpoint no tiene el decorador `@Auth(Role.PROFESSOR)`.
-    - **Solución:** Verificar que el `id` del profesor esté en el array `professor` del `ProjectInfo`.
-7.  **Las nuevas columnas de verificación no aparecen en la DB**
-    - **Causa:** `synchronize: true` puede no estar habilitado, o TypeORM no recargó el schema.
-    - **Solución:** Reiniciar el contenedor de NestJS: `docker-compose restart backend-prod`. Si no funciona, agregar las columnas manualmente (ver sección de Base de Datos arriba).
-8.  **Error al generar el reporte PDF (500 Internal Server Error)**
-    - **Causa:** El proyecto no tiene resultados financieros guardados, o `pdfkit` no se instaló correctamente.
-    - **Solución:** Verificar que el proyecto tenga datos en `financial_result`. Si el error persiste, reconstruir la imagen de NestJS: `docker-compose up --build backend-prod`.
+1. **Error: "Port is already allocated" o EADDRINUSE**
+   - **Causa:** Otra aplicación ya está usando los puertos configurados (3005, 3006 o 3007).
+   - **Solución:** Ve al `docker-compose.yml` o `docker-compose.prod.yml` y cambia el puerto del Host (el número a la izquierda de los dos puntos `:`) a otro número libre.
+2. **Los paquetes NPM instalados en local dan conflicto y el contenedor se rompe**
+   - **Causa:** Tu subida accidental de tu `node_modules` de macOS mezclado con el entorno Alpine Linux del contenedor.
+   - **Solución:** Los archivos `.dockerignore` previenen esto, pero si un volumen lo sobreescribió, corre:
+     `docker-compose down -v` (Esto borra los volúmenes para que empiece de cero) y vuelve a correr `docker-compose up --build`.
+3. **Cambios en el código no se refrescan en desarrollo (React o NestJS)**
+   - **Causa:** Los volúmenes en `docker-compose.yml` no están apuntando al directorio correcto de tu proyecto.
+   - **Solución:** Verifica que la ruta `./nestjs/magic_ceipa` y `./magicFront/magicFront` del lado izquierdo del `:` correspondan exactamente a los nombres de tus carpetas en relación a donde corres el comando.
+4. **Error al "Instalar" dependencias con NPM (ELIFECYCLE, ENOENT)**
+   - **Causa:** Puede deberse a caché corrompida durante el build original.
+   - **Solución:** Reconstruye las imágenes sin el caché previo: `docker-compose build --no-cache` o elimina toda tu carpeta en tu S.O anfitrión `node_modules` y `package-lock.json` e intenta de nuevo.
+5. **¿Qué pasa con la carpeta `excel_templates/` en el proyecto de Python con Docker?**
+   - **Arquitectura:** El código internamente (`ExcelTemplateManager`) accede a sus plantillas mediante una ruta relativa.
+   - **En Desarrollo:** Gracias al volumen que mapea `./planfin_microservice:/app`, el contenedor de Python lee tu misma carpeta local en tiempo real. Si editas u ocupas un Excel nuevo, el contenedor lo procesará al instante.
+   - **En Producción:** El Dockerfile utiliza `COPY . /app`, por lo que todos los `excel_templates` son "empaquetados y congelados" directamente dentro del contenedor inyectado con Linux y Libreoffice.
+   - **Procesamiento de Macros (LibreOffice):** Cuando NestJS envía datos, Python inyecta los json al Excel base, llama a **LibreOffice Headless** directamente dentro de la máquina virtual Alpine Linux del contenedor interactuando con el kernel del sistema para re-calcular las celdas formuladas (WACC, VPN, etc.), las extrae y retorna por JSON al intermediario NestJS.
+6. **Error 403 Forbidden al acceder desde el Dashboard del Profesor**
+   - **Causa:** El profesor no está asignado al proyecto o el endpoint no tiene el decorador `@Auth(Role.PROFESSOR)`.
+   - **Solución:** Verificar que el `id` del profesor esté en el array `professor` del `ProjectInfo`.
+7. **Las nuevas columnas de verificación no aparecen en la DB**
+   - **Causa:** `synchronize: true` puede no estar habilitado, o TypeORM no recargó el schema.
+   - **Solución:** Reiniciar el contenedor de NestJS: `docker-compose restart backend-prod`. Si no funciona, agregar las columnas manualmente (ver sección de Base de Datos arriba).
+8. **Error al generar el reporte PDF (500 Internal Server Error)**
+   - **Causa:** El proyecto no tiene resultados financieros guardados, o `pdfkit` no se instaló correctamente.
+   - **Solución:** Verificar que el proyecto tenga datos en `financial_result`. Si el error persiste, reconstruir la imagen de NestJS: `docker-compose up --build backend-prod`.

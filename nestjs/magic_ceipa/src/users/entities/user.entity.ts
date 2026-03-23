@@ -21,6 +21,12 @@ export class User {
     @Column({type: 'enum', default: Role.USER, enum: Role})
     role: string;
 
+    @Column({ nullable: true, select: false })
+    resetToken: string;
+
+    @Column({ type: 'datetime', nullable: true })
+    resetTokenExpiry: Date;
+
     @DeleteDateColumn()
     deleteAt: Date;
 }

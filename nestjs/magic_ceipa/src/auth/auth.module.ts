@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants/jwt.constant';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -12,7 +13,23 @@ import { jwtConstants } from './constants/jwt.constant';
       global: true,
       secret: jwtConstants.secret,
       signOptions: {expiresIn: '4h'}
-    })
+    }),
+    MailerModule.forRootAsync({
+      useFactory: () => ({
+        transport: {
+          host: process.env.MAIL_HOST || 'smtp.gmail.com',
+          port: Number(process.env.MAIL_PORT) || 587,
+          secure: process.env.MAIL_SECURE === 'true',
+          auth: {
+            user: process.env.MAIL_USER,
+            pass: process.env.MAIL_PASS,
+          },
+        },
+        defaults: {
+          from: process.env.MAIL_FROM || '"Magic CEIPA" <no-reply@ceipa.edu.co>',
+        },
+      }),
+    }),
   ],
   controllers: [AuthController],
   providers: [AuthService]

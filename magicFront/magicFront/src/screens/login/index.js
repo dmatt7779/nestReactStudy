@@ -96,7 +96,7 @@ function Login() {
             <label>
               <input type="checkbox" /> Recuerdame
             </label>
-            <a href="aquiVaLaUrlparaRecuperarContrasena">Olvidé contraseña</a>
+            <Link to="/forgot-password" style={{ color: '#1a237e', textDecoration: 'none', fontSize: '14px', fontWeight: 'bold' }}>Olvidé contraseña</Link>
           </div>
 
           {/* Botón de enviar con indicador de carga */}

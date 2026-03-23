@@ -4,6 +4,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Login from './screens/login';
 import Register from './screens/register';
+import ForgotPassword from './screens/forgotPassword';
+import ResetPassword from './screens/resetPassword';
 import NewProject from './screens/newProject';
 import ProjectInfo from './screens/projectInfo';
 import ProyeccionMacro from './screens/proyeccionMacro';
@@ -37,6 +39,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} /> 
         <Route path="/register" element={<Register />} /> 
+        <Route path="/forgot-password" element={<ForgotPassword />} /> 
+        <Route path="/reset-password" element={<ResetPassword />} /> 
         
         <Route element={<ProtectedRoute />}>
           <Route path="/ProjectInfo" element={<ProjectInfo />} /> 
