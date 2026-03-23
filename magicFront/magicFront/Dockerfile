@@ -23,6 +23,8 @@ RUN npm run build
 
 # Production stage - Using NGINX
 FROM nginx:alpine AS production
+# Copy custom Nginx configuration to support React Router (Fixes 404 on refresh/redirects)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Copy the built index.html and static assets from previous stage into Nginx
 COPY --from=build /usr/src/app/build /usr/share/nginx/html
 
