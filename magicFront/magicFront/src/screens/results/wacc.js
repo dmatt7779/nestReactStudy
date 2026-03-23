@@ -9,9 +9,11 @@ import tituloComentarios from "../../images/titulo_comentarios.png";
 import { DownloadCloud } from "lucide-react";
 import axiosClient from "../../utils/axios";
 import toast from "react-hot-toast";
+import { useRole } from "../../hooks/useRole";
 
 const Wacc = () => {
   const navigate = useNavigate();
+  const { isProfessor } = useRole();
   const location = useLocation();
 
   const projectId = location.state?.projectId || sessionStorage.getItem("currentProjectId");
@@ -67,6 +69,7 @@ const Wacc = () => {
 
   const handleGuardar = async (e) => {
     e.preventDefault();
+    if (isProfessor) return;
     if (analisis === savedComment.current) {
       toast.success("No hay cambios que guardar.");
       return;
@@ -215,11 +218,14 @@ const Wacc = () => {
                 placeholder="Escribe aquí tu análisis..."
                 value={analisis}
                 onChange={(e) => setAnalisis(e.target.value)}
+                  readOnly={isProfessor}
+                  style={{ backgroundColor: isProfessor ? "#f9f9f9" : "white" }}
               />
             </div>
 
             {/* Guardar */}
-            <div className="guardar-avance-wrapper">
+            {!isProfessor && (
+              <div className="guardar-avance-wrapper">
               <button type="submit" className="guardar-avance-container">
                 <span className="guardar-avance-texto">
                   <strong>Antes de seguir</strong>, asegúrate de guardar tu progreso. Haz clic aquí para no perder tu avance.
@@ -227,19 +233,20 @@ const Wacc = () => {
                 <div className="guardar-avance-icono"><DownloadCloud size={24} /></div>
               </button>
             </div>
+            )}
 
             {/* Navegación */}
             <div className="buttons-container">
               <button className="nav-btn anterior" type="button" onClick={() => navigate(-1)}>&lt; Anterior</button>
               <button className="nav-btn siguiente" type="button" onClick={async () => {
                 const updatedComments = { ...allComments, wacc: analisis };
-                if (analisis !== savedComment.current) {
+                if (!isProfessor && analisis !== savedComment.current) {
                   try { await axiosClient.saveComment(projectId, "wacc", analisis); } catch(e) {}
                 }
                 navigate("/indiFinancieros", {
                   state: { projectId, openingYear, resultadosCalculados: valores ? { result: valores, comments: updatedComments } : null }
                 });
-              }}>Guardar y continuar &gt;</button>
+              }}>{isProfessor ? 'Continuar >' : 'Guardar y continuar >'}</button>
             </div>
           </div>
         </form>
