@@ -32,7 +32,7 @@ function App() {
         reverseOrder={false} 
         containerStyle={{ zIndex: 99999 }}
         toastOptions={{ 
-            duration: 6000,
+            duration: 3000,
             style: { zIndex: 99999 }
         }} 
       />
