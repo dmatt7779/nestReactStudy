@@ -195,7 +195,7 @@ const ProjectInfo = () => {
         </div>
         <div className="contenido-container">        
           <h4>¿Estas preparado para iniciar?</h4>
-          <p>A continuación, te invito a diligenciar los datos preliminares...</p>
+          <p>A continuación, te invito a diligenciar los datos preliminares. Por favor, asegúrate de que la información ingresada cumpla con los criterios de selección y calidad establecidos.</p>
           <div className="section">
             <img src={tituloProyectoImg} alt="Creación de un nuevo proyecto" className="section-img1" />
           </div>
