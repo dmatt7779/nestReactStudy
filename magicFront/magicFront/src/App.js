@@ -1,6 +1,7 @@
 import './App.css';
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import Login from './screens/login';
 import Register from './screens/register';
@@ -24,9 +25,19 @@ import ProfessorDashboard from './screens/professorDashboard';
 import VerifiedProjects from './screens/verifiedProjects';
 import ProtectedRoute from './components/ProtectedRoute';
 
+// Lleva el scroll al tope en cada cambio de ruta
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [pathname]);
+  return null;
+}
+
 function App() {
   return(
     <BrowserRouter> 
+      <ScrollToTop />
       <Toaster 
         position="top-right" 
         reverseOrder={false} 
