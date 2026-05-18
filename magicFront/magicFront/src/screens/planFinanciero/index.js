@@ -30,21 +30,111 @@ const PlanFinanciero = () => {
 
   // --- 2. CONFIGURACIÓN DE CAMPOS ---
   const campos = [
-    { nombre: "Disponible inicial", id: "disponibleInicial", tipo: "number", descripcion: "..." },
-    { nombre: "Días de inventario inicial", id: "diasInventarioInicial", tipo: "number", descripcion: "..." },
-    { nombre: "Financiación propia", id: "financiacionPropia", tipo: "number", descripcion: "..." },
-    { nombre: "Plazo del crédito (meses)", id: "plazoCredito", tipo: "number", descripcion: "..." },
-    { nombre: "Tasa del crédito (% E.A.)", id: "tasaCredito", tipo: "percentage", descripcion: "..." },
-    { nombre: "Costo proveedores (% E.A.)", id: "tasaProveedores", tipo: "percentage", descripcion: "..." },
-    { nombre: "TMRR o COK (% E.A.)", id: "tmrr", tipo: "percentage", descripcion: "..." },
-    { nombre: "Tasa de Reinversión (% E.A.)", id: "tasaReinversion", tipo: "percentage", descripcion: "..." },
-    { nombre: "Tasa impuestos de Renta (%)", id: "impuestosRenta", tipo: "percentage", descripcion: "..." },
-    { nombre: "Días cartera", id: "diasCartera", tipo: "number", descripcion: "..." },
-    { nombre: "Días inventario", id: "diasInventario", tipo: "number", descripcion: "..." },
-    { nombre: "Días pago a proveedores", id: "diasPagoProveedores", tipo: "number", descripcion: "..." },
-    { nombre: "Tarifa Ind y Ccio (%)", id: "tarfiaIndCcio", tipo: "percentage", descripcion: "..." },
-    { nombre: "GMF (4 x mil)", id: "gmf4xmil", tipo: "percentage", descripcion: "..." },
-    { nombre: "Saldo mínimo caja", id: "saldoMinCaja", tipo: "number", descripcion: "..." },
+    {
+      nombre: "Disponible inicial",
+      id: "disponibleInicial",
+      tipo: "number",
+      placeholder: "Ej: $5.000.000",
+      descripcion: "Saldo de caja o efectivo disponible al inicio del proyecto (año 0).",
+    },
+    {
+      nombre: "Días de inventario inicial",
+      id: "diasInventarioInicial",
+      tipo: "number",
+      placeholder: "Ej: 30",
+      descripcion: "Número de días de ventas que se mantendrán como inventario inicial antes de arrancar operaciones.",
+    },
+    {
+      nombre: "Financiación propia",
+      id: "financiacionPropia",
+      tipo: "number",
+      placeholder: "Ej: $20.000.000",
+      descripcion: "Monto total en pesos que los socios aportarán como capital propio al proyecto.",
+    },
+    {
+      nombre: "Plazo del crédito (meses)",
+      id: "plazoCredito",
+      tipo: "number",
+      placeholder: "Ej: 36",
+      descripcion: "Número de meses pactados para pagar el crédito bancario solicitado.",
+    },
+    {
+      nombre: "Tasa del crédito (% E.A.)",
+      id: "tasaCredito",
+      tipo: "percentage",
+      placeholder: "Ej: 18%",
+      descripcion: "Tasa de interés anual efectiva del crédito financiero. Ejemplo: 18% E.A.",
+    },
+    {
+      nombre: "Costo proveedores (% E.A.)",
+      id: "tasaProveedores",
+      tipo: "percentage",
+      placeholder: "Ej: 12%",
+      descripcion: "Costo financiero anual del crédito otorgado por los proveedores (descuento por pronto pago o mora).",
+    },
+    {
+      nombre: "TMRR o COK (% E.A.)",
+      id: "tmrr",
+      tipo: "percentage",
+      placeholder: "Ej: 20%",
+      descripcion: "Tasa Mínima Requerida de Retorno o Costo de Oportunidad del Capital. Es el rendimiento mínimo exigido por los inversionistas.",
+    },
+    {
+      nombre: "Tasa de Reinversión (% E.A.)",
+      id: "tasaReinversion",
+      tipo: "percentage",
+      placeholder: "Ej: 8%",
+      descripcion: "Tasa a la que se reinvertirán los excedentes de caja del proyecto (generalmente la tasa de mercado o CDT).",
+    },
+    {
+      nombre: "Tasa impuestos de Renta (%)",
+      id: "impuestosRenta",
+      tipo: "percentage",
+      placeholder: "Ej: 35%",
+      descripcion: "Porcentaje de impuesto de renta vigente que pagará la empresa sobre su utilidad gravable.",
+    },
+    {
+      nombre: "Días cartera",
+      id: "diasCartera",
+      tipo: "number",
+      placeholder: "Ej: 30",
+      descripcion: "Número promedio de días que tarda la empresa en cobrar sus ventas a crédito a los clientes.",
+    },
+    {
+      nombre: "Días inventario",
+      id: "diasInventario",
+      tipo: "number",
+      placeholder: "Ej: 15",
+      descripcion: "Número promedio de días que la empresa mantiene existencias antes de venderlas o consumirlas.",
+    },
+    {
+      nombre: "Días pago a proveedores",
+      id: "diasPagoProveedores",
+      tipo: "number",
+      placeholder: "Ej: 30",
+      descripcion: "Número promedio de días que la empresa demora en pagar a sus proveedores de materias primas o mercancías.",
+    },
+    {
+      nombre: "Tarifa Ind y Ccio (%)",
+      id: "tarfiaIndCcio",
+      tipo: "percentage",
+      placeholder: "Ej: 5%",
+      descripcion: "Tarifa del impuesto de Industria y Comercio aplicable al municipio donde opera el negocio.",
+    },
+    {
+      nombre: "GMF (4 x mil)",
+      id: "gmf4xmil",
+      tipo: "percentage",
+      placeholder: "0.4%",
+      descripcion: "Gravamen a los Movimientos Financieros. Equivale al 0.4% sobre cada transacción bancaria. Normalmente 0.4%.",
+    },
+    {
+      nombre: "Saldo mínimo caja",
+      id: "saldoMinCaja",
+      tipo: "number",
+      placeholder: "Ej: $50.000.000",
+      descripcion: "Monto mínimo de efectivo que el proyecto debe mantener siempre disponible para cubrir gastos operativos del día a día.",
+    },
   ];
 
   // --- 3. STATE ---
@@ -258,7 +348,7 @@ const PlanFinanciero = () => {
           <form onSubmit={handleSubmit} style={{ width: "100%" }}>
             
             <div className="formulario-datos">
-              {campos.map(({ nombre, id, tipo, descripcion }) => (
+              {campos.map(({ nombre, id, tipo, descripcion, placeholder }) => (
                 <div key={id} className="bloque-dato">
                   <div className="bloque-info">
                     <label htmlFor={id} className="titulo-dato">
@@ -271,6 +361,7 @@ const PlanFinanciero = () => {
                         id={id} 
                         type={tipo} 
                         value={datos[id]} 
+                        placeholder={placeholder}
                         onChange={(valor) => manejarCambio(id, valor)} 
                     />
                   </div>
