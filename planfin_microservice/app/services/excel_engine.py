@@ -317,7 +317,9 @@ class ExcelInputWriter:
             self._write_vector_col(ws, row_start=191, col=2, values=nombres_costos)
             valores_costos = [costo.get("valor") for costo in costos]
             self._write_vector_col(ws, row_start=191, col=4, values=valores_costos)
-
+        
+        self._write_scalar(ws, "D208", payload, ["costosGastos", "gastosConstitucion"])
+        
         gastos = self._pick(
             payload,
             ["costosGastos", "gastos"],
@@ -325,9 +327,9 @@ class ExcelInputWriter:
         ) or []
         if isinstance(gastos, list) and gastos:
             nombres_gastos = [gasto.get("nombre") for gasto in gastos]
-            self._write_vector_col(ws, row_start=208, col=2, values=nombres_gastos)
+            self._write_vector_col(ws, row_start=209, col=2, values=nombres_gastos)
             valores_gastos = [gasto.get("valor") for gasto in gastos]
-            self._write_vector_col(ws, row_start=208, col=4, values=valores_gastos)
+            self._write_vector_col(ws, row_start=209, col=4, values=valores_gastos)
 
         crecimiento_costos_gastos = self._pick(
             payload,

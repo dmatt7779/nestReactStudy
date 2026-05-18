@@ -314,7 +314,7 @@ const ActivosFijos = () => {
                                                 <CustomInput 
                                                     type="number" 
                                                     value={secciones[id].valorSalvamento} 
-                                                    placeholder={"Ej: 100000"} 
+                                                    placeholder={"Ej: $0"} 
                                                     onChange={(value) => handleSectionChange(id, "valorSalvamento", value)} 
                                                 />
                                             </div>

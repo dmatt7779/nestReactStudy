@@ -646,7 +646,7 @@ const ProyeccionMacro = () => {
                                                         id={`producto-cantidad-${producto.id}`}
                                                         value={producto.cantidad}
                                                         onChange={(value) => manejarCambioProducto(producto.id, "cantidad", value)}
-                                                        placeholder="$0"
+                                                        placeholder="0"
                                                         type="number"
                                                     />
                                                 </td>

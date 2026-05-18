@@ -42,6 +42,9 @@ export class CostosGasto {
     @Column({ type: 'json' })
     incrementoEgresos: IncrementoEgresos;
 
+    @Column({ type: 'float', default: 0, nullable: true })
+    gastosConstitucion: number;
+
     @ManyToOne(() => User)
     @JoinColumn({ name: 'userEmail', referencedColumnName: 'email' })
     user: User;

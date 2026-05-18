@@ -53,6 +53,7 @@ const CostosGastos = () => {
     // --- 2. ESTADOS ---
     const [costos, setCostos] = useState([{ id: Date.now(), nombre: "", valor: "" }]);
     const [gastos, setGastos] = useState([{ id: Date.now(), nombre: "", valor: "" }]);
+    const [gastosConstitucion, setGastosConstitucion] = useState("");
     const [opcionSeleccionadaEgresos, setOpcionSeleccionadaEgresos] = useState("");
     const [incrementoEgresos, setIncrementoEgresos] = useState(() => years.reduce((acc, year) => ({ ...acc, [year]: "" }), {}));
 
@@ -72,7 +73,7 @@ const CostosGastos = () => {
 
         // 3. Validar Incremento Egresos
         let incrementoValido = false;
-        if (opcionSeleccionadaEgresos === "PIB" || opcionSeleccionadaEgresos === "IPC") {
+        if (opcionSeleccionadaEgresos === "IPC") {
             incrementoValido = true;
         } else if (opcionSeleccionadaEgresos === "Estrategia") {
             // Si es estrategia, validamos que los años (del 2 al 5) tengan valor
@@ -134,10 +135,16 @@ const CostosGastos = () => {
                     setGastos([{ id: Date.now(), nombre: "", valor: "" }]);
                 }
 
+                // Cargar Gastos de Constitución
+                if (data.gastosConstitucion !== undefined && data.gastosConstitucion !== null) {
+                    setGastosConstitucion(String(data.gastosConstitucion));
+                } else {
+                    setGastosConstitucion("");
+                }
+
                 // Cargar Incremento en Egresos
                 if (data.incrementoEgresos) {
-                    if (data.incrementoEgresos.pib) setOpcionSeleccionadaEgresos("PIB");
-                    else if (data.incrementoEgresos.ipc) setOpcionSeleccionadaEgresos("IPC");
+                    if (data.incrementoEgresos.ipc) setOpcionSeleccionadaEgresos("IPC");
                     else if (data.incrementoEgresos.estrategia) setOpcionSeleccionadaEgresos("Estrategia");
 
                     if (data.incrementoEgresos.incrementoEgresosCantidades) {
@@ -234,8 +241,9 @@ const CostosGastos = () => {
                     nombre: g.nombre.trim(),
                     valor: parseFloat(g.valor) || 0,
                 })),
+                gastosConstitucion: parseFloat(gastosConstitucion) || 0,
                 incrementoEgresos: {
-                    pib: opcionSeleccionadaEgresos === "PIB",
+                    pib: false,
                     ipc: opcionSeleccionadaEgresos === "IPC",
                     estrategia: opcionSeleccionadaEgresos === "Estrategia",
                     incrementoEgresosCantidades: years.map(year => parseFloat(incrementoEgresos[year]) || 0),
@@ -321,6 +329,39 @@ const CostosGastos = () => {
                         <p>Detalle los conceptos de gastos administrativos (incluye los de administracion y ventas) asociados al proyecto y el valor mensual para el primer año. 
                            No incluya salarios, depreciación y gastos financieros que serán proyectados en forma independiente más debajo de esta plantilla
                         </p>
+                        {/* Gastos de Constitución */}
+                        <div className="proyeccion-container">
+                            <h3>Gastos de Constitución</h3>
+                            <table className="tabla-estrategias">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th className="estrategia-celda-nombre">Concepto</th>
+                                        <th>Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td className="estrategia-celda-nombre">
+                                            <span style={{ padding: '0 8px', color: '#555' }}>Gastos de Constitución</span>
+                                        </td>
+                                        <td>
+                                            <CustomInput
+                                                type="number"
+                                                placeholder={"$0"}
+                                                value={gastosConstitucion}
+                                                onChange={(value) => {
+                                                    const limpio = limpiarNumero(value);
+                                                    setGastosConstitucion(limpio);
+                                                }}
+                                            />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
                         {/* Gastos Administrativos */}
                         <div className="proyeccion-container">
                             <h3>Gastos administrativos y valor mensual</h3>
@@ -361,13 +402,14 @@ const CostosGastos = () => {
                             </table>
                             <button type="button" className="estrategia-boton-agregar" onClick={agregarGasto}>+ Agregar Gasto Administrativo</button>
                         </div>
+
                         {/* Crecimiento en Egresos */}
                         <h3>Incremento en Egresos</h3>
                         <p>El crecimiento en COSTOS y GASTOS está representado en inflación
                            o en otro porcentaje establecido en el plan operativo.
                         </p>
                         <div id="crecimiento-egresos" className="contenedor-crecimiento">
-                            <CustomInput type="radio" value={opcionSeleccionadaEgresos} onChange={manejarCambioEgresos} options={["PIB", "Estrategia", "IPC"]} name="metodoIncrementoEgresos" />
+                            <CustomInput type="radio" value={opcionSeleccionadaEgresos} onChange={manejarCambioEgresos} options={["Estrategia", "IPC"]} name="metodoIncrementoEgresos" />
                         </div>
                         {opcionSeleccionadaEgresos === "Estrategia" && (
                             <div id="incremento-egresos-estrategia">

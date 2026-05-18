@@ -1,4 +1,4 @@
-import { IsArray, ValidateNested } from 'class-validator';
+import { IsArray, IsNumber, IsOptional, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CostoGastoItemDto } from './costos-gasto-item.dto';
 import { IncrementoEgresosDto } from './increment-egresos.dto';
@@ -17,6 +17,11 @@ export class CreateCostosGastoDto {
   @ValidateNested({ each: true })
   @Type(() => IncrementoEgresosDto)
   incrementoEgresos: IncrementoEgresosDto;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  gastosConstitucion?: number;
 }
 
 export { IncrementoEgresosDto };
