@@ -35,105 +35,105 @@ const PlanFinanciero = () => {
       id: "disponibleInicial",
       tipo: "number",
       placeholder: "Ej: $5.000.000",
-      descripcion: "Saldo de caja o efectivo disponible al inicio del proyecto (año 0).",
+      descripcion: "Ingrese los meses de capital de trabajo estimados que necesita reservar al inicio del proyecto (Mientras el negocio empiece a dar Ingresos).",
     },
     {
       nombre: "Días de inventario inicial",
       id: "diasInventarioInicial",
       tipo: "number",
       placeholder: "Ej: 30",
-      descripcion: "Número de días de ventas que se mantendrán como inventario inicial antes de arrancar operaciones.",
+      descripcion: " En caso de tener inventario, ingrese los días de inventario inicial para el proyecto (Cuidado si los productos son Perecederos).",
     },
     {
       nombre: "Financiación propia",
       id: "financiacionPropia",
       tipo: "number",
       placeholder: "Ej: $20.000.000",
-      descripcion: "Monto total en pesos que los socios aportarán como capital propio al proyecto.",
+      descripcion: "Del total de la inversión necesaria, ingrese cuanto dinero se dispondrá como capital propio (en pesos colombianos), el modelo determinará la diferencia como préstamo y realizará automáticamente el plan de amortización.",
     },
     {
       nombre: "Plazo del crédito (meses)",
       id: "plazoCredito",
       tipo: "number",
       placeholder: "Ej: 36",
-      descripcion: "Número de meses pactados para pagar el crédito bancario solicitado.",
+      descripcion: " Ingrese el plazo de una línea de crédito en meses. No debe ser mayor al período de evaluación.",
     },
     {
       nombre: "Tasa del crédito (% E.A.)",
       id: "tasaCredito",
       tipo: "percentage",
       placeholder: "Ej: 18%",
-      descripcion: "Tasa de interés anual efectiva del crédito financiero. Ejemplo: 18% E.A.",
+      descripcion: "Ingrese la tasa de interés Efectiva Anual estimada para el préstamo.",
     },
     {
       nombre: "Costo proveedores (% E.A.)",
       id: "tasaProveedores",
       tipo: "percentage",
       placeholder: "Ej: 12%",
-      descripcion: "Costo financiero anual del crédito otorgado por los proveedores (descuento por pronto pago o mora).",
+      descripcion: "Ingrese el costo financiero de los proveedores (costo de financiación por parte de proveedores) si existe.",
     },
     {
       nombre: "TMRR o COK (% E.A.)",
       id: "tmrr",
       tipo: "percentage",
       placeholder: "Ej: 20%",
-      descripcion: "Tasa Mínima Requerida de Retorno o Costo de Oportunidad del Capital. Es el rendimiento mínimo exigido por los inversionistas.",
+      descripcion: "Ingrese la Tasa Anual mínima de rentabilidad requerida para el accionista (También se denomina Costo de Oportunidad de Capital).",
     },
     {
       nombre: "Tasa de Reinversión (% E.A.)",
       id: "tasaReinversion",
       tipo: "percentage",
       placeholder: "Ej: 8%",
-      descripcion: "Tasa a la que se reinvertirán los excedentes de caja del proyecto (generalmente la tasa de mercado o CDT).",
+      descripcion: "Ingrese la Tasa Anual estimada de rentabilidad que espera tener en la inversión diversificada de excedentes de tesorería (Invertir en otras   opciones de inversión, diferente al Negocio Original) (Se sugiere la tasa de un CDT).",
     },
     {
       nombre: "Tasa impuestos de Renta (%)",
       id: "impuestosRenta",
       tipo: "percentage",
       placeholder: "Ej: 35%",
-      descripcion: "Porcentaje de impuesto de renta vigente que pagará la empresa sobre su utilidad gravable.",
+      descripcion: "Ingrese la Tasa Anual del Impuesto de Renta estipulada por la DIAN para los próximos años.",
     },
     {
       nombre: "Días cartera",
       id: "diasCartera",
       tipo: "number",
       placeholder: "Ej: 30",
-      descripcion: "Número promedio de días que tarda la empresa en cobrar sus ventas a crédito a los clientes.",
+      descripcion: "Determine la política de días de cartera o recuperación de ventas a crédito.",
     },
     {
       nombre: "Días inventario",
       id: "diasInventario",
       tipo: "number",
       placeholder: "Ej: 15",
-      descripcion: "Número promedio de días que la empresa mantiene existencias antes de venderlas o consumirlas.",
+      descripcion: "Determine la política de días de inventarios y su rotación en caso de que aplique (Cuidado si los productos son Perecederos).",
     },
     {
       nombre: "Días pago a proveedores",
       id: "diasPagoProveedores",
       tipo: "number",
       placeholder: "Ej: 30",
-      descripcion: "Número promedio de días que la empresa demora en pagar a sus proveedores de materias primas o mercancías.",
+      descripcion: "Determine la política de días de pago a proveedores.",
     },
     {
       nombre: "Tarifa Ind y Ccio (%)",
       id: "tarfiaIndCcio",
       tipo: "percentage",
       placeholder: "Ej: 5%",
-      descripcion: "Tarifa del impuesto de Industria y Comercio aplicable al municipio donde opera el negocio.",
+      descripcion: "Ingrese la Tarifa de Impuesto de Industria y Comercio (%) para la actividad que desarrolla (Escriba el valor en porcentaje:   Por ejemplo, para el  10 x mil, digite 1 y el reglon aparecera 1%).",
     },
     {
       nombre: "GMF (4 x mil)",
       id: "gmf4xmil",
       tipo: "percentage",
       placeholder: "0.4%",
-      descripcion: "Gravamen a los Movimientos Financieros. Equivale al 0.4% sobre cada transacción bancaria. Normalmente 0.4%.",
+      descripcion: "Ingrese la Tarifa de Gravamen (%) de Movimiento Financiero (Escriba el valor en porcentaje: Por ejemplo, el 7 x mil, digite 0,7 y el reglon aparecera 0,7%).",
     },
     {
       nombre: "Saldo mínimo caja",
       id: "saldoMinCaja",
       tipo: "number",
       placeholder: "Ej: $50.000.000",
-      descripcion: "Monto mínimo de efectivo que el proyecto debe mantener siempre disponible para cubrir gastos operativos del día a día.",
+      descripcion: "Ingrese el valor estimado del Saldo mínimo de efectivo (Caja Menor) para cubrir la operación normal de uno (1) a dos (2) meses a nivel de Capital de Trabajo.",
     },
   ];
 
@@ -343,7 +343,8 @@ const PlanFinanciero = () => {
           <img src={cabezotePlanFin} alt="Robot" className="robot-img-p" />
         </div>
         <div className="contenido-container-p">
-          <p>Una vez cuantificados los ingresos...</p>
+          <p>Una vez cuantificados los ingresos, costos, gastos e inversión, se requiere información complementaria para elaborar el
+plan financiero, como son políticas, tasas, impuestos y otros datos. Ingrese cada dato teniendo en cuenta las estrategias para el desarrollo del proyecto.</p>
           
           <form onSubmit={handleSubmit} style={{ width: "100%" }}>
             
@@ -413,7 +414,7 @@ const PlanFinanciero = () => {
                 </div>
 
                 <p>
-                  Total actual:{" "}
+                 La suma debe totalizar 100%. Total actual:{" "}
                   <strong style={{ color: esPorcentajeValido ? "inherit" : "crimson" }}>
                     100%
                   </strong>
@@ -447,6 +448,14 @@ const PlanFinanciero = () => {
                     </div>
                   ))}
                 </div>
+                <p>Los porcentajes no pueden superar el 100%. Total actual: {" "}
+                  <strong style={{ color: esPorcentajeValido ? "inherit" : "crimson" }}>
+                    100%
+                  </strong>
+                  {!esPorcentajeValido && <span style={{color: "red", marginLeft: "10px"}}>(Excede el 100%)</span>}
+                </p>
+                <h3>Nota</h3>
+                <p>Financiación Adicional de Capital de Trabajo (PQC). En caso que su proyecto de como resultado pérdidas en algunos períodos de tiempo (años), los dueños deberán asumir los compromisos deficitarios.</p>
               </div>
             </div>
           </form>

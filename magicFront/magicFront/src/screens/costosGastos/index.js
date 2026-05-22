@@ -327,7 +327,7 @@ const CostosGastos = () => {
                         </div>
 
                         <p>Detalle los conceptos de gastos administrativos (incluye los de administracion y ventas) asociados al proyecto y el valor mensual para el primer año. 
-                           No incluya salarios, depreciación y gastos financieros que serán proyectados en forma independiente más debajo de esta plantilla
+                           No incluya salarios, depreciación y gastos financieros que serán proyectados en forma independiente más debajo de esta plantilla.
                         </p>
                         {/* Gastos de Constitución */}
                         <div className="proyeccion-container">

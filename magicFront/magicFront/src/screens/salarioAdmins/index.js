@@ -229,14 +229,20 @@ const SalarioAdmins = () => {
                     <img src={cabezoteSalarios} alt="Robot" className="robot-img-an" />
                 </div>
                 <div className="contenido-container">
-                    <p>Una vez determinadas las necesidades de personal...</p>
+                    <p>Una vez determinadas las necesidades de personal, la estructura organizacional y las características de la misma, se requiere
+tener el detalle de los empleados con su asignación salarial y carga social y prestacional, la cual corre por parte de los dueños del proyecto.
+
+Ingrese el concepto de empleados que no sean costos y, el valor mensual incluyendo factor prestacional.  Si son varios empleados con el mismo
+cargo, ingrese el total mensual de los mismos, identificando la cantidad de empleados en la descripción.
+
+En este punto no incluya los cargos que tengan que ver con los costos fijos (estos van en la sección de Costos Fijos)</p>
                     
                     {/* Formulario con validación en onSubmit (opcional, ya que el botón se deshabilita) */}
                     <form onSubmit={handleSubmit} style={{ width: "100%" }}>
                         
                         <div className="proyeccion-container">
                             <h3>Cargos y valor mensual</h3>
-                            <p>Recuerde incluir prestaciones...</p>
+                            <p>Recuerde Incluir prestaciones y auxilio de transporte, salario y/o bonificación de los dueños.</p>
                             <table className="tabla-estrategias">
                                 <thead>
                                     <tr>
@@ -276,7 +282,7 @@ const SalarioAdmins = () => {
                         </div>
 
                         <h3>Incremento en Salarios</h3>
-                        <p>El incremento en SALARIOS cada año...</p>
+                        <p>El incremento en salarios cada año puede estar fundamentado en la inflación o en otro porcentaje. Marque cual sería:</p>
                         <div id="crecimiento-salario" className="contenedor-crecimiento">
                             <CustomInput type="radio" value={opcionSeleccionadaSalarios} onChange={manejarCambioSalarios} options={["IPC", "Otro Porcentaje"]} name="metodoIncrementoSalarios" />
                         </div>

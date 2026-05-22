@@ -74,7 +74,7 @@ const NewProject = () => {
             className="img-resizable"
           />
         </div>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+        <p></p>
         <form onSubmit={(e) => e.preventDefault()}>
           <div className="grid-proyectos">
             {Array.from({ length: NUM_CARDS }).map((_, index) => {

@@ -546,9 +546,7 @@ const ProyeccionMacro = () => {
                         <img src={tituloAnalisiImg} alt="Análisis del entorno" className="section-img1" />
                     </div>
                     <p>
-                        En el análisis del entorno, es necesario investigar y contemplar las proyecciones de
-                        ciertas variables macroeconómicas...
-                    </p>
+                        En el análisis del entorno, es necesario Investigar y contemplar las proyecciones de ciertas variables Macroeconómicas. En este aspecto, existen entidades que se encargan de realizar estos estudios, y los publican en sus portales digitales.</p>
 
                     <form>
                         <div className="table-container">
@@ -594,7 +592,7 @@ const ProyeccionMacro = () => {
                             <img src={tituloMercadeoImg} alt="Análisis del entorno" className="section-img5" />
                         </div>
                         <p>
-                            En el plan de mercadeo y ventas, se debe realizar una estimación...
+                            En el plan de mercadeo y ventas, se debe realizar una estimación de las cantidades a facturar y los precios promedio de ventas para el primer año por cada producto y/o servicio, así como también los factores de crecimiento (con base en indicador o estrategia) y el costo de cada una de las estrategias de Marketing para atraer clientes.
                         </p>
                         <div className="analisis-info-container">
                             <div className="tasa-iva">
@@ -782,7 +780,7 @@ const ProyeccionMacro = () => {
                         {opcionSeleccionadaCostos === "Estrategia" && (
                             <div id="crecimiento-costos-estrategia">
                                 <p className="texto-estrategia">
-                                    En caso de que su crecimiento sea mediante estrategias de mercadeo...
+                                    En caso de que su crecimiento sea mediante estrategias de mercadeo, indique los crecimientos porcentuales de precios de venta para cada año.
                                 </p>
                                 <div className="fila-crecimiento">
                                     {years.map((anio) => (
@@ -806,7 +804,7 @@ const ProyeccionMacro = () => {
                             <img src={tituloMarketingImg} alt="Marteting" className="section-img6" />
                         </div>
                         <div className="marketing-invest-container">
-                            <p>Nombre las estrategias de mercadeo a realizar en su proyecto...</p>
+                            <p>Nombre las estrategias de mercadeo a realizar en su proyecto y el gasto estimado para cada año, a fin de darse a conocer y atraer clientes en el mercado competitivo.</p>
                             <div className="proyeccion-container">
                                 <table className="tabla-estrategias">
                                     <thead>

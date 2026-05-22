@@ -281,7 +281,8 @@ const ActivosFijos = () => {
                     <img src={cabezoteActivos} alt="Robot" className="robot-img-an" />
                 </div>
                 <div className="contenido-container">
-                    <p>Ingrese cada uno de los activos fijos...</p>
+                    <p>Ingrese cada uno de los activos fijos necesarios al inicio del proyecto para conformar su infraestructura, determinando su clasificación en grupo y el valor.</p>
+                    <p>Ingrese además la vida útil de los activos, y el Valor de Salvamento o Valor Residual (Una estimación de venta de dichos activos luego de la vida útil registrada).</p>
                     
                     <form onSubmit={handleSubmit} style={{ width: "100%" }}>
                         {SECCIONES.map(({ id, nombre, campos }) => (
