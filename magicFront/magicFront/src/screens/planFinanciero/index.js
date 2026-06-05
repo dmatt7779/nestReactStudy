@@ -34,7 +34,7 @@ const PlanFinanciero = () => {
       nombre: "Disponible inicial",
       id: "disponibleInicial",
       tipo: "number",
-      placeholder: "Ej: $5.000.000",
+      placeholder: "Ej: 5",
       descripcion: "Ingrese los meses de capital de trabajo estimados que necesita reservar al inicio del proyecto (Mientras el negocio empiece a dar Ingresos).",
     },
     {
