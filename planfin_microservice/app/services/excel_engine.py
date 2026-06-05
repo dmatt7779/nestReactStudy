@@ -1047,14 +1047,14 @@ class ExcelEngineService:
         data["excelPath"] = str(recalculated_path)
         
         # Recolección de basura: Borrar el directorio padre UUID completo
-        # work_dir = original_path.parent
-        # if work_dir.exists() and work_dir.is_dir():
-        #     try:
-        #         import shutil
-        #         shutil.rmtree(work_dir, ignore_errors=True)
-        #         print(f"[ExcelEngineService] Garbage collection complete: Removed {work_dir}")
-        #     except Exception as e:
-        #         print(f"[ExcelEngineService] Warning: Failed to clean up {work_dir} - {e}")
+        work_dir = original_path.parent
+        if work_dir.exists() and work_dir.is_dir():
+            try:
+                import shutil
+                shutil.rmtree(work_dir, ignore_errors=True)
+                print(f"[ExcelEngineService] Garbage collection complete: Removed {work_dir}")
+            except Exception as e:
+                print(f"[ExcelEngineService] Warning: Failed to clean up {work_dir} - {e}")
                 
         return data
 
