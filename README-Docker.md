@@ -1,15 +1,573 @@
-# 🐳 Guía de Configuración y Despliegue con Docker
+# 📘 Documentación Técnica del Proyecto — Magic CEIPA
 
-Este documento detalla paso a paso cómo levantar el entorno de desarrollo y producción usando Docker y Docker Compose para este proyecto, junto con información clave sobre la arquitectura, puertos y comandos útiles.
+**Plataforma de Simulación Financiera para Planes de Negocio** — CEIPA Powered by Arizona State University
+
+Este documento contiene la documentación técnica completa del proyecto: arquitectura, estructura del código, modelo de datos, flujos, endpoints de la API, y la guía paso a paso de configuración y despliegue con Docker.
+
+---
+
+## 📐 Arquitectura General
+
+El proyecto es una aplicación **full-stack de 3 servicios** independientes, comunicados por HTTP y orquestados con Docker Compose. El frontend (React) se comunica con el backend core (NestJS) para operaciones CRUD y autenticación, y con el microservicio Python (FastAPI) para el cálculo financiero pesado que requiere LibreOffice Headless.
+
+```mermaid
+graph TB
+    subgraph Frontend ["🖥️ Frontend — React.js :3005"]
+        A[React 18 + React Router 6]
+        A1[Axios Client Singleton]
+        A2[JWT Auth + ProtectedRoute]
+        A3[14 Screens + 7 Components]
+    end
+
+    subgraph Backend ["⚙️ Backend Core — NestJS :3006"]
+        B[NestJS 11 + TypeORM]
+        B1[11 Controllers / REST API]
+        B2[JWT Guard + Role-Based Auth]
+        B3[PDFKit Report Generator]
+        B4["Mailer — Password Recovery"]
+    end
+
+    subgraph Python ["🐍 Motor Financiero — FastAPI :3007"]
+        C[FastAPI + Uvicorn]
+        C1[Excel Engine + LibreOffice Headless]
+        C2["Plantilla XLSX con Fórmulas"]
+    end
+
+    subgraph DB ["🗄️ Base de Datos"]
+        D[MySQL — db_magic]
+    end
+
+    A -- "HTTP + JWT Bearer" --> B
+    A -- "HTTP POST" --> C
+    B -- "TypeORM" --> D
+    C -- "OpenPyXL inyecta → LibreOffice recalcula → Extrae resultados" --> C2
+```
 
 ---
 
 ## 🛠 Stack de Tecnología
 
-- **Frontend:** React.js (Create React App), Nginx (para servir estáticos en producción)
-- **Backend Core (NestJS):** NestJS, TypeScript, Node.js, TypeORM, PDFKit (generación de reportes PDF)
-- **Motor Financiero (Python):** FastAPI, Uvicorn, Python 3.11, OpenPyXL y libreoffice-headless (Embebidos en Docker)
-- **Infraestructura:** Docker, Docker Compose
+| Capa | Tecnología | Puerto | Notas |
+|:-----|:-----------|:------:|:------|
+| **Frontend** | React 18 (CRA), React Router 6, Axios, Lucide Icons, HeadlessUI, react-hot-toast | `:3005` | Nginx en producción |
+| **Backend Core** | NestJS 11, TypeORM, JWT (`@nestjs/jwt`), bcryptjs, PDFKit, `@nestjs-modules/mailer` | `:3006` | Prefijo global `api/v1` |
+| **Motor Financiero** | FastAPI, Uvicorn, OpenPyXL, LibreOffice Headless (Alpine Docker) | `:3007` | Recálculo de fórmulas Excel |
+| **Base de Datos** | MySQL | `:3307` | `synchronize: true` con TypeORM |
+| **Infraestructura** | Docker, Docker Compose (multi-stage: dev + prod) | — | Volúmenes para live-reload en dev |
+
+---
+
+## 📂 Estructura del Proyecto
+
+```
+nestReactStudy/
+├── docker-compose.yml              # Desarrollo (live-reload con volúmenes)
+├── docker-compose.prod.yml         # Producción (Nginx + builds optimizados)
+├── README-Docker.md                # Esta documentación
+├── mapa_dependencias.png           # Grafo de dependencias entre hojas Excel
+│
+├── magicFront/magicFront/          # 🖥️ FRONTEND (React)
+│   ├── src/
+│   │   ├── App.js                  # Router principal (20 rutas)
+│   │   ├── components/             # 7 componentes reutilizables
+│   │   │   ├── Navbar.js           # Menú condicional por rol
+│   │   │   ├── CeipaLoader.js      # Animación de carga (ciclo mínimo 8s)
+│   │   │   ├── CeipaLoader.css     # Estilos de la animación
+│   │   │   ├── CustomInput.js      # Input reutilizable con validación
+│   │   │   ├── ParticleBackground.js # Fondo animado con partículas
+│   │   │   ├── ProtectedRoute.js   # Guard de ruta (valida JWT expiration)
+│   │   │   └── Footer.js           # Pie de página
+│   │   ├── screens/                # 14 carpetas de pantallas
+│   │   │   ├── login/              # Inicio de sesión
+│   │   │   ├── register/           # Registro de usuarios
+│   │   │   ├── forgotPassword/     # Solicitar recuperación
+│   │   │   ├── resetPassword/      # Restablecer contraseña
+│   │   │   ├── newProject/         # Listado + crear proyectos
+│   │   │   ├── projectInfo/        # Información inicial
+│   │   │   ├── proyeccionMacro/    # Análisis del entorno
+│   │   │   ├── costosGastos/       # Costos y gastos
+│   │   │   ├── activosFijos/       # Activos fijos
+│   │   │   ├── salarioAdmins/      # Salarios administrativos
+│   │   │   ├── planFinanciero/     # Plan financiero + botón calcular
+│   │   │   ├── results/            # 7 pantallas de resultados financieros
+│   │   │   ├── professorDashboard/ # Dashboard del profesor
+│   │   │   └── verifiedProjects/   # Proyectos verificados
+│   │   ├── hooks/                  # Custom hooks
+│   │   │   ├── useRole.js          # Decodifica rol del JWT
+│   │   │   └── useProcessing.js    # Estado de carga con ciclo mínimo
+│   │   ├── utils/axios.js          # Cliente HTTP singleton (Axios)
+│   │   ├── style/styles.css        # Hoja de estilos global (36KB)
+│   │   └── images/                 # Assets estáticos
+│   ├── .env                        # REACT_APP_API_URL, REACT_APP_PY_APP_API_URL
+│   ├── nginx.conf                  # Configuración de Nginx para producción
+│   └── Dockerfile                  # Multi-stage (dev + prod con Nginx)
+│
+├── nestjs/magic_ceipa/             # ⚙️ BACKEND (NestJS)
+│   ├── src/
+│   │   ├── app.module.ts           # Módulo raíz (TypeORM MySQL + 10 módulos)
+│   │   ├── main.ts                 # Bootstrap: prefix api/v1, CORS, ValidationPipe
+│   │   ├── auth/                   # Módulo de autenticación
+│   │   │   ├── auth.controller.ts  # Login, Register, Forgot/Reset Password
+│   │   │   ├── auth.service.ts     # Lógica de auth + envío de emails
+│   │   │   ├── auth.module.ts      # Configuración JWT + Mailer
+│   │   │   ├── dto/                # RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto
+│   │   │   ├── guard/              # JWT AuthGuard
+│   │   │   ├── decorators/         # @Auth() decorator
+│   │   │   └── constants/          # JWT secret
+│   │   ├── users/                  # CRUD usuarios + roles
+│   │   │   ├── entities/user.entity.ts
+│   │   │   ├── users.service.ts    # findByEmail, saveResetToken, findByValidResetToken
+│   │   │   └── dto/                # CreateUserDto, UpdateUserDto
+│   │   ├── project-info/           # CRUD proyectos + Dashboard profesor
+│   │   │   ├── entities/project-info.entity.ts
+│   │   │   ├── project-info.service.ts # Incluye eliminación en cascada
+│   │   │   └── dto/
+│   │   ├── proyeccion-macro/       # Análisis del entorno (con sub-entidades)
+│   │   │   ├── entities/
+│   │   │   │   ├── proyeccion-macro.entity.ts
+│   │   │   │   ├── producto.entity.ts
+│   │   │   │   └── estrategia-marketing.entity.ts
+│   │   │   └── dto/
+│   │   ├── costos-gastos/          # Costos y gastos operativos
+│   │   ├── activos-fijos/          # Activos fijos e inversión
+│   │   ├── salario-admins/         # Salarios administrativos
+│   │   ├── plan-financiero/        # Plan financiero (datos de entrada)
+│   │   ├── financial-results/      # Resultados calculados + verificación + comentarios
+│   │   │   ├── entities/financial-result.entity.ts
+│   │   │   ├── financial-results.controller.ts
+│   │   │   └── financial-results.service.ts
+│   │   ├── project-summary/        # Resumen consolidado de datos del proyecto
+│   │   ├── reports/                # Generación de PDF con PDFKit
+│   │   │   ├── reports.service.ts  # Servicio principal (28KB)
+│   │   │   ├── pdf-helpers.ts      # Utilidades de generación PDF
+│   │   │   ├── reports.controller.ts
+│   │   │   └── reports.module.ts
+│   │   └── common/                 # Utilidades compartidas
+│   │       ├── decorators/         # @ActiveUser()
+│   │       ├── enums/              # Role (USER, PROFESSOR, ADMIN)
+│   │       └── interfaces/         # UserActiveInterface
+│   ├── .env                        # DB, CORS, MAIL, FRONTEND_URL
+│   └── Dockerfile                  # Multi-stage (dev + prod)
+│
+├── planfin_microservice/           # 🐍 MICROSERVICIO PYTHON
+│   ├── app/
+│   │   ├── main.py                 # FastAPI app + CORS
+│   │   ├── routers/
+│   │   │   └── calculator.py       # Router POST /calculate/excel
+│   │   └── services/
+│   │       ├── excel_engine.py     # Motor principal (47KB) — inyección a XLSX
+│   │       ├── informacion_inicial.py # Mapeo de datos iniciales (32KB)
+│   │       ├── estado_resultados.py   # Extracción de resultados (25KB)
+│   │       ├── calculator_service.py  # Orquestador del cálculo
+│   │       └── base.py             # Clase base de servicio
+│   ├── excel_templates/
+│   │   └── Plantilla_Plan_Financiero_empty.xlsx  # Template Excel con fórmulas
+│   ├── requirements.txt            # fastapi, uvicorn, pydantic, openpyxl
+│   └── dockerfile                  # Alpine + LibreOffice Headless
+│
+└── template_report/                # Template Word para informes
+    └── INFORME EVALUACIÓN DE PROYECTOS MAGIC.docx
+```
+
+---
+
+## 🗄️ Modelo de Datos (10 Entidades TypeORM)
+
+La base de datos MySQL `db_magic` contiene 10 entidades gestionadas por TypeORM con `synchronize: true`. La entidad principal es `ProjectInfo`, que tiene relaciones 1:1 con cada módulo de datos del proyecto. Los resultados financieros calculados se almacenan como JSON en `FinancialResult`.
+
+```mermaid
+erDiagram
+    User {
+        int id PK
+        string name
+        string email UK
+        string password
+        string role "user | professor | admin"
+        string resetToken "nullable"
+        datetime resetTokenExpiry "nullable"
+    }
+
+    ProjectInfo {
+        int id PK
+        string projectName
+        json teamMembers
+        int openingYear
+        json professor "array de IDs de profesores"
+        string userEmail FK
+    }
+
+    ProyeccionMacro {
+        int id PK
+        int projectInfoId FK
+        json data
+    }
+
+    Producto {
+        int id PK
+        int proyeccionMacroId FK
+    }
+
+    EstrategiaMarketing {
+        int id PK
+        int proyeccionMacroId FK
+    }
+
+    CostosGasto {
+        int id PK
+        int projectInfoId FK
+        json data
+    }
+
+    ActivoFijo {
+        int id PK
+        int projectInfoId FK
+        json data
+    }
+
+    SalarioAdmin {
+        int id PK
+        int projectInfoId FK
+        json data
+    }
+
+    PlanFinanciero {
+        int id PK
+        int projectInfoId FK
+        json data
+    }
+
+    FinancialResult {
+        int id PK
+        int projectInfoId FK
+        json result "Todos los resultados calculados"
+        boolean verified "false por defecto"
+        int verifiedBy "ID del profesor"
+        datetime verifiedAt "nullable"
+        json comments "comentarios por pantalla"
+        string userEmail
+    }
+
+    ProjectInfo ||--o| ProyeccionMacro : tiene
+    ProjectInfo ||--o| CostosGasto : tiene
+    ProjectInfo ||--o| ActivoFijo : tiene
+    ProjectInfo ||--o| SalarioAdmin : tiene
+    ProjectInfo ||--o| PlanFinanciero : tiene
+    ProjectInfo ||--o| FinancialResult : tiene
+    ProyeccionMacro ||--o{ Producto : contiene
+    ProyeccionMacro ||--o{ EstrategiaMarketing : contiene
+    User ||--o{ ProjectInfo : crea
+```
+
+> **Nota sobre la eliminación en cascada:** Al borrar un `ProjectInfo`, el servicio elimina manualmente todas las entidades relacionadas (PlanFinanciero, CostosGasto, ActivoFijo, SalarioAdmin, ProyeccionMacro con sus Productos y EstrategiaMarketing, y FinancialResult) antes de eliminar el proyecto principal.
+
+---
+
+## 🖥️ Pantallas del Frontend (20 rutas)
+
+### Flujo Público (sin autenticación)
+
+```mermaid
+graph LR
+    L["/  — Login"] -->|¿Olvidó contraseña?| FP["/forgot-password"]
+    FP -->|Email enviado| RP["/reset-password?token=xxx"]
+    RP -->|Contraseña actualizada| L
+    L -->|¿No tiene cuenta?| R["/register"]
+    R -->|Registro exitoso| L
+    L -->|"Login exitoso (user)"| NP["/NewProject"]
+    L -->|"Login exitoso (professor)"| PD["/ProfessorDashboard"]
+```
+
+| Ruta | Pantalla | Descripción |
+|:-----|:---------|:------------|
+| `/` | Login | Inicio de sesión con email/password + ParticleBackground |
+| `/register` | Register | Registro de nuevos usuarios con selección de rol |
+| `/forgot-password` | ForgotPassword | Solicitud de recuperación por correo electrónico |
+| `/reset-password` | ResetPassword | Restablecimiento con token temporal (15 min) |
+
+### Flujo del Estudiante — Instrucciones (entrada de datos)
+
+```mermaid
+graph LR
+    NP["/NewProject — Mis Proyectos"] -->|Seleccionar o crear| PI["/ProjectInfo"]
+    PI -->|Guardar y siguiente| PM["/ProyeccionMacro"]
+    PM -->|Guardar y siguiente| CG["/CostosGastos"]
+    CG -->|Guardar y siguiente| AF["/ActivosFijos"]
+    AF -->|Guardar y siguiente| SA["/SalarioAdmins"]
+    SA -->|Guardar y siguiente| PF["/PlanFinanciero"]
+    PF -->|"Calcular (→ Python API)"| ER["/EstadoResultados"]
+```
+
+| Ruta | Pantalla | Descripción |
+|:-----|:---------|:------------|
+| `/NewProject` | NewProject | Listado de proyectos existentes + botón crear nuevo proyecto |
+| `/ProjectInfo` | ProjectInfo | Información inicial: nombre del proyecto, equipo, año de apertura, profesores asignados |
+| `/ProyeccionMacro` | ProyeccionMacro | Análisis del entorno macro: productos, estrategia de marketing |
+| `/CostosGastos` | CostosGastos | Costos y gastos operativos del proyecto |
+| `/ActivosFijos` | ActivosFijos | Activos fijos e inversiones requeridas |
+| `/SalarioAdmins` | SalarioAdmins | Salarios del personal administrativo |
+| `/PlanFinanciero` | PlanFinanciero | Plan financiero completo + botón **Calcular** que invoca al microservicio Python |
+
+### Flujo del Estudiante — Resultados (consulta de datos calculados)
+
+```mermaid
+graph LR
+    ER["/EstadoResultados"] --> FE["/FlujoEfectivo"]
+    FE --> ESF["/EstadoSituaFin"]
+    ESF --> FC["/FlujoCaja"]
+    FC --> W["/Wacc"]
+    W --> IF["/IndiFinancieros"]
+    IF --> I["/Indicadores"]
+    I -->|"📥 Descargar PDF"| PDF["Reporte PDF"]
+```
+
+| Ruta | Pantalla | Descripción |
+|:-----|:---------|:------------|
+| `/EstadoResultados` | EstadoResultados | Estado de resultados proyectado (ingresos, egresos, utilidad) |
+| `/FlujoEfectivo` | FlujoEfectivo | Flujo de efectivo operativo, de inversión y financiamiento |
+| `/EstadoSituaFin` | EstadoSituaFin | Estado de situación financiera (balance general) |
+| `/FlujoCaja` | FlujoCaja | Flujo de caja libre del proyecto |
+| `/Wacc` | Wacc | Costo Promedio Ponderado de Capital (WACC) |
+| `/IndiFinancieros` | IndiFinancieros | Indicadores financieros (liquidez, endeudamiento, rentabilidad) |
+| `/Indicadores` | Indicadores | VPN, TIR, Punto de equilibrio + botón **Descargar Reporte PDF** |
+
+> Cada pantalla de resultados incluye un campo de **comentarios** donde el estudiante puede escribir su análisis. Los comentarios se guardan en la columna JSON `comments` de `FinancialResult`.
+
+### Flujo del Profesor
+
+```mermaid
+graph LR
+    PD["/ProfessorDashboard"] -->|Ver resultados| RES["Pantallas de Resultados"]
+    PD -->|"✅ Verificar proyecto"| PD
+    PD -->|"📥 Descargar PDF"| PDF["Reporte PDF"]
+    PD -->|Ver verificados| VP["/VerifiedProjects"]
+    VP -->|"↩️ Desmarcar"| PD
+```
+
+| Ruta | Pantalla | Descripción |
+|:-----|:---------|:------------|
+| `/ProfessorDashboard` | ProfessorDashboard | Proyectos asignados al profesor con buscador dinámico (nombre, estudiante, cédula). Permite verificar proyectos y descargar reportes PDF |
+| `/VerifiedProjects` | VerifiedProjects | Lista de proyectos ya verificados con opción de desmarcar la verificación |
+
+---
+
+## 🔄 Flujo de Datos Principal (Cálculo Financiero)
+
+Este diagrama muestra el flujo completo desde que el estudiante presiona **"Calcular"** en la pantalla de Plan Financiero hasta que los resultados se guardan en la base de datos:
+
+```mermaid
+sequenceDiagram
+    participant S as 🧑‍🎓 Estudiante (React)
+    participant N as ⚙️ NestJS Backend
+    participant P as 🐍 Python Microservice
+    participant L as 📄 LibreOffice Headless
+    participant DB as 🗄️ MySQL
+
+    S->>N: GET /api/v1/project-summary/:id
+    N->>DB: Recopilar datos del proyecto
+    DB-->>N: ProjectInfo + Macro + Costos + Activos + Salarios + PlanFin
+    N-->>S: JSON consolidado con todos los datos
+
+    S->>P: POST /api/v1/calculate/excel {datos consolidados}
+    P->>P: 1. Abrir Plantilla_Plan_Financiero_empty.xlsx
+    P->>P: 2. Inyectar datos en celdas (OpenPyXL)
+    P->>L: 3. Ejecutar LibreOffice para recalcular fórmulas
+    L-->>P: 4. XLSX con celdas recalculadas
+    P->>P: 5. Extraer resultados de 18+ hojas
+    P-->>S: JSON estructurado con todos los resultados financieros
+
+    S->>N: POST /api/v1/save-results/:projectId {resultados}
+    N->>DB: INSERT/UPDATE en financial_result
+    DB-->>N: OK
+    N-->>S: Resultado guardado exitosamente
+
+    S->>S: Navegar a /EstadoResultados con datos en state
+```
+
+---
+
+## 🧩 Componentes Reutilizables del Frontend
+
+| Componente | Archivo | Descripción |
+|:-----------|:--------|:------------|
+| **Navbar** | `components/Navbar.js` | Menú de navegación condicional por rol. Estudiantes ven dropdowns de Instrucciones y Resultados. Profesores ven "Ver asignaciones" y "Verificados". Incluye lógica de decodificación JWT para determinar el rol |
+| **CeipaLoader** | `components/CeipaLoader.js` + `.css` | Animación de carga overlay con el logo de CEIPA. Garantiza un ciclo mínimo de 8 segundos para evitar parpadeos en transiciones rápidas |
+| **CustomInput** | `components/CustomInput.js` | Input reutilizable con soporte para labels, validación, diferentes tipos y estilos consistentes en toda la aplicación |
+| **ParticleBackground** | `components/ParticleBackground.js` | Fondo animado con partículas interactivas renderizadas en canvas. Usado en las pantallas de Login y Register |
+| **ProtectedRoute** | `components/ProtectedRoute.js` | Wrapper de `<Outlet>` que decodifica el JWT, valida la expiración (`exp * 1000 < Date.now()`), y redirige a login si el token venció o no existe |
+| **Footer** | `components/Footer.js` | Pie de página estático |
+
+### Custom Hooks
+
+| Hook | Archivo | Descripción |
+|:-----|:--------|:------------|
+| **useRole** | `hooks/useRole.js` | Decodifica el JWT desde localStorage/sessionStorage y retorna `{ role, isProfessor }` |
+| **useProcessing** | `hooks/useProcessing.js` | Maneja el estado de carga `isProcessing` con función `runWithLoader()` que envuelve operaciones async con el CeipaLoader |
+
+### Cliente HTTP
+
+| Utilidad | Archivo | Descripción |
+|:---------|:--------|:------------|
+| **AxiosClient** | `utils/axios.js` | Singleton con dos instancias de Axios: `axiosInstance` (NestJS) y `pythonInstance` (FastAPI). Interceptores automáticos para: inyectar JWT en headers, manejar 401 (redirigir a login), silenciar 404 en GET, y mostrar toasts de error |
+
+---
+
+## 📡 API Endpoints del Backend (NestJS)
+
+Todos los endpoints están bajo el prefijo global **`/api/v1/`** configurado en `main.ts`.
+
+### 🔐 Auth (`/api/v1/auth/`)
+
+| Método | Endpoint | Auth | Descripción |
+|:-------|:---------|:-----|:------------|
+| `POST` | `/login` | ❌ | Autenticación con email/password. Retorna JWT con `{id, email, role}` |
+| `POST` | `/register` | ❌ | Registro de nuevo usuario. Password hasheado con bcryptjs (12 rounds) |
+| `POST` | `/forgot-password` | ❌ | Envía email de recuperación con token SHA256 (válido 15 min) |
+| `POST` | `/reset-password` | ❌ | Restablece contraseña usando el token del email |
+| `GET` | `/profile` | ✅ | Retorna perfil del usuario autenticado |
+
+### 👤 Users (`/api/v1/users/`)
+
+| Método | Endpoint | Auth | Descripción |
+|:-------|:---------|:-----|:------------|
+| `GET` | `/professors` | ✅ | Lista todos los usuarios con rol `professor` (solo id, name, email) |
+
+### 📁 ProjectInfo (`/api/v1/project-info/`)
+
+| Método | Endpoint | Auth | Roles | Descripción |
+|:-------|:---------|:-----|:------|:------------|
+| `POST` | `/` | ✅ | USER | Crear proyecto. Valida que no exista duplicado por nombre+email |
+| `GET` | `/` | ✅ | USER/ADMIN | Listar proyectos del usuario (admin ve todos) |
+| `GET` | `/:id` | ✅ | USER | Obtener proyecto por ID (valida ownership) |
+| `PATCH` | `/:id` | ✅ | USER | Actualizar proyecto |
+| `DELETE` | `/:id` | ✅ | USER | Eliminar proyecto + todas las entidades relacionadas en cascada |
+| `GET` | `/professor/dashboard` | ✅ | PROFESSOR | Dashboard del profesor. `?verified=true` para proyectos verificados |
+
+### 📊 Módulos de Datos del Proyecto
+
+Cada módulo sigue el patrón CRUD estándar de NestJS con validación de ownership:
+
+| Módulo | Prefijo | Descripción |
+|:-------|:--------|:------------|
+| **ProyeccionMacro** | `/api/v1/proyeccion-macro/` | Análisis del entorno con sub-entidades Producto y EstrategiaMarketing |
+| **CostosGastos** | `/api/v1/costos-gastos/` | Costos y gastos operativos |
+| **ActivosFijos** | `/api/v1/activos-fijos/` | Activos fijos e inversión |
+| **SalarioAdmins** | `/api/v1/salario-admins/` | Salarios administrativos |
+| **PlanFinanciero** | `/api/v1/plan-financiero/` | Plan financiero (datos de entrada al cálculo) |
+
+### 📈 ProjectSummary (`/api/v1/project-summary/`)
+
+| Método | Endpoint | Auth | Descripción |
+|:-------|:---------|:-----|:------------|
+| `GET` | `/:id` | ✅ | Consolida **todos** los datos del proyecto en un único JSON para enviar al motor de cálculo Python |
+
+### 💰 FinancialResults (`/api/v1/save-results/`)
+
+| Método | Endpoint | Auth | Roles | Descripción |
+|:-------|:---------|:-----|:------|:------------|
+| `POST` | `/:projectInfoId` | ✅ | USER | Guardar resultados financieros calculados |
+| `GET` | `/` | ✅ | USER | Listar todos los resultados del usuario |
+| `GET` | `/:id` | ✅ | USER | Obtener resultado por ID |
+| `GET` | `/project/:projectId` | ✅ | USER/PROFESSOR | Obtener resultado por ID del proyecto |
+| `PATCH` | `/:id` | ✅ | USER | Actualizar resultado |
+| `DELETE` | `/:id` | ✅ | USER | Eliminar resultado |
+| `PATCH` | `/verify/project/:projectInfoId` | ✅ | PROFESSOR | Toggle verificación del proyecto (marcar/desmarcar como verificado) |
+| `PATCH` | `/comments/project/:projectInfoId` | ✅ | USER | Actualizar comentarios por pantalla `{ screenKey, comment }` |
+
+### 📄 Reports (`/api/v1/reports/`)
+
+| Método | Endpoint | Auth | Descripción |
+|:-------|:---------|:-----|:------------|
+| `GET` | `/project/:id` | ✅ | Genera y descarga un **PDF** con todas las tablas financieras y comentarios del estudiante. Utiliza PDFKit |
+
+---
+
+## 🐍 Motor Financiero Python (Detalle)
+
+El microservicio Python es el **núcleo del cálculo financiero**. Recibe los datos crudos del proyecto y retorna todos los estados financieros calculados.
+
+### Endpoint
+
+| Método | Endpoint | Descripción |
+|:-------|:---------|:------------|
+| `POST` | `/api/v1/calculate/excel` | Recibe JSON con todos los datos del proyecto y retorna resultados financieros calculados |
+| `GET` | `/` | Health check del microservicio |
+
+### Flujo Interno del Motor
+
+```mermaid
+graph TD
+    A["📥 Recibir JSON con datos del proyecto"] --> B["📂 Abrir Plantilla_Plan_Financiero_empty.xlsx"]
+    B --> C["✏️ Inyectar datos en celdas con OpenPyXL"]
+    C --> D["💾 Guardar XLSX temporal"]
+    D --> E["⚙️ Invocar LibreOffice Headless"]
+    E --> F["🔄 LibreOffice recalcula TODAS las fórmulas"]
+    F --> G["📖 Abrir XLSX recalculado con OpenPyXL"]
+    G --> H["📊 Extraer resultados de 18+ hojas"]
+    H --> I["📤 Retornar JSON estructurado"]
+```
+
+### Archivos Clave del Motor
+
+| Archivo | Tamaño | Responsabilidad |
+|:--------|:------:|:----------------|
+| `excel_engine.py` | 47KB | Motor principal: orquesta la apertura del template, inyección de datos, invocación de LibreOffice, y extracción de resultados |
+| `informacion_inicial.py` | 32KB | Mapeo detallado de datos del frontend a celdas específicas del Excel (información inicial, productos, estrategia) |
+| `estado_resultados.py` | 25KB | Extracción de resultados calculados desde las hojas del Excel: estado de resultados, flujos, WACC, indicadores |
+| `calculator_service.py` | 1.3KB | Orquestador que coordina los servicios anteriores |
+| `base.py` | 5.4KB | Clase base con utilidades compartidas entre servicios |
+
+### Plantilla Excel
+
+El archivo `Plantilla_Plan_Financiero_empty.xlsx` (560KB) contiene fórmulas financieras complejas distribuidas en 18+ hojas interdependientes (ver mapa de dependencias en `mapa_dependencias.png`):
+
+- Información inicial → Instrucciones → Inversión
+- Egresos → Estado de Resultados → Ingresos
+- Flujo de Efectivo → Estado Situación Financiera → Flujo de Caja
+- Plan Amortización → WACC
+- Indicadores: Liquidez, Endeudamiento, Rentabilidad, Generación de Valor
+- Punto de Equilibrio
+
+---
+
+## 🔐 Sistema de Autenticación y Autorización
+
+| Aspecto | Implementación |
+|:--------|:---------------|
+| **Login** | Email + Password → bcryptjs compare → JWT firmado con `{id, email, role}` |
+| **Token JWT** | Expiración de 4 horas, almacenado en `localStorage` del navegador |
+| **Protección Frontend** | `ProtectedRoute` decodifica el JWT y valida `exp` antes de renderizar la ruta |
+| **Protección Backend** | Guard `@Auth(Role.USER, Role.PROFESSOR)` decorador compuesto en cada controller |
+| **Roles** | `user` (estudiante), `professor`, `admin` |
+| **Recuperación** | Flujo completo: forgot → email SMTP con token SHA256 (15 min) → reset password |
+| **Interceptor 401** | Axios global detecta respuestas 401, limpia `localStorage` y redirige a login |
+
+---
+
+## 📋 Changelog de Funcionalidades
+
+Estas funcionalidades fueron integradas al sistema y están incluidas en el ciclo de despliegue:
+
+| Feature                              | Descripción                                                                                                                                                                                                          |
+| :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Dashboard de Profesores**          | Pantalla exclusiva para profesores que muestra solo los proyectos asignados a su ID con resultados financieros.                                                                                                      |
+| **Verificación de Proyectos**        | Los profesores pueden marcar proyectos como "verificados", separándolos del listado principal.                                                                                                                       |
+| **Pantalla de Verificados**          | Vista `/VerifiedProjects` lista los proyectos ya aprobados con opción de desmarcar.                                                                                                                                  |
+| **Buscador Dinámico**                | Filtrado en tiempo real por nombre de proyecto, nombre de estudiante o cédula en el dashboard del profesor.                                                                                                          |
+| **Roles JWT Mejorados**              | El JWT ahora incluye `id` y `role` del usuario. Endpoints protegidos con `@Auth(Role.USER, Role.PROFESSOR)`.                                                                                                         |
+| **Navbar Condicional**               | Menú de navegación adaptado según el rol: estudiantes ven instrucciones/resultados, profesores ven asignaciones y verificados.                                                                                       |
+| **CeipaLoader Animado**              | Animación de carga con ciclo mínimo garantizado de 8s en login y navegación entre pantallas.                                                                                                                         |
+| **Eliminación en Cascada**           | Borrar un proyecto elimina todos los datos relacionados (macros, costos, activos, resultados financieros).                                                                                                           |
+| **Microservicio Python Dockerizado** | FastAPI + LibreOffice Headless empaquetados en Alpine Linux para el cálculo financiero automatizado.                                                                                                                 |
+| **Comentarios por Pantalla**         | Los estudiantes pueden escribir análisis/comentarios en cada pantalla de resultados. Se guardan en columna JSON de la DB.                                                                                            |
+| **Generación de Reportes PDF**       | Endpoint `GET /api/v1/reports/project/:id` genera un PDF con todas las tablas financieras y comentarios del estudiante. Descargable desde la pantalla de Indicadores (estudiante) y desde el Dashboard del Profesor. |
+| **Expiración de Token JWT**          | El `ProtectedRoute` del frontend ahora decodifica el JWT y verifica su expiración. Si el token venció (4h), redirige a login automáticamente al recargar o navegar.                                                  |
+| **Recuperación de Contraseña**       | Flujo completo de recuperación por correo electrónico con token temporal (15 min) utilizando `@nestjs-modules/mailer`. Dos nuevas pantallas en React para envío de link y restablecimiento seguro.                   |
+
+---
+
+# 🐳 Guía de Configuración y Despliegue con Docker
+
+A partir de esta sección se detalla paso a paso cómo levantar el entorno de desarrollo y producción usando Docker y Docker Compose, junto con información clave sobre puertos, variables de entorno, y comandos útiles.
 
 ---
 
@@ -169,28 +727,6 @@ TypeORM está configurado con `synchronize: true` en `app.module.ts`, lo que sig
 > ALTER TABLE user ADD COLUMN resetToken VARCHAR(255) NULL;
 > ALTER TABLE user ADD COLUMN resetTokenExpiry DATETIME NULL;
 > ```
-
----
-
-## 📋 Changelog de Funcionalidades Recientes
-
-Estas funcionalidades fueron integradas al sistema y están incluidas en el ciclo de despliegue:
-
-| Feature                              | Descripción                                                                                                                                                                                                          |
-| :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Dashboard de Profesores**          | Pantalla exclusiva para profesores que muestra solo los proyectos asignados a su ID con resultados financieros.                                                                                                      |
-| **Verificación de Proyectos**        | Los profesores pueden marcar proyectos como "verificados", separándolos del listado principal.                                                                                                                       |
-| **Pantalla de Verificados**          | Vista `/VerifiedProjects` lista los proyectos ya aprobados con opción de desmarcar.                                                                                                                                  |
-| **Buscador Dinámico**                | Filtrado en tiempo real por nombre de proyecto, nombre de estudiante o cédula en el dashboard del profesor.                                                                                                          |
-| **Roles JWT Mejorados**              | El JWT ahora incluye `id` y `role` del usuario. Endpoints protegidos con `@Auth(Role.USER, Role.PROFESSOR)`.                                                                                                         |
-| **Navbar Condicional**               | Menú de navegación adaptado según el rol: estudiantes ven instrucciones/resultados, profesores ven asignaciones y verificados.                                                                                       |
-| **CeipaLoader Animado**              | Animación de carga con ciclo mínimo garantizado de 8s en login y navegación entre pantallas.                                                                                                                         |
-| **Eliminación en Cascada**           | Borrar un proyecto elimina todos los datos relacionados (macros, costos, activos, resultados financieros).                                                                                                           |
-| **Microservicio Python Dockerizado** | FastAPI + LibreOffice Headless empaquetados en Alpine Linux para el cálculo financiero automatizado.                                                                                                                 |
-| **Comentarios por Pantalla**         | Los estudiantes pueden escribir análisis/comentarios en cada pantalla de resultados. Se guardan en columna JSON de la DB.                                                                                            |
-| **Generación de Reportes PDF**       | Endpoint `GET /api/v1/reports/project/:id` genera un PDF con todas las tablas financieras y comentarios del estudiante. Descargable desde la pantalla de Indicadores (estudiante) y desde el Dashboard del Profesor. |
-| **Expiración de Token JWT**          | El `ProtectedRoute` del frontend ahora decodifica el JWT y verifica su expiración. Si el token venció (4h), redirige a login automáticamente al recargar o navegar.                                                  |
-| **Recuperación de Contraseña**       | Flujo completo de recuperación por correo electrónico con token temporal (15 min) utilizando `@nestjs-modules/mailer`. Dos nuevas pantallas en React para envío de link y restablecimiento seguro.                   |
 
 ---
 
