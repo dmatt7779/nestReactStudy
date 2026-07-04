@@ -486,7 +486,7 @@ class ExcelInputWriter:
         if incremento_salarial.get("otroPorcentaje") is True:
             ws["C326"] = "X"
             crecimiento_values = incremento_salarial.get("incrementoEgresos", [])
-            crecimiento_percent_values = [self._to_percent_decimal(v) for v in crecimiento_values]
+            crecimiento_percent_values = [self._to_percent_decimal(v) for v in crecimiento_values[1:]]
             self._write_vector_row(ws, row=329, col_start=4, values=crecimiento_percent_values)
 
         # ======== planFinanciero ========

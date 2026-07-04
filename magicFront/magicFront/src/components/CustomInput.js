@@ -87,6 +87,9 @@ const CustomInput = ({ label, value, onChange, placeholder, type, options, name,
     } else if (type === "text") {
       newValue = newValue.replace(/[^a-zA-ZÁÉÍÓÚáéíóúñÑ\s]/g, "");
       onChange(newValue);
+    } else if (type === "textnum") {
+      newValue = newValue.replace(/[^a-zA-ZÁÉÍÓÚáéíóúñÑ0-9\s]/g, "");
+      onChange(newValue);
     } else {
       onChange(newValue);
     }

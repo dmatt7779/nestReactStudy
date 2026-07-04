@@ -104,6 +104,7 @@ const Navbar = () => {
                     <li onClick={() => handleSelect("/proyeccionMacro", "instrucciones")}>Análisis del entorno</li>
                     <li onClick={() => handleSelect("/costosGastos", "instrucciones")}>Costos y gastos</li>
                     <li onClick={() => handleSelect("/activosFijos", "instrucciones")}>Activos fijos</li>
+                    <li onClick={() => handleSelect("/salarioAdmins", "instrucciones")}>Salarios administrativos</li>
                     <li onClick={() => handleSelect("/planFinanciero", "instrucciones")}>Plan financiero</li>
                   </ul>
                 )}

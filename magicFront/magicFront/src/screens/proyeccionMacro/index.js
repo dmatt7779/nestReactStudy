@@ -635,7 +635,7 @@ const ProyeccionMacro = () => {
                                                         value={producto.nombre}
                                                         onChange={(value) => manejarCambioProducto(producto.id, "nombre", value)}
                                                         placeholder="nombre"
-                                                        type="text"
+                                                        type="textnum"
                                                     />
                                                 </td>
 
